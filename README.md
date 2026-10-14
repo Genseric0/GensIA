@@ -1,7 +1,7 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.19.1** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.20.0** — protótipo em evolução.
 
 ## Começar
 
@@ -38,6 +38,7 @@ de um adaptador não significa validação com hardware ou serviços reais.
 
 ```powershell
 py -3 -m gensia.agents list
+py -3 -m gensia.doctor --model qwen2.5:0.5b
 py -3 -m gensia.agents audit --workspace . --url https://example.com
 ```
 
@@ -45,6 +46,8 @@ O coordenador delega tarefas delimitadas e o revisor recebe as evidências da
 segurança. Para analisar Python é necessário Bandit; para estudo e revisão com
 modelo, Ollama local. Ver [comandos e limites](docs/AGENT_TEAM.md).
 Publicar o código no GitHub não inicia processos permanentes nem monitorização.
+O [diagnóstico local](docs/DOCTOR.md) verifica pré-requisitos sem prompts, downloads
+ou arranque de serviços. Um modelo listado ainda precisa de validação de inferência.
 
 ## Organização
 
@@ -58,12 +61,12 @@ Publicar o código no GitHub não inicia processos permanentes nem monitorizaç�
 
 ## Validação
 
-131 testes passaram no ambiente de desenvolvimento Linux/Python 3.12, com as
+141 testes passaram no ambiente de desenvolvimento Linux/Python 3.12, com as
 dependências opcionais da API instaladas. Sem estas dependências, seis testes HTTP
 são omitidos explicitamente. Uma consulta HTTP real em loopback foi validada.
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.
 
-Bandit 1.9.4 real analisou os 15 módulos Python: três avisos baixos B404, nenhum
+Bandit 1.9.4 real analisou os 16 módulos Python: três avisos baixos B404, nenhum
 achado médio/alto. Isto não garante ausência de vulnerabilidades. Ollama 0.40.4
 real respondeu à API; inferência pendente porque a rede impediu o download do
 modelo. Ver [relatório de integração](docs/REAL_ENGINE_VALIDATION.md).

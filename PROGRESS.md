@@ -1,5 +1,20 @@
 # Progresso GensIA
 
+## 14/10/2026 — módulo 20 — v0.20.0
+
+Acrescentado `python -m gensia.doctor --model ETIQUETA`: diagnóstico explícito dos
+pré-requisitos antes dos agentes. Verifica metadados/módulo Bandit, GET local
+/api/tags e etiqueta exata. Não instala, descarrega, inicia serviços, envia prompts
+ou lê documentos. Erros e inventário completo de modelos não são publicados.
+Exit codes 0/12/2; aprovação de pré-requisitos não afirma inferência validada.
+
+141 testes passaram (dez novos). Teste HTTP real com resposta sintética verificou
+um GET sem corpo. CLI real: Bandit disponível, Ollama inacessível, modelo não
+verificado, saída 12. Scan Bandit real: 16 módulos, três LOW B404, sem MEDIUM/HIGH.
+Não se repetiu nem contornou o download bloqueado. Sem dependências novas.
+Guia e evidências: docs/DOCTOR.md. Próximo: inferência real quando houver pesos
+locais; painel read-only pode avançar independentemente dessa disponibilidade.
+
 ## 14/10/2026 — validação real e transporte local — v0.19.1
 
 Recuperada a versão 0.19.0 do GitHub como base autoritativa. Bandit 1.9.4 instalado
@@ -273,8 +288,9 @@ aberta no computador do utilizador e nenhum Windows real foi usado nesta etapa.
 ## Retomar
 
 1. Ler PROGRESS.md, README.md e VALIDATION.txt.
-2. Concluir inferência real com modelo Ollama instalado (Bandit e API Ollama já
-   validados). Executar scripts/validate_agents_real.py. Depois criar painel
+2. Usar gensia.doctor para verificar o ambiente e concluir inferência real quando
+   houver modelo Ollama instalado. Executar scripts/validate_agents_real.py.
+   O painel read-only pode avançar sem esse motor. Criar painel
    local read-only na mesma origem, mantendo token e sem CDN; rever Origin apenas
    para a origem local exata. Não expor ações mutáveis.
 3. Não guardar conversas automaticamente nem enviar memória ao modelo por padrão.

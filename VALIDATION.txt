@@ -1,8 +1,17 @@
 Data: 2026-10-14
 Ambiente: Linux, Python 3.12.14
-Versão: 0.19.1
+Versão: 0.20.0
 Comando: python3 -m unittest discover -s tests -v
-Resultado observado: 131 testes, todos passaram no venv com dependências API.
+Resultado observado: 141 testes, todos passaram no venv com dependências API.
+
+v0.20.0: dez testes novos do diagnóstico. Bandit metadados/módulo, API ausente,
+modelo ausente/não escolhido, etiquetas exatas, inventário e erro privados,
+validação antecipada de argumentos, códigos 0/12/2 e GET real sem corpo.
+O servidor de teste devolve dados sintéticos; não substitui inferência real.
+CLI real com --model qwen2.5:0.5b --timeout 0.5: Bandit 1.9.4 disponível,
+Ollama inacessível, modelo not_checked, saída 12. Nenhum download iniciado.
+Bandit real: 16 ficheiros em gensia/, três B404 LOW, zero MEDIUM/HIGH.
+Não foram suprimidos achados. Sem instalação no computador do utilizador.
 
 v0.19.1: Bandit 1.9.4 real, 15 módulos de gensia/, três LOW B404 e zero MEDIUM/HIGH.
 Fixture sintética B602 HIGH detetada pelo motor real; bytes preservados.

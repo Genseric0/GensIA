@@ -1,4 +1,4 @@
-# Equipa local — v0.19.1
+# Equipa local — v0.20.0
 
 Implementação em `gensia/agents.py`, reutilizando os módulos existentes. Nenhum
 framework de swarm ou dependência adicional obrigatória foi introduzido.
@@ -16,6 +16,10 @@ um modelo para decidir ferramentas. O GitHub guarda o código; executá-lo reque
 Python no computador onde se pretende trabalhar.
 
 ## Executar
+
+Antes de iniciar, usar `python -m gensia.doctor --model ETIQUETA_EXATA` no mesmo
+ambiente Python dos agentes. [Guia de diagnóstico](DOCTOR.md). Não instala nada
+nem gera respostas; pré-requisitos aprovados não equivalem a inferência validada.
 
 Na pasta do repositório, Windows/Python 3.10+:
 

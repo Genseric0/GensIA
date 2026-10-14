@@ -207,3 +207,14 @@ todos os redirecionamentos HTTP. Isto protege o destino da ligação; não prova
 um servidor local arbitrário não encaminhe dados. O operador deve usar modelos
 instalados localmente e desativar funcionalidades cloud no servidor.
 Bandit e API Ollama reais validados; inferência ainda pendente por falta de pesos.
+
+## Diagnóstico local (v0.20.0)
+
+`gensia.doctor` é uma CLI independente e não é invocada automaticamente pelos
+agentes. Valida argumentos antes de verificar dependências ou rede. Verifica
+Bandit por metadados e resolução do módulo, sem o importar; consulta apenas
+GET /api/tags através do transporte local protegido. Não lê documentos nem memória.
+Etiquetas exatas, sem aliases ou seleção automática. Não expõe inventário completo
+nem corpos de erro HTTP. `preflight_passed` só significa pré-requisitos observados;
+não valida execução Bandit, inferência nem a política interna do servidor Ollama.
+Não inicia serviços nem downloads. Ver docs/DOCTOR.md.
