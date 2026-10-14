@@ -4,7 +4,16 @@ import socket
 from typing import Protocol
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
-from urllib.request import Request, urlopen
+from urllib.request import Request, HTTPRedirectHandler, ProxyHandler, build_opener
+
+
+class _NoRedirect(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise HTTPError(req.full_url, code, "Redirecionamento Ollama recusado", headers, None)
+
+
+# Never delegate local prompts to a proxy or redirected endpoint.
+_LOCAL_OPENER = build_opener(ProxyHandler({}), _NoRedirect())
 
 
 class ProviderUnavailable(RuntimeError):
@@ -76,7 +85,7 @@ class OllamaProvider:
         request = Request(self.base_url + path, data=body, method=method,
                           headers={"Content-Type": "application/json"})
         try:
-            with urlopen(request, timeout=self.timeout) as response:
+            with _LOCAL_OPENER.open(request, timeout=self.timeout) as response:
                 raw = response.read(10 * 1024 * 1024 + 1)
         except HTTPError as exc:
             detail = ""

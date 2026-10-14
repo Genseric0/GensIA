@@ -1,0 +1,170 @@
+{
+  "date": "2026-10-14",
+  "bandit_fixture": {
+    "complete": true,
+    "detects_B602": true,
+    "fixture_unchanged": true,
+    "engine_version": "1.9.4",
+    "severity_counts": {
+      "HIGH": 1,
+      "LOW": 1
+    }
+  },
+  "ollama_probe": {
+    "version": "0.40.4",
+    "models": [],
+    "missing_model_raises": true,
+    "cloud_disabled_for_test": true,
+    "inference_validated": false
+  },
+  "ollama_archive_sha256": "15f31e9576d15a481e099b4145dba6e9f8c1f295927d6b8895300ae30ed3740a",
+  "model_download": "blocked: redirect storage DNS unavailable in this environment",
+  "servers_stopped": true,
+  "project_scan": {
+    "mode": "bounded_sequential_team",
+    "complete": true,
+    "steps": [
+      {
+        "id": "E1",
+        "agent": "security",
+        "task": "code",
+        "status": "completed",
+        "result": {
+          "engine": "bandit",
+          "engine_version": "1.9.4",
+          "target": "gensia",
+          "files_considered": 15,
+          "source_bytes": 116077,
+          "severity_threshold": "low",
+          "confidence_threshold": "low",
+          "issues_total": 3,
+          "issues_returned": 3,
+          "truncated": false,
+          "severity_counts": {
+            "LOW": 3
+          },
+          "confidence_counts": {
+            "HIGH": 3
+          },
+          "scanner_errors_count": 0,
+          "complete": true,
+          "issues": [
+            {
+              "path": "gensia/static_analysis.py",
+              "line": 8,
+              "test_id": "B404",
+              "test_name": "blacklist",
+              "severity": "LOW",
+              "confidence": "HIGH",
+              "message": "Consider possible security implications associated with the subprocess module.",
+              "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_imports.html#b404-import-subprocess"
+            },
+            {
+              "path": "gensia/tools.py",
+              "line": 7,
+              "test_id": "B404",
+              "test_name": "blacklist",
+              "severity": "LOW",
+              "confidence": "HIGH",
+              "message": "Consider possible security implications associated with the subprocess module.",
+              "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_imports.html#b404-import-subprocess"
+            },
+            {
+              "path": "gensia/voice.py",
+              "line": 7,
+              "test_id": "B404",
+              "test_name": "blacklist",
+              "severity": "LOW",
+              "confidence": "HIGH",
+              "message": "Consider possible security implications associated with the subprocess module.",
+              "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_imports.html#b404-import-subprocess"
+            }
+          ],
+          "local_only": true,
+          "network_accessed": null,
+          "files_modified": null,
+          "isolation": "python_isolated_mode_not_os_sandbox",
+          "project_configuration_used": false,
+          "limitations": "Análise estática heurística: pode ter falsos positivos e falsos negativos; não executa intencionalmente o projeto nem substitui revisão humana. Não é uma sandbox do SO: plugins instalados são código confiável; rede e alterações não são monitorizadas. Não analisar árvores que mudem em simultâneo."
+        }
+      },
+      {
+        "id": "E2",
+        "agent": "reviewer",
+        "task": "review",
+        "status": "completed",
+        "result": {
+          "evidence_ids": [
+            "E1"
+          ],
+          "requires_human_review": true,
+          "incomplete_evidence": false,
+          "findings": [
+            {
+              "evidence": "E1",
+              "counts": {
+                "LOW": 3
+              },
+              "complete": true,
+              "issues": [
+                {
+                  "path": "gensia/static_analysis.py",
+                  "line": 8,
+                  "test_id": "B404",
+                  "test_name": "blacklist",
+                  "severity": "LOW",
+                  "confidence": "HIGH",
+                  "message": "Consider possible security implications associated with the subprocess module.",
+                  "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_imports.html#b404-import-subprocess"
+                },
+                {
+                  "path": "gensia/tools.py",
+                  "line": 7,
+                  "test_id": "B404",
+                  "test_name": "blacklist",
+                  "severity": "LOW",
+                  "confidence": "HIGH",
+                  "message": "Consider possible security implications associated with the subprocess module.",
+                  "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_imports.html#b404-import-subprocess"
+                },
+                {
+                  "path": "gensia/voice.py",
+                  "line": 7,
+                  "test_id": "B404",
+                  "test_name": "blacklist",
+                  "severity": "LOW",
+                  "confidence": "HIGH",
+                  "message": "Consider possible security implications associated with the subprocess module.",
+                  "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_imports.html#b404-import-subprocess"
+                }
+              ],
+              "omitted_issues": 0
+            }
+          ],
+          "model_used": false,
+          "recommendation": "Rever os sinais e limitações. Ausência de achados não prova segurança."
+        }
+      }
+    ],
+    "automatic_changes": false,
+    "cloud_fallback": false,
+    "warning": "Conclusão das etapas não significa que o alvo esteja seguro."
+  },
+  "source_sha256": {
+    "gensia/__init__.py": "2934fe4bcbe8498c7037978b4b8733dbdc23d4889f641149a73451c5cc3f7c08",
+    "gensia/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "gensia/agents.py": "8df09b71b63420769ebd00e6ea207c4c879b9f67169ab96b6d6ef99452536169",
+    "gensia/api.py": "6e4f680fdb09efa7e958051c5b9c910e8929df0470079dd0312f1e7d9603cae7",
+    "gensia/cli.py": "9870c30ab35ad0879c97b3799fc5b8a4567c818b0a2febdf92976b9b0a9ca4fa",
+    "gensia/core.py": "b607866d0b41efb34b1a2c0ef397eb7a1210439e9e99613f972e33b2bfba0e83",
+    "gensia/documents.py": "eed703676ebdd36d7a1195e81c6d4105c81a3c32ad911a24cacd5629a36e7eb4",
+    "gensia/kev.py": "136450837107b5d2cc64366d7b8ffc509688fc2fbeff38bc7c3b3375e6ec668a",
+    "gensia/memory.py": "b313d43a9d136a5640a75e5915dc0871e850d96f2b1eb9754b72396d884628ed",
+    "gensia/providers.py": "3f98542628dea8484c3c120f418dc9f805c3e9d583d8c5279b09aba4d4d1124c",
+    "gensia/search.py": "b38a31934c3d231fc8cc8f8e2c7bed39a1fff805695c7e396ba91fda17e48bb1",
+    "gensia/security.py": "9858d829c1b2169bc673dc4f5bc882a0337bfa784f45582fea73cf02e0417a57",
+    "gensia/static_analysis.py": "af7842a4d3ce488baaa776b2a056cff604869beac820daefdc083b137b72b0f0",
+    "gensia/tools.py": "550644d3a295793dd34325602ff355f256202c3fdeb606a867cc478acb18f1ef",
+    "gensia/voice.py": "14c726843cc256fcc5be020d0642e02b519ce851558d63a41b9865c38f93d8d7"
+  }
+}

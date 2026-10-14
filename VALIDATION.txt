@@ -1,8 +1,17 @@
 Data: 2026-10-14
 Ambiente: Linux, Python 3.12.14
-Versão: 0.19.0
+Versão: 0.19.1
 Comando: python3 -m unittest discover -s tests -v
-Resultado observado: 129 testes, todos passaram no venv com dependências API.
+Resultado observado: 131 testes, todos passaram no venv com dependências API.
+
+v0.19.1: Bandit 1.9.4 real, 15 módulos de gensia/, três LOW B404 e zero MEDIUM/HIGH.
+Fixture sintética B602 HIGH detetada pelo motor real; bytes preservados.
+Transporte Ollama: redirecionamentos HTTP 301/302/303/307/308 recusados e proxy de
+ambiente ignorado, verificados por servidores locais reais. Sem mocks de transporte.
+Ollama 0.40.4 real: /api/version, /api/tags (lista vazia), erro de modelo ausente.
+Inferência não validada: download dos pesos bloqueado pela rede/DNS do ambiente.
+Servidores de teste encerrados. Relatório: docs/REAL_ENGINE_VALIDATION.md.
+As entradas de módulos anteriores abaixo descrevem o estado histórico desses testes.
 
 Módulo 19: 12 testes novos verificam passagem de evidências, falhas isoladas,
 omissão do revisor sem evidências, recusa de provider cloud, ausência de modelo

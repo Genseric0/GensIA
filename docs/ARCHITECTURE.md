@@ -202,4 +202,8 @@ O log guarda estados e hashes; relatórios impressos podem conter informação
 sensível. Revisor recebe até 30 achados por scan, sem campo de código nem URL
 completa. Tutor recebe trechos selecionados. Citações/recomendações não são prova
 de correção. Não há workers permanentes, autoedição ou fallback cloud.
-Detalhes em AGENT_TEAM.md. Próximo: integração real dos motores e painel local.
+Detalhes em AGENT_TEAM.md. Na v0.19.1, o provider usa opener sem proxies e recusa
+todos os redirecionamentos HTTP. Isto protege o destino da ligação; não prova que
+um servidor local arbitrário não encaminhe dados. O operador deve usar modelos
+instalados localmente e desativar funcionalidades cloud no servidor.
+Bandit e API Ollama reais validados; inferência ainda pendente por falta de pesos.

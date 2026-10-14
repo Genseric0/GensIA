@@ -1,7 +1,7 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.19.0** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.19.1** — protótipo em evolução.
 
 ## Começar
 
@@ -58,10 +58,15 @@ Publicar o código no GitHub não inicia processos permanentes nem monitorizaç�
 
 ## Validação
 
-129 testes passaram no ambiente de desenvolvimento Linux/Python 3.12, com as
+131 testes passaram no ambiente de desenvolvimento Linux/Python 3.12, com as
 dependências opcionais da API instaladas. Sem estas dependências, seis testes HTTP
 são omitidos explicitamente. Uma consulta HTTP real em loopback foi validada.
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.
+
+Bandit 1.9.4 real analisou os 15 módulos Python: três avisos baixos B404, nenhum
+achado médio/alto. Isto não garante ausência de vulnerabilidades. Ollama 0.40.4
+real respondeu à API; inferência pendente porque a rede impediu o download do
+modelo. Ver [relatório de integração](docs/REAL_ENGINE_VALIDATION.md).
 
 ## Privacidade e permissões
 
@@ -76,6 +81,6 @@ distribuição ao projeto; as dependências mantêm as suas próprias licenças.
 
 ## Continuidade
 
-Próximo incremento: validar a equipa com Bandit e Ollama reais; depois integrar
+Próximo incremento: concluir inferência com um modelo Ollama instalado; depois integrar
 resultados no painel local de leitura, sem CDN e com token.
 Consultar [PROGRESS.md](PROGRESS.md) antes de iniciar alterações.

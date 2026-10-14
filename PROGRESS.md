@@ -1,5 +1,23 @@
 # Progresso GensIA
 
+## 14/10/2026 — validação real e transporte local — v0.19.1
+
+Recuperada a versão 0.19.0 do GitHub como base autoritativa. Bandit 1.9.4 instalado
+apenas no ambiente de desenvolvimento e executado realmente: 15 módulos, três
+avisos LOW B404 após correção. Fixture sintética detectada como B602 HIGH, sem
+execução do seu conteúdo e sem alteração dos bytes.
+
+Corrigido transporte do Ollama: opener próprio sem proxies de ambiente, com
+redirecionamentos HTTP recusados. 131 testes passaram; dois novos testes usam
+servidores HTTP locais reais para 301/302/303/307/308 e proxy.
+
+Ollama 0.40.4 arrancou realmente em CPU, cloud desativada; /api/version e /api/tags
+responderam, modelo ausente gerou ProviderUnavailable. Download qwen2.5:0.5b
+bloqueado por resolução DNS do destino de armazenamento no ambiente. Não houve
+inferência real. Servidores encerrados. Nada instalado no computador do utilizador.
+Evidências em docs/validation/2026-10-14-real-engines.json; roteiro reproduzível
+em scripts/validate_agents_real.py. Próximo: executar esse roteiro com pesos locais.
+
 ## 14/10/2026 — módulo 19 — v0.19.0
 
 Pedido do utilizador: colocar agentes de segurança e outros a trabalhar na GensIA.
@@ -255,7 +273,8 @@ aberta no computador do utilizador e nenhum Windows real foi usado nesta etapa.
 ## Retomar
 
 1. Ler PROGRESS.md, README.md e VALIDATION.txt.
-2. Validar equipa com Bandit/Ollama reais e projeto de exemplo. Depois criar painel
+2. Concluir inferência real com modelo Ollama instalado (Bandit e API Ollama já
+   validados). Executar scripts/validate_agents_real.py. Depois criar painel
    local read-only na mesma origem, mantendo token e sem CDN; rever Origin apenas
    para a origem local exata. Não expor ações mutáveis.
 3. Não guardar conversas automaticamente nem enviar memória ao modelo por padrão.

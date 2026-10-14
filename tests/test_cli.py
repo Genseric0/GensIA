@@ -84,7 +84,7 @@ class CliTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             OllamaProvider("modelo", "https://example.com")
 
-    @patch("gensia.providers.urlopen")
+    @patch("gensia.providers._LOCAL_OPENER.open")
     def test_ollama_chat_payload_and_response(self, mocked):
         class Response:
             def __enter__(self): return self
@@ -99,7 +99,7 @@ class CliTests(unittest.TestCase):
         self.assertFalse(body["stream"])
         self.assertEqual(body["messages"][0]["content"], "Explica NAT")
 
-    @patch("gensia.providers.urlopen")
+    @patch("gensia.providers._LOCAL_OPENER.open")
     def test_list_installed_models(self, mocked):
         class Response:
             def __enter__(self): return self
@@ -108,7 +108,7 @@ class CliTests(unittest.TestCase):
         mocked.return_value = Response()
         self.assertEqual(OllamaProvider().list_models(), ["a", "b"])
 
-    @patch("gensia.providers.urlopen")
+    @patch("gensia.providers._LOCAL_OPENER.open")
     def test_invalid_json_is_reported(self, mocked):
         class Response:
             def __enter__(self): return self

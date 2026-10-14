@@ -1,4 +1,4 @@
-# Equipa local — v0.19.0
+# Equipa local — v0.19.1
 
 Implementação em `gensia/agents.py`, reutilizando os módulos existentes. Nenhum
 framework de swarm ou dependência adicional obrigatória foi introduzido.
@@ -76,13 +76,14 @@ sandbox de sistema operativo; mantenha código hostil num ambiente isolado.
 
 ## Validação e continuidade
 
-Em 14/10/2026: 129 testes passaram, incluindo 12 novos testes da equipa. CLI
-real exercitada com URL pública sem acesso à rede. Recuperação documental usa
-ficheiros temporários reais; geração Ollama e resultados Bandit usam simulações.
-Ollama/Bandit reais e execução em Windows ainda não foram validados nesta etapa.
+Em 14/10/2026: 131 testes passaram. Bandit 1.9.4 executado realmente no código e
+numa fixture vulnerável. Ollama 0.40.4 respondeu realmente à API, mas o download
+do modelo foi bloqueado pela rede; respostas geradas continuam por validar.
+Transporte recusa redirects e ignora proxies. Windows continua por validar.
+Ver [evidências e reprodução](REAL_ENGINE_VALIDATION.md).
 
-Próximo passo: teste de integração com os dois motores reais e um projeto de
-exemplo; depois expor os relatórios no painel local. Não existe serviço em
+Próximo passo: concluir o teste de integração com pesos Ollama instalados;
+depois expor os relatórios no painel local. Não existe serviço em
 segundo plano instalado no computador do utilizador.
 
 Referência consultada em 14/10/2026: API oficial Ollama,
