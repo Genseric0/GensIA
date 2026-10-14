@@ -188,4 +188,18 @@ Lançador fixa loopback e desativa proxy headers/access log. Host e Origin valid
 antes de servir os três endpoints GET. O token não pode viajar na query string.
 O modelo de ameaça não inclui processos locais comprometidos nem proxy externo.
 
-Próximo módulo: painel local read-only na mesma origem, sem CDN e com token.
+## Equipa de agentes (v0.19.0)
+
+`gensia.agents.Coordinator` valida tarefas explícitas e delega sequencialmente.
+`SecurityAgent` reutiliza PassiveUrlAnalyzer/BanditScanner; `ReviewAgent` recebe
+evidências estruturadas com IDs, prioriza severidades e opcionalmente consulta
+Ollama; `StudyAgent` reutiliza LocalDocumentSearch. Não há descoberta automática
+de ferramentas nem execução de texto produzido pelo modelo. Erros esperados são
+isolados por etapa; falhas de auditoria interrompem a operação. A CLI fixa o
+provider Ollama local e a equipa recusa providers declarados como cloud.
+
+O log guarda estados e hashes; relatórios impressos podem conter informação
+sensível. Revisor recebe até 30 achados por scan, sem campo de código nem URL
+completa. Tutor recebe trechos selecionados. Citações/recomendações não são prova
+de correção. Não há workers permanentes, autoedição ou fallback cloud.
+Detalhes em AGENT_TEAM.md. Próximo: integração real dos motores e painel local.

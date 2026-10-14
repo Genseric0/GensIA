@@ -1,8 +1,18 @@
 Data: 2026-10-14
 Ambiente: Linux, Python 3.12.14
-Versão: 0.18.0
+Versão: 0.19.0
 Comando: python3 -m unittest discover -s tests -v
-Resultado observado: 117 testes, todos passaram no venv com dependências API.
+Resultado observado: 129 testes, todos passaram no venv com dependências API.
+
+Módulo 19: 12 testes novos verificam passagem de evidências, falhas isoladas,
+omissão do revisor sem evidências, recusa de provider cloud, ausência de modelo
+antes de ler documentos, recuperação/citações, limites antes de execução,
+scans parciais, ordenação/truncagem de achados, texto do modelo sem execução,
+omissão de URL sensível no prompt/log e códigos de saída CLI.
+CLI real: python -m gensia.agents audit --workspace . --url https://example.com
+(com log temporário) devolveu duas etapas completas e network_accessed=false.
+Ollama e Bandit não instalados; interfaces simuladas. Nenhuma instalação no PC
+do utilizador. Comandos abaixo referentes a módulos anteriores são históricos.
 
 Módulo 18: endpoints FastAPI reais via TestClient; autenticação, Host/Origin,
 métodos mutáveis, query strings, ausência de docs/rotas pessoais, no-store,

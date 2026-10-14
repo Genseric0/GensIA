@@ -1,5 +1,19 @@
 # Progresso GensIA
 
+## 14/10/2026 — módulo 19 — v0.19.0
+
+Pedido do utilizador: colocar agentes de segurança e outros a trabalhar na GensIA.
+Implementada equipa local com coordenador determinístico, segurança (URLs/Bandit),
+revisor com evidências e Ollama opcional, e tutor documental com Ollama local.
+CLI independente: `python -m gensia.agents list|audit|study`. Falhas isoladas,
+resultados parciais, limites de tarefas/evidências e auditoria reutilizam os
+módulos existentes. Nenhuma saída de modelo é executada, nenhum serviço permanente
+é instalado e não há fallback cloud. Guia: docs/AGENT_TEAM.md.
+
+129 testes passaram (12 novos); CLI passiva executada realmente. Bandit e Ollama
+simulados nos testes, sem execução real desses motores. A publicação no GitHub
+não significa agentes em execução no computador do utilizador.
+
 ## 14/10/2026 — organização para GitHub
 
 Destino confirmado: Genseric0/GensIA, repositório público inicialmente vazio.
@@ -241,8 +255,9 @@ aberta no computador do utilizador e nenhum Windows real foi usado nesta etapa.
 ## Retomar
 
 1. Ler PROGRESS.md, README.md e VALIDATION.txt.
-2. Criar painel local read-only servido na mesma origem, mantendo token e sem CDN;
-   rever política Origin apenas para a origem local exata. Não expor ações mutáveis.
+2. Validar equipa com Bandit/Ollama reais e projeto de exemplo. Depois criar painel
+   local read-only na mesma origem, mantendo token e sem CDN; rever Origin apenas
+   para a origem local exata. Não expor ações mutáveis.
 3. Não guardar conversas automaticamente nem enviar memória ao modelo por padrão.
 4. Atualizar documentação, testes e a mesma identidade do artefacto.
 
@@ -255,4 +270,5 @@ aberta no computador do utilizador e nenhum Windows real foi usado nesta etapa.
 - [x] Voz inicial (ficheiro, microfone limitado e TTS; diálogo contínuo fica futuro).
 - [x] Pesquisa, documentos e apoio ao estudo (base local com recuperação e citações).
 - [x] Cibersegurança inicial (URL, reputação opt-in, CISA KEV e Bandit).
-- [ ] Interface gráfica e orquestração.
+- [x] Coordenação inicial limitada de agentes especializados.
+- [ ] Interface gráfica e orquestração avançada.

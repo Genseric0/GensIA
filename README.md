@@ -1,7 +1,7 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.18.0** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.19.0** — protótipo em evolução.
 
 ## Começar
 
@@ -28,10 +28,23 @@ Não é necessário instalar todas as bibliotecas para começar.
 | Documentos | TXT/Markdown/PDF, pesquisa lexical e respostas com referências |
 | Cibersegurança | URLs passivas, VirusTotal opt-in, CISA KEV e adaptador Bandit |
 | API | Estado e diagnóstico read-only em loopback, com token |
+| Agentes | Coordenador, segurança, revisor e tutor; tarefas locais explícitas |
 | Interface gráfica | Planeada; ainda não implementada |
 
 As capacidades opcionais precisam dos respetivos motores/modelos. Implementação
 de um adaptador não significa validação com hardware ou serviços reais.
+
+## Equipa de agentes
+
+```powershell
+py -3 -m gensia.agents list
+py -3 -m gensia.agents audit --workspace . --url https://example.com
+```
+
+O coordenador delega tarefas delimitadas e o revisor recebe as evidências da
+segurança. Para analisar Python é necessário Bandit; para estudo e revisão com
+modelo, Ollama local. Ver [comandos e limites](docs/AGENT_TEAM.md).
+Publicar o código no GitHub não inicia processos permanentes nem monitorização.
 
 ## Organização
 
@@ -45,7 +58,7 @@ de um adaptador não significa validação com hardware ou serviços reais.
 
 ## Validação
 
-117 testes passaram no ambiente de desenvolvimento Linux/Python 3.12, com as
+129 testes passaram no ambiente de desenvolvimento Linux/Python 3.12, com as
 dependências opcionais da API instaladas. Sem estas dependências, seis testes HTTP
 são omitidos explicitamente. Uma consulta HTTP real em loopback foi validada.
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.
@@ -63,5 +76,6 @@ distribuição ao projeto; as dependências mantêm as suas próprias licenças.
 
 ## Continuidade
 
-Próximo incremento: painel local de leitura servido pela API, sem CDN e com token.
+Próximo incremento: validar a equipa com Bandit e Ollama reais; depois integrar
+resultados no painel local de leitura, sem CDN e com token.
 Consultar [PROGRESS.md](PROGRESS.md) antes de iniciar alterações.
