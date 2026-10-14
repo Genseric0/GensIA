@@ -1,5 +1,19 @@
 # Progresso GensIA
 
+## 14/10/2026 — módulo 21 — v0.21.0
+
+Catálogo declarativo em gensia/agent_catalog.py, partilhado por CLI e API.
+GET /agents autenticado apresenta capacidades, dependências e limites dos quatro
+agentes. Contrato tipado schema_version=1 filtra campos não declarados. Estado de
+execução não observado; dependências não verificadas; nenhuma execução exposta.
+API não importa ferramentas/executores para servir metadados; sem novas dependências.
+
+148 testes passaram (sete novos). HTTP real em Uvicorn confirmou 200 com quatro
+agentes, 401 sem token, 405 para POST e no-store. Servidor encerrado. Bandit real:
+17 módulos, três LOW B404, zero MEDIUM/HIGH. Sem navegador ou inferência real nesta
+etapa. Guia: docs/AGENT_CATALOG_API.md. Próximo: painel local de leitura na mesma
+origem, mantendo autenticação e sem expor execução ou dados pessoais.
+
 ## 14/10/2026 — módulo 20 — v0.20.0
 
 Acrescentado `python -m gensia.doctor --model ETIQUETA`: diagnóstico explícito dos

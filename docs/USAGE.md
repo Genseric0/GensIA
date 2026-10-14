@@ -24,6 +24,8 @@ na URL. Remove a variável ao terminar: Remove-Item Env:GENSIA_API_TOKEN.
 
 GET /health confirma o processo; GET /status mostra versão e modo;
 GET /diagnostics lista Python e versões de dependências, sem contactar modelos.
+GET /agents descreve os quatro agentes, dependências e limites declarados, sem
+testar instalações ou iniciar tarefas. Ver [contrato e exemplos](AGENT_CATALOG_API.md).
 Não expõe documentos, memória, caminhos, variáveis de ambiente ou ferramentas.
 Só o lançador fornecido garante bind 127.0.0.1; não usar proxy, encaminhamento de
 portas ou Uvicorn externo com host 0.0.0.0. Host deve ser 127.0.0.1:PORTA.

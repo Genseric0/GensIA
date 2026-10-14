@@ -1,8 +1,16 @@
 Data: 2026-10-14
 Ambiente: Linux, Python 3.12.14
-Versão: 0.20.0
+Versão: 0.21.0
 Comando: python3 -m unittest discover -s tests -v
-Resultado observado: 141 testes, todos passaram no venv com dependências API.
+Resultado observado: 148 testes, todos passaram no venv com dependências API.
+
+v0.21.0: sete testes novos para catálogo partilhado e GET /agents: compatibilidade
+CLI, cópias independentes, limites/modelo, importação isolada sem ferramentas,
+contrato HTTP, autenticação/Host/Origin/métodos/query e filtragem de campos extra.
+Uvicorn real: HTTP 200, quatro agentes, not_observed e no-store; 401 sem token;
+405 para POST. Processo encerrado no fim. Nenhum navegador real exercitado.
+Bandit real sobre 17 módulos: três B404 LOW, zero MEDIUM/HIGH, scan completo.
+Na suite atual, nove testes HTTP são skipped sem dependências opcionais API/httpx.
 
 v0.20.0: dez testes novos do diagnóstico. Bandit metadados/módulo, API ausente,
 modelo ausente/não escolhido, etiquetas exatas, inventário e erro privados,

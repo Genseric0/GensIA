@@ -218,3 +218,14 @@ Etiquetas exatas, sem aliases ou seleção automática. Não expõe inventário 
 nem corpos de erro HTTP. `preflight_passed` só significa pré-requisitos observados;
 não valida execução Bandit, inferência nem a política interna do servidor Ollama.
 Não inicia serviços nem downloads. Ver docs/DOCTOR.md.
+
+## Catálogo read-only (v0.21.0)
+
+`agent_catalog.py` contém apenas dataclasses imutáveis e metadados públicos. A CLI
+obtém descrições dessa definição; a API não importa `agents.py` nem ferramentas.
+`GET /agents` usa `CatalogSnapshot` como response_model, permitindo apenas campos
+declarados. Schema version 1 distingue capacidades estáticas de estado runtime:
+`not_observed`, `dependencies_checked=false`, `execution_exposed=false`.
+Não consulta modelos, ficheiros ou processos. Guardas existentes mantêm token,
+Host exato, rejeição de Origin, métodos mutáveis e query strings. Agora existem
+quatro endpoints GET. Não há CORS, HTML nem rotas de execução de agentes.

@@ -1,7 +1,7 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.20.0** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.21.0** — protótipo em evolução.
 
 ## Começar
 
@@ -27,7 +27,7 @@ Não é necessário instalar todas as bibliotecas para começar.
 | Voz | Adaptadores Whisper/Piper e gravação limitada de microfone |
 | Documentos | TXT/Markdown/PDF, pesquisa lexical e respostas com referências |
 | Cibersegurança | URLs passivas, VirusTotal opt-in, CISA KEV e adaptador Bandit |
-| API | Estado e diagnóstico read-only em loopback, com token |
+| API | Estado, diagnóstico e catálogo dos agentes em loopback, com token |
 | Agentes | Coordenador, segurança, revisor e tutor; tarefas locais explícitas |
 | Interface gráfica | Planeada; ainda não implementada |
 
@@ -48,6 +48,8 @@ modelo, Ollama local. Ver [comandos e limites](docs/AGENT_TEAM.md).
 Publicar o código no GitHub não inicia processos permanentes nem monitorização.
 O [diagnóstico local](docs/DOCTOR.md) verifica pré-requisitos sem prompts, downloads
 ou arranque de serviços. Um modelo listado ainda precisa de validação de inferência.
+O endpoint autenticado `GET /agents` descreve as capacidades e os limites dos
+agentes, mas não os executa. Ver [catálogo na API](docs/AGENT_CATALOG_API.md).
 
 ## Organização
 
@@ -61,12 +63,12 @@ ou arranque de serviços. Um modelo listado ainda precisa de validação de infe
 
 ## Validação
 
-141 testes passaram no ambiente de desenvolvimento Linux/Python 3.12, com as
-dependências opcionais da API instaladas. Sem estas dependências, seis testes HTTP
+148 testes passaram no ambiente de desenvolvimento Linux/Python 3.12, com as
+dependências opcionais da API instaladas. Sem estas dependências, nove testes HTTP
 são omitidos explicitamente. Uma consulta HTTP real em loopback foi validada.
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.
 
-Bandit 1.9.4 real analisou os 16 módulos Python: três avisos baixos B404, nenhum
+Bandit 1.9.4 real analisou os 17 módulos Python: três avisos baixos B404, nenhum
 achado médio/alto. Isto não garante ausência de vulnerabilidades. Ollama 0.40.4
 real respondeu à API; inferência pendente porque a rede impediu o download do
 modelo. Ver [relatório de integração](docs/REAL_ENGINE_VALIDATION.md).

@@ -7,6 +7,7 @@ import secrets
 import sys
 
 from . import __version__
+from .agent_catalog import CatalogSnapshot, catalog_snapshot
 
 
 def validate_settings(token, port):
@@ -70,6 +71,10 @@ def create_app(token, port=8765):
     @app.get("/diagnostics")
     async def diagnostic_endpoint():
         return diagnostics()
+
+    @app.get("/agents", response_model=CatalogSnapshot)
+    async def agent_catalog_endpoint():
+        return catalog_snapshot()
 
     return app
 

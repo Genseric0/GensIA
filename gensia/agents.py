@@ -9,14 +9,10 @@ from .search import LocalDocumentSearch
 from .documents import DocumentError
 from .providers import OllamaProvider, ProviderUnavailable
 from .tools import AuditLogger, ToolError
+from .agent_catalog import descriptions
 
 
-CATALOG = {
-    "coordinator": "Valida a tarefa, delega e reúne estados; regras determinísticas.",
-    "security": "Inspeciona URLs passivamente e código Python com Bandit; sem LLM.",
-    "reviewer": "Prioriza evidências da segurança e propõe revisão; Ollama opcional.",
-    "study": "Recupera documentos indicados e responde com fontes pelo Ollama local.",
-}
+CATALOG = descriptions()
 
 
 def local_model(provider):

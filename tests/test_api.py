@@ -24,7 +24,7 @@ class ApiTests(unittest.TestCase):
         self.addCleanup(self.client.close)
 
     def test_read_only_endpoints(self):
-        for path in ("/health", "/status", "/diagnostics"):
+        for path in ("/health", "/status", "/diagnostics", "/agents"):
             response = self.client.get(path)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.headers["cache-control"], "no-store")
@@ -60,3 +60,31 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(run.call_args.kwargs["host"], "127.0.0.1")
         self.assertFalse(run.call_args.kwargs["proxy_headers"])
         self.assertFalse(run.call_args.kwargs["access_log"])
+
+    def test_agent_catalog_is_static_and_read_only(self):
+        from gensia.agent_catalog import catalog_snapshot
+        response = self.client.get("/agents")
+        import json
+        self.assertEqual(response.json(), json.loads(json.dumps(catalog_snapshot())))
+        self.assertEqual(response.json()["runtime_state"], "not_observed")
+        self.assertFalse(response.json()["execution_exposed"])
+
+    def test_agent_catalog_guard_and_execution_routes(self):
+        self.assertEqual(self.client.get("/agents", headers={"Authorization": ""}).status_code, 401)
+        self.assertEqual(self.client.get("/agents", headers={"Host": "evil.example"}).status_code, 400)
+        self.assertEqual(self.client.get("/agents", headers={"Origin": "null"}).status_code, 403)
+        self.assertEqual(self.client.get("/agents?model=private").status_code, 400)
+        for method in ("POST", "PUT", "PATCH", "DELETE", "OPTIONS"):
+            self.assertEqual(self.client.request(method, "/agents").status_code, 405)
+        for path in ("/agents/run", "/agents/security", "/agents/"):
+            self.assertEqual(self.client.get(path).status_code, 404)
+
+    def test_agent_catalog_response_model_filters_unlisted_fields(self):
+        from gensia.agent_catalog import catalog_snapshot
+        data = catalog_snapshot()
+        data["secret"] = "PRIVATE"
+        data["agents"][0]["workspace"] = "PRIVATE"
+        with patch("gensia.api.catalog_snapshot", return_value=data):
+            response = self.client.get("/agents")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("PRIVATE", response.text)
