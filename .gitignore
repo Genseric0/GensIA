@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+!.env.example
+*.wav
+*.mp3
+*.onnx
+*.gguf
+*.zip
+*.log
+data/
+.gensia/
+*.sqlite3
+*.sqlite3-*

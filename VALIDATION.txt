@@ -1,0 +1,120 @@
+Data: 2026-10-14
+Ambiente: Linux, Python 3.12.14
+Versão: 0.18.0
+Comando: python3 -m unittest discover -s tests -v
+Resultado observado: 117 testes, todos passaram no venv com dependências API.
+
+Módulo 18: endpoints FastAPI reais via TestClient; autenticação, Host/Origin,
+métodos mutáveis, query strings, ausência de docs/rotas pessoais, no-store,
+diagnóstico sem segredos e lançador loopback sem proxy. HTTP real em 127.0.0.1
+devolveu 200 e v0.18.0; processo terminado após teste. pip check sem conflitos.
+FastAPI 0.143.0 e Uvicorn 0.54.0 instalados num venv de teste separado.
+Aviso TestClient: httpx depreciado, httpx2 recomendado. Não impede testes atuais.
+Sem dependências opcionais, seis testes HTTP são skipped explicitamente.
+
+Módulo 17: teste com Python real e -I -B confirmou que bandit.py no cwd/PYTHONPATH
+não é resolvido como módulo do motor. Verificados cwd privado, INI/YAML explícitos,
+--ignore-nosec, stderr descartado e campos de telemetria desconhecida (null).
+Os restantes testes do adaptador continuam a simular o motor; Bandit não instalado.
+
+Módulo 16: caminho absoluto/travessia/formato e symlinks recusados; diretórios
+gerados excluídos; dependência ausente reportada; argumentos, shell=False, stdin,
+cwd e ambiente do subprocesso verificados. Foram exercitados thresholds, timeout,
+erro de execução sanitizado, JSON inválido, relatório acima de 5 MiB, caminho fora
+da base redigido, 501 achados truncados a 500 e omissão de trechos de código.
+
+Um ficheiro Python de teste foi comparado antes/depois e permaneceu idêntico. O
+Bandit real não estava instalado, portanto o subprocesso e os relatórios foram
+simulados. Não se afirma análise de um projeto real nem instalação no computador
+do utilizador.
+
+Módulo 15: aprovação obrigatória antes do download; URL oficial, método GET e
+timeout verificados com transporte simulado. Foram testados cache atómico, consulta
+local, normalização CVE, resultado presente/ausente, conteúdo idêntico sem reescrita,
+preservação do cache anterior, contagem incompatível, CVE duplicado, JSON inválido,
+resposta acima de 10 MiB, symlink e erros HTTP/rede sanitizados.
+
+Nenhum pedido real à CISA foi feito. O feed oficial não foi incluído no pacote e
+precisa de ser atualizado explicitamente no computador do utilizador. Conectividade,
+permissões Windows e evolução futura do esquema continuam por validar nesse ambiente.
+
+Módulo 14: aprovação externa e chave obrigatórias antes da rede; rejeição de URL
+local, privada, ambígua e com userinfo; método GET, endpoint oficial, cabeçalho
+x-apikey e Base64 URL-safe sem padding verificados com transporte simulado. Foram
+testados relatório existente, 404 sem submissão, JSON/estrutura inválidos, resposta
+acima de 1 MiB, timeout/erro HTTP sanitizados e auditoria sem chave ou URL em claro.
+
+Nenhuma chave real foi usada e nenhum pedido ao VirusTotal foi efetuado. Por isso,
+quota, autenticação e conectividade reais ainda precisam de validação no computador
+do utilizador. A análise não faz DNS e não identifica domínios públicos que resolvam
+internamente para endereços privados.
+
+Módulo 13: análise passiva de URL validada com HTTPS comum, HTTP, userinfo,
+porta alternativa, IPv4/IPv6 privados, Punycode, esquemas não permitidos, hostname
+e controlos inválidos. A URL original não aparece na auditoria. Nenhum DNS, pedido
+HTTP, VirusTotal ou outro serviço externo foi chamado.
+
+Módulo 12: somente trechos recuperados foram entregues ao provider simulado;
+conteúdo irrelevante ficou fora do prompt. Citações válidas, ausentes e inválidas,
+zero resultados sem chamar o provider e exigência de modelo antes da leitura foram
+testados. Nenhum Ollama real ou documento do utilizador foi usado.
+
+Módulo 11: ranking lexical entre vários TXT/Markdown/PDF; normalização de acentos,
+linhas/páginas, ausência de correspondências, limites e confinamento foram testados.
+Um TXT e um PDF real local foram pesquisados juntos; o trecho PDF relevante ficou
+em primeiro lugar com página 1. Nenhum documento do utilizador ou modelo foi usado.
+
+Módulo 10: perguntas PDF testadas com provider simulado; referências válidas foram
+recolhidas, páginas inexistentes e respostas sem citação foram sinalizadas, e a
+resposta fixa de ausência foi aceite. Pergunta vazia ou acima de 2000 caracteres
+é recusada antes de ler o ficheiro. Ollama real não estava disponível.
+
+Módulo 9: extração PDF com interface pypdf simulada cobriu dependência ausente,
+extensão, encriptação, limite de páginas, ausência de texto/OCR e resumo protegido.
+Um PDF real de 1 página foi criado localmente e extraído pela CLI com pypdf 6.10.0.
+Nenhuma instalação foi feita e nenhum PDF do utilizador foi acedido.
+
+Módulo 8: leitura TXT/Markdown UTF-8; bloqueio de caminho absoluto, travessia,
+symlink, formato não autorizado, NUL, codificação inválida e excesso de tamanho;
+hash do documento; resumo de estudo com provider simulado; documento tratado como
+dado não confiável; comando CLI de leitura e erro claro sem modelo configurado.
+
+No módulo 8, Ollama real não estava disponível e nenhum documento foi transmitido
+a um modelo real, à internet ou a uma cloud. PDF ainda não era suportado; DOCX
+continua não suportado.
+
+Módulo 7: duração inválida recusada antes do acesso ao dispositivo; dependência
+ausente com erro claro; listagem filtrada para entradas; parâmetros do stream
+verificados; WAV PCM mono de 4000 frames criado com áudio simulado; overflow
+cancela a operação e preserva o destino; parser CLI devolve código 7.
+
+sounddevice não estava instalado e nenhum microfone físico foi acedido. A
+compatibilidade real, permissões e drivers do Windows continuam por validar.
+
+Módulo 6: voz e configuração locais obrigatórias; texto/destino inválidos recusados;
+subprocesso com lista e shell=False; texto com metacaracteres tratado literalmente;
+WAV temporário validado e promovido atomicamente; substituição exige autorização;
+falha do Piper preserva o ficheiro anterior; parser CLI devolve código 7.
+
+Piper, modelo ONNX e voz real não estavam instalados. O executor foi simulado e
+nenhum áudio real foi sintetizado ou reproduzido.
+
+Módulo 5: validação antes de importar a dependência; ficheiro inexistente e formato
+desconhecido recusados; erro claro sem openai-whisper; chamada load_model/transcribe,
+CPU sem FP16, idioma português e deteção automática exercitados com interface
+simulada; transcrição vazia reportada; bytes do áudio permaneceram inalterados.
+
+Não estavam instalados openai-whisper, FFmpeg nem pesos de modelo. Nenhum áudio real
+foi transcrito e o microfone não foi acedido.
+
+Módulo 4: escrita, leitura e atualização em processos separados; eliminação
+seletiva; paginação; SQL como dado; entradas inválidas sem criar ficheiro;
+base corrompida; chat sem instanciar MemoryStore. Usa SQLite real temporário.
+
+Novas validações: listagem confinada à pasta-base, bloqueio de `..`, auditoria sem
+caminho em texto, confirmação obrigatória, bloqueio de aplicação desconhecida,
+Popen com lista e shell=False, e comando CLI de listagem.
+
+Aplicações Windows foram testadas com executor simulado; nenhuma aplicação real foi
+aberta. Ollama real, GPU e Windows continuam não disponíveis neste ambiente.
+Nenhuma instalação foi realizada no computador do utilizador.
