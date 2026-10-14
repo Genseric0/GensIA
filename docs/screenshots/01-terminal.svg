@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="764" viewBox="0 0 1280 764">
+<title>Terminal e comandos</title>
+<rect width="1280" height="764" rx="16" fill="#0d1117"/>
+<text x="32" y="44" fill="#79c0ff" font-family="monospace" font-size="23">GensIA / Terminal e comandos</text>
+<text x="32" y="75" fill="#8b949e" font-family="monospace" font-size="16">Saída real da CLI • renderização documental • v0.21.0</text>
+<text x="32" y="116" xml:space="preserve" fill="#7ee787" font-family="monospace" font-size="18">$ python -m gensia --help</text>
+<text x="32" y="140" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">usage: gensia [-h] [--version] [--provider {none,ollama}] [--model MODEL]</text>
+<text x="32" y="164" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">              [--ollama-url OLLAMA_URL] [--timeout TIMEOUT]</text>
+<text x="32" y="188" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">              {memory,chat,status,doctor,voice,document,ask,tool,security} ...</text>
+<text x="32" y="212" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18"></text>
+<text x="32" y="236" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">GensIA — base local por terminal</text>
+<text x="32" y="260" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18"></text>
+<text x="32" y="284" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">positional arguments:</text>
+<text x="32" y="308" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  {memory,chat,status,doctor,voice,document,ask,tool,security}</text>
+<text x="32" y="332" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">    memory              guardar e consultar notas locais explícitas</text>
+<text x="32" y="356" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">    chat                abrir sessão interativa</text>
+<text x="32" y="380" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">    status              mostrar capacidades reais</text>
+<text x="32" y="404" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">    doctor              diagnóstico local sem rede</text>
+<text x="32" y="428" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">    voice               transcrever áudio local explicitamente</text>
+<text x="32" y="452" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">    document            ler ou resumir texto local explicitamente</text>
+<text x="32" y="476" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">    ask                 enviar uma pergunta ao motor de IA</text>
+<text x="32" y="500" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">    tool                executar ferramenta local explícita</text>
+<text x="32" y="524" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">    security            análises locais e passivas</text>
+<text x="32" y="548" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18"></text>
+<text x="32" y="572" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">options:</text>
+<text x="32" y="596" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  -h, --help            show this help message and exit</text>
+<text x="32" y="620" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  --version             show program&#x27;s version number and exit</text>
+<text x="32" y="644" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  --provider {none,ollama}</text>
+<text x="32" y="668" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  --model MODEL         nome exato de um modelo já instalado</text>
+<text x="32" y="692" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  --ollama-url OLLAMA_URL</text>
+<text x="32" y="716" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  --timeout TIMEOUT</text>
+</svg>

@@ -1,0 +1,11 @@
+$ python -m gensia memory --db demo.sqlite3 set tema Redes
+{
+  "saved": "tema"
+}
+
+$ python -m gensia memory --db demo.sqlite3 get tema
+{
+  "key": "tema",
+  "value": "Redes",
+  "updated_at": "2026-10-14T20:09:15.730825+00:00"
+}

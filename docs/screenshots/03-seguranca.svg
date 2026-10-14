@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="596" viewBox="0 0 1280 596">
+<title>Análise passiva de URL</title>
+<rect width="1280" height="596" rx="16" fill="#0d1117"/>
+<text x="32" y="44" fill="#79c0ff" font-family="monospace" font-size="23">GensIA / Análise passiva de URL</text>
+<text x="32" y="75" fill="#8b949e" font-family="monospace" font-size="16">Saída real da CLI • renderização documental • v0.21.0</text>
+<text x="32" y="116" xml:space="preserve" fill="#7ee787" font-family="monospace" font-size="18">$ python -m gensia security url http://example.com/login</text>
+<text x="32" y="140" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">{</text>
+<text x="32" y="164" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  &quot;canonical_url&quot;: &quot;http://example.com/login&quot;,</text>
+<text x="32" y="188" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  &quot;hostname&quot;: &quot;example.com&quot;,</text>
+<text x="32" y="212" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  &quot;scheme&quot;: &quot;http&quot;,</text>
+<text x="32" y="236" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  &quot;port&quot;: 80,</text>
+<text x="32" y="260" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  &quot;risk_score&quot;: 20,</text>
+<text x="32" y="284" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  &quot;risk_level&quot;: &quot;medium&quot;,</text>
+<text x="32" y="308" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  &quot;findings&quot;: [</text>
+<text x="32" y="332" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">    {</text>
+<text x="32" y="356" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">      &quot;code&quot;: &quot;unencrypted_http&quot;,</text>
+<text x="32" y="380" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">      &quot;points&quot;: 20,</text>
+<text x="32" y="404" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">      &quot;explanation&quot;: &quot;HTTP não protege o transporte com TLS.&quot;</text>
+<text x="32" y="428" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">    }</text>
+<text x="32" y="452" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  ],</text>
+<text x="32" y="476" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  &quot;verdict&quot;: &quot;heuristic_review_required&quot;,</text>
+<text x="32" y="500" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  &quot;network_accessed&quot;: false,</text>
+<text x="32" y="524" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  &quot;limitations&quot;: &quot;Análise sintática; não verifica conteúdo, DNS, reputação ou malware.&quot;</text>
+<text x="32" y="548" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">}</text>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="308" viewBox="0 0 1280 308">
+<title>Equipa de agentes</title>
+<rect width="1280" height="308" rx="16" fill="#0d1117"/>
+<text x="32" y="44" fill="#79c0ff" font-family="monospace" font-size="23">GensIA / Equipa de agentes</text>
+<text x="32" y="75" fill="#8b949e" font-family="monospace" font-size="16">Saída real da CLI • renderização documental • v0.21.0</text>
+<text x="32" y="116" xml:space="preserve" fill="#7ee787" font-family="monospace" font-size="18">$ python -m gensia.agents list</text>
+<text x="32" y="140" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">{</text>
+<text x="32" y="164" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  &quot;coordinator&quot;: &quot;Valida a tarefa, delega e reúne estados; regras determinísticas.&quot;,</text>
+<text x="32" y="188" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  &quot;security&quot;: &quot;Inspeciona URLs passivamente e código Python com Bandit; sem LLM.&quot;,</text>
+<text x="32" y="212" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  &quot;reviewer&quot;: &quot;Prioriza evidências da segurança e propõe revisão; Ollama opcional.&quot;,</text>
+<text x="32" y="236" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">  &quot;study&quot;: &quot;Recupera documentos indicados e responde com fontes pelo Ollama local.&quot;</text>
+<text x="32" y="260" xml:space="preserve" fill="#e6edf3" font-family="monospace" font-size="18">}</text>
+</svg>

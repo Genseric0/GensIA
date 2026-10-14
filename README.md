@@ -3,6 +3,26 @@
 Assistente pessoal modular, com prioridade ao processamento local e controlo
 explícito sobre ferramentas e dados. Versão atual: **0.21.0** — protótipo em evolução.
 
+## Demonstração visual
+
+A interface disponível é **por terminal**, acompanhada de uma API local autenticada.
+As imagens abaixo reproduzem saídas reais da CLI com dados fictícios de demonstração;
+são renderizações documentais, não capturas de um painel gráfico. A GUI está planeada.
+
+![Terminal da GensIA e comandos disponíveis](docs/screenshots/01-terminal.svg)
+
+![Catálogo dos quatro agentes](docs/screenshots/02-agentes.svg)
+
+![Análise passiva de URL sem visitar o endereço](docs/screenshots/03-seguranca.svg)
+
+![Guardar e consultar uma nota SQLite](docs/screenshots/04-memoria.svg)
+
+![Pesquisa lexical num documento local](docs/screenshots/05-documentos.svg)
+
+**Para recrutadores:** [visão geral, arquitetura, evidências e limitações](docs/SHOWCASE.md).
+As [transcrições originais](docs/screenshots/) e o
+[script de reprodução](scripts/capture_showcase.py) acompanham as imagens.
+
 ## Começar
 
 Requer Python 3.10 ou superior. Na pasta do repositório:

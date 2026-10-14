@@ -1,0 +1,26 @@
+$ python -m gensia --help
+usage: gensia [-h] [--version] [--provider {none,ollama}] [--model MODEL]
+              [--ollama-url OLLAMA_URL] [--timeout TIMEOUT]
+              {memory,chat,status,doctor,voice,document,ask,tool,security} ...
+
+GensIA — base local por terminal
+
+positional arguments:
+  {memory,chat,status,doctor,voice,document,ask,tool,security}
+    memory              guardar e consultar notas locais explícitas
+    chat                abrir sessão interativa
+    status              mostrar capacidades reais
+    doctor              diagnóstico local sem rede
+    voice               transcrever áudio local explicitamente
+    document            ler ou resumir texto local explicitamente
+    ask                 enviar uma pergunta ao motor de IA
+    tool                executar ferramenta local explícita
+    security            análises locais e passivas
+
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  --provider {none,ollama}
+  --model MODEL         nome exato de um modelo já instalado
+  --ollama-url OLLAMA_URL
+  --timeout TIMEOUT

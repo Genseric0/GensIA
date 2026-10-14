@@ -1,0 +1,19 @@
+$ python -m gensia security url http://example.com/login
+{
+  "canonical_url": "http://example.com/login",
+  "hostname": "example.com",
+  "scheme": "http",
+  "port": 80,
+  "risk_score": 20,
+  "risk_level": "medium",
+  "findings": [
+    {
+      "code": "unencrypted_http",
+      "points": 20,
+      "explanation": "HTTP não protege o transporte com TLS."
+    }
+  ],
+  "verdict": "heuristic_review_required",
+  "network_accessed": false,
+  "limitations": "Análise sintática; não verifica conteúdo, DNS, reputação ou malware."
+}

@@ -1,0 +1,21 @@
+$ python -m gensia document --workspace . search DNS redes.txt
+{
+  "query": "DNS",
+  "files_scanned": 1,
+  "chunks_scanned": 1,
+  "results": [
+    {
+      "path": "redes.txt",
+      "location": {
+        "lines": [
+          1,
+          2
+        ]
+      },
+      "score": 1.0,
+      "excerpt": "DNS resolve nomes em endereços IP.\nDHCP distribui configuração de rede."
+    }
+  ],
+  "local_only": true,
+  "ranking": "tf_idf_lexical"
+}

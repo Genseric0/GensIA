@@ -1,5 +1,13 @@
 # Progresso GensIA
 
+## Apresentação visual — 2026-10-14
+
+Adicionada galeria ao README e docs/SHOWCASE.md para avaliação técnica por recrutadores.
+Cinco imagens SVG renderizam saídas reais da CLI, acompanhadas de transcrições e
+scripts/capture_showcase.py para reprodução. Dados sintéticos em pasta temporária.
+As cinco execuções terminaram com código zero. Nenhuma funcionalidade de produto
+foi alterada; a versão mantém-se 0.21.0. GUI continua planeada e inferência real pendente.
+
 ## 14/10/2026 — módulo 21 — v0.21.0
 
 Catálogo declarativo em gensia/agent_catalog.py, partilhado por CLI e API.
