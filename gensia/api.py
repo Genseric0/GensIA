@@ -8,6 +8,7 @@ import sys
 
 from . import __version__
 from .agent_catalog import CatalogSnapshot, catalog_snapshot
+from .catalog_report import render_report
 
 
 def validate_settings(token, port):
@@ -31,7 +32,7 @@ def diagnostics():
 def create_app(token, port=8765):
     validate_settings(token, port)
     from fastapi import FastAPI
-    from starlette.responses import JSONResponse
+    from starlette.responses import JSONResponse, HTMLResponse
 
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None,
                   redirect_slashes=False)
@@ -57,6 +58,12 @@ def create_app(token, port=8765):
         response.headers["Cache-Control"] = "no-store"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
+        if request.url.path == "/agents/report" and response.status_code == 200:
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; "
+                "form-action 'none'; frame-ancestors 'none'"
+            )
+        response.headers["Referrer-Policy"] = "no-referrer"
         return response
 
     @app.get("/health")
@@ -75,6 +82,12 @@ def create_app(token, port=8765):
     @app.get("/agents", response_model=CatalogSnapshot)
     async def agent_catalog_endpoint():
         return catalog_snapshot()
+
+    @app.get("/agents/report", response_class=HTMLResponse)
+    async def agent_report_endpoint():
+        return HTMLResponse(render_report(), headers={
+            "Content-Disposition": 'attachment; filename="gensia-agents.html"',
+        })
 
     return app
 

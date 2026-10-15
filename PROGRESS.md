@@ -1,5 +1,17 @@
 # Progresso GensIA
 
+## 15/10/2026 — exportação HTML autenticada — v0.24.0
+
+GET /agents/report reutiliza render_report e entrega attachment UTF-8. Mantém
+Host, Bearer, GET-only, rejeição de Origin/query. CSP permite estilos inline apenas
+no HTML 200; JSON e erros não recebem essa permissão. Referrer-Policy no-referrer.
+Três testes HTTP novos; 167 testes Python passaram sem omissões num venv novo com
+FastAPI 0.143.0, Uvicorn 0.54.0, Starlette 1.8.0, Pydantic 2.14.1 e httpx 0.28.1.
+TestClient emitiu aviso de depreciação do backend httpx; não falhou. Nenhum teste
+de socket Uvicorn ou navegador novo, nenhuma inferência ou scan Bandit neste passo.
+Guia docs/API_REPORT.md. Não é GUI interativa nem permite executar agentes.
+Próximo: concluir capturas e desenhar autenticação do painel sem token em URL/storage.
+
 ## 15/10/2026 — pesquisa explícita de memória — v0.23.0
 
 MemoryStore.search e CLI memory search: substring literal nas chaves e valores,

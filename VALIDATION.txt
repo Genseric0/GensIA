@@ -1,3 +1,11 @@
+2026-10-15 — v0.24.0 — GET /agents/report
+167 testes Python passaram, zero omitidos, usando venv com dependências opcionais.
+FastAPI 0.143.0; Uvicorn 0.54.0; Starlette 1.8.0; Pydantic 2.14.1; httpx 0.28.1.
+Três testes HTTP novos: HTML/attachment/headers, guards, isolamento de CSP JSON.
+Aviso StarletteDeprecationWarning sobre httpx no TestClient; suite terminou OK.
+HTTP testado em processo via TestClient, não socket nem navegador real.
+Nenhuma instalação no computador do utilizador; sem novo Bandit ou Ollama real.
+
 2026-10-15 — v0.23.0 — pesquisa explícita local de memória
 python3 -m unittest discover -s tests -q: 164 descobertos, 155 passaram, 9 HTTP omitidos.
 Sete testes novos: DB ausente, chave/valor/Unicode/case, SQL e wildcards literais,

@@ -31,6 +31,37 @@ class ApiTests(unittest.TestCase):
             self.assertNotIn("access-control-allow-origin", response.headers)
         self.assertFalse(self.client.get("/status").json()["actions_enabled"])
 
+    def test_report_is_authenticated_html_attachment(self):
+        from gensia.catalog_report import render_report
+        response = self.client.get('/agents/report')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.text, render_report())
+        self.assertIn('text/html', response.headers['content-type'])
+        self.assertIn('charset=utf-8', response.headers['content-type'])
+        self.assertEqual(response.headers['content-disposition'], 'attachment; filename="gensia-agents.html"')
+        self.assertEqual(response.headers['cache-control'], 'no-store')
+        self.assertEqual(response.headers['referrer-policy'], 'no-referrer')
+        self.assertEqual(response.headers['x-content-type-options'], 'nosniff')
+        self.assertIn("frame-ancestors 'none'", response.headers['content-security-policy'])
+        self.assertNotIn('a' * 64, response.text)
+
+    def test_report_keeps_all_guards(self):
+        for headers, code in (({'Authorization': ''}, 401),
+                              ({'Host': 'evil.example'}, 400),
+                              ({'Origin': 'http://127.0.0.1:8765'}, 403)):
+            response = self.client.get('/agents/report', headers=headers)
+            self.assertEqual(response.status_code, code)
+            self.assertNotIn('content-disposition', response.headers)
+            self.assertNotIn('unsafe-inline', response.headers['content-security-policy'])
+        self.assertEqual(self.client.get('/agents/report?token=secret').status_code, 400)
+        self.assertEqual(self.client.post('/agents/report').status_code, 405)
+        self.assertEqual(self.client.get('/agents/report/').status_code, 404)
+
+    def test_report_styles_do_not_relax_json_policy(self):
+        self.assertIn("style-src 'unsafe-inline'", self.client.get('/agents/report').headers['content-security-policy'])
+        for path in ('/health', '/status', '/agents', '/diagnostics'):
+            self.assertNotIn('unsafe-inline', self.client.get(path).headers['content-security-policy'])
+
     def test_authentication_required(self):
         for token in ("", "Bearer wrong", "Bearer " + "a" * 63):
             self.assertEqual(self.client.get("/health", headers={"Authorization": token}).status_code, 401)

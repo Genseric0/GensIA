@@ -1,7 +1,10 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.23.0** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.24.0** — protótipo em evolução.
+
+Novo: [exportação HTML autenticada pela API](docs/API_REPORT.md), em
+`GET /agents/report`. É um anexo estático, não um painel interativo.
 
 Novo: [pesquisa literal nas notas locais](docs/MEMORY_SEARCH.md), com paginação,
 sem rede nem envio ao modelo: `python -m gensia memory search DNS`.
@@ -94,9 +97,8 @@ agentes, mas não os executa. Ver [catálogo na API](docs/AGENT_CATALOG_API.md).
 
 ## Validação
 
-Na v0.23.0 foram descobertos 164 testes: 155 passaram e nove testes HTTP foram
-omitidos por falta das dependências opcionais da API. Na v0.22.0 os 152 testes
-então existentes passaram com essas dependências. Uma consulta HTTP real em
+Na v0.24.0 os 167 testes Python passaram, com as dependências opcionais da API,
+sem omissões. HTTP validado via TestClient em processo. Uma consulta HTTP real em
 loopback foi validada anteriormente; não foi repetida neste incremento.
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.
 
