@@ -1,3 +1,10 @@
+2026-10-15 — v0.22.0 — relatório HTML offline
+152 testes passaram, Linux/Python 3.12, ambiente com dependências opcionais API.
+Quatro testes novos: conteúdo/estado, escaping, ausência de elementos ativos/remotos,
+CLI e isolamento de importação. CLI real gerou HTML com sucesso.
+Inspeção visual não concluída: Playwright disponível, Chromium executável ausente.
+Nenhum novo scan Bandit ou inferência real nesta etapa; resultados anteriores históricos.
+
 Data: 2026-10-14
 Ambiente: Linux, Python 3.12.14
 Versão: 0.21.0

@@ -1,5 +1,16 @@
 # Progresso GensIA
 
+## 15/10/2026 — módulo 22 — v0.22.0
+
+Relatório HTML offline em gensia/catalog_report.py, com catálogo de agentes,
+dependências, limites e aviso explícito de estado não observado. Sem JavaScript,
+rede, token, servidores ou novos pacotes. Conteúdo escapado e CSP restritiva.
+CLI escreve no stdout; exportação e abertura documentadas em docs/CATALOG_REPORT.md.
+152 testes passaram (quatro novos). Tentativa de inspeção com Playwright bloqueada
+pela ausência do binário Chromium: aparência desktop/mobile ainda por validar.
+Não altera a API nem inicia agentes. Inferência real continua pendente.
+Próximo: validação visual e painel autenticado de leitura integrado com a API.
+
 ## Apresentação visual — 2026-10-14
 
 Adicionada galeria ao README e docs/SHOWCASE.md para avaliação técnica por recrutadores.
