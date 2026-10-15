@@ -1,3 +1,9 @@
+2026-10-15 — infraestrutura visual, produto v0.22.1
+node --test tests/catalog_visual.test.cjs: quatro testes passaram.
+Integração visual: FALHOU no arranque (Chromium ausente), zero capturas.
+Não confundir testes dos critérios com teste real do layout no navegador.
+Download de Chromium via npx falhou: ZIP inválido. Sem contorno de rede.
+
 2026-10-15 — v0.22.1 — exportação exclusiva UTF-8
 python -m unittest discover -s tests -q
 157 testes descobertos; 148 passaram; 9 HTTP omitidos (dependências opcionais ausentes).

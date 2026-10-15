@@ -1,5 +1,18 @@
 # Progresso GensIA
 
+## 15/10/2026 — infraestrutura de validação visual (produto mantém v0.22.1)
+
+Adicionado scripts/validate_catalog_visual.cjs: gera HTML da CLI, testa larguras
+1440/390/320, quatro cartões, aviso de estado e ausência de overflow horizontal.
+Contexto offline, pedidos intercetados e recusados, saída exclusiva em nova pasta,
+capturas full-page e validation.json com estado explícito. Não instala dependências.
+Quatro testes Node dos critérios passaram. A execução integrada falhou antes de
+abrir página: Playwright 1.62.1 disponível, Chromium ausente. Tentativa separada
+de download via npx (1.64.1) recebeu ZIP inválido e terminou com código 1.
+Nenhuma captura HTML criada, nenhuma validação visual humana afirmada.
+Próximo: executar o script com Chromium correspondente ao Playwright instalado,
+inspecionar as três imagens e só então publicar a galeria HTML para recrutadores.
+
 ## 15/10/2026 — exportação segura — v0.22.1
 
 catalog_report aceita --output com criação exclusiva e UTF-8, sem substituir

@@ -9,6 +9,10 @@ sem substituir ficheiros existentes. É uma consulta estática; o painel ligado 
 
 ## Demonstração visual
 
+O [teste de apresentação desktop/mobile](docs/VISUAL_VALIDATION.md) gera capturas
+reais quando Chromium está disponível. A execução de 15/10/2026 ficou bloqueada
+pela ausência do navegador; não há ainda screenshots HTML validados.
+
 A interface disponível é **por terminal**, acompanhada de uma API local autenticada.
 As imagens abaixo reproduzem saídas reais da CLI com dados fictícios de demonstração;
 são renderizações documentais, não capturas de um painel gráfico. A GUI está planeada.
