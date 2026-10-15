@@ -1,3 +1,10 @@
+2026-10-15 — v0.22.1 — exportação exclusiva UTF-8
+python -m unittest discover -s tests -q
+157 testes descobertos; 148 passaram; 9 HTTP omitidos (dependências opcionais ausentes).
+Cinco testes novos: UTF-8, ficheiros existentes/vazios preservados, pasta ausente,
+symlinks existentes/dangling recusados, CLI real com saída 0 e depois 13.
+Inspeção visual e inferência real permanecem pendentes. Sem novo scan Bandit.
+
 2026-10-15 — v0.22.0 — relatório HTML offline
 152 testes passaram, Linux/Python 3.12, ambiente com dependências opcionais API.
 Quatro testes novos: conteúdo/estado, escaping, ausência de elementos ativos/remotos,

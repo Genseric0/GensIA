@@ -1,10 +1,11 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.22.0** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.22.1** — protótipo em evolução.
 
 Novo: [relatório visual HTML offline dos agentes](docs/CATALOG_REPORT.md), sem
-dependências adicionais. É uma consulta estática; o painel ligado à API continua planeado.
+dependências adicionais. Exporta com `python -m gensia.catalog_report --output catalogo.html`
+sem substituir ficheiros existentes. É uma consulta estática; o painel ligado à API continua planeado.
 
 ## Demonstração visual
 
@@ -86,9 +87,10 @@ agentes, mas não os executa. Ver [catálogo na API](docs/AGENT_CATALOG_API.md).
 
 ## Validação
 
-152 testes passaram no ambiente de desenvolvimento Linux/Python 3.12, com as
-dependências opcionais da API instaladas. Sem estas dependências, nove testes HTTP
-são omitidos explicitamente. Uma consulta HTTP real em loopback foi validada.
+Na v0.22.1 foram descobertos 157 testes: 148 passaram e nove testes HTTP foram
+omitidos por falta das dependências opcionais da API. Na v0.22.0 os 152 testes
+então existentes passaram com essas dependências. Uma consulta HTTP real em
+loopback foi validada anteriormente; não foi repetida neste incremento.
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.
 
 Na v0.21.0, Bandit 1.9.4 real analisou os 17 módulos Python: três avisos baixos B404, nenhum

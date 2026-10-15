@@ -1,5 +1,16 @@
 # Progresso GensIA
 
+## 15/10/2026 — exportação segura — v0.22.1
+
+catalog_report aceita --output com criação exclusiva e UTF-8, sem substituir
+destinos existentes (incluindo ficheiros vazios e symlinks). Sem novas dependências.
+Códigos 0 sucesso, 13 destino existente, 14 falha de escrita. Stdout preservado.
+157 testes descobertos: 148 passaram, nove HTTP omitidos por dependências ausentes.
+Cinco testes novos, incluindo CLI real que grava uma vez e recusa a segunda.
+Falhas durante escrita podem deixar um novo ficheiro incompleto; documentado.
+Nenhuma validação visual, inferência ou scan Bandit novo neste incremento.
+Próximo: validar apresentação desktop/mobile e painel autenticado de leitura.
+
 ## 15/10/2026 — módulo 22 — v0.22.0
 
 Relatório HTML offline em gensia/catalog_report.py, com catálogo de agentes,

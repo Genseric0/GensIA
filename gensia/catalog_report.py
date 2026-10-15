@@ -1,5 +1,7 @@
 """Offline HTML report of declared capabilities, without runtime inspection."""
 import argparse
+from pathlib import Path
+import sys
 from html import escape
 from . import __version__
 from .agent_catalog import AGENTS
@@ -50,9 +52,26 @@ O diagnóstico não comprova inferência. Este relatório não se atualiza autom
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Gerar catálogo HTML offline no stdout.")
-    parser.parse_args(argv)
-    print(render_report())
+    parser = argparse.ArgumentParser(description="Gerar catálogo HTML offline.")
+    parser.add_argument("--output", type=Path, help="novo ficheiro HTML; nunca substitui ficheiros existentes")
+    args = parser.parse_args(argv)
+    report = render_report()
+    if args.output is None:
+        print(report)
+        return 0
+    try:
+        # Exclusive creation avoids a check-then-open race and refuses symlinks,
+        # including dangling ones. Parent directories are never created here.
+        with args.output.open("x", encoding="utf-8", newline="\n") as output:
+            output.write(report)
+    except FileExistsError:
+        print("Destino já existe. Escolhe outro nome; nenhum ficheiro foi substituído.", file=sys.stderr)
+        return 13
+    except OSError:
+        print("Não foi possível gravar. Verifica a pasta, permissões e espaço disponível. "
+              "Uma falha durante a escrita pode deixar um ficheiro incompleto.", file=sys.stderr)
+        return 14
+    print("Relatório HTML guardado em UTF-8. Abre o ficheiro no navegador.")
     return 0
 
 
