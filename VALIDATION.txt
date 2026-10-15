@@ -1,3 +1,12 @@
+2026-10-15 — regressão socket real, produto v0.24.0
+GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
+171 testes passaram, zero omitidos, Linux/Python 3.12.
+Quatro testes novos com Uvicorn 0.54.0 real e http.client em loopback.
+Socket e thread encerrados no cleanup; sem pedidos externos ou dados pessoais.
+FastAPI 0.143.0, Starlette 1.8.0, Pydantic 2.14.1, httpx 0.28.1.
+Permanece aviso de depreciação httpx no TestClient dos testes em processo.
+Sem navegador real, Windows, inferência Ollama ou novo scan Bandit.
+
 2026-10-15 — v0.24.0 — GET /agents/report
 167 testes Python passaram, zero omitidos, usando venv com dependências opcionais.
 FastAPI 0.143.0; Uvicorn 0.54.0; Starlette 1.8.0; Pydantic 2.14.1; httpx 0.28.1.

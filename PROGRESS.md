@@ -1,5 +1,17 @@
 # Progresso GensIA
 
+## 15/10/2026 — regressão HTTP real — produto mantém v0.24.0
+
+Adicionados quatro testes opt-in em tests/test_api_socket.py. Uvicorn real numa
+thread, socket reservado em 127.0.0.1 com porta efémera, token aleatório temporário,
+cliente http.client sem proxy, encerramento verificado e timeouts limitados.
+Validado HTML 200 idêntico ao gerador, attachment/no-store/CSP, 401 sem token e
+Authorization duplicado, 400 Host errado/duplicado e query, 403 Origin, 405 POST,
+404 rota de execução. 171 testes passaram com GENSIA_TEST_REAL_HTTP=1, sem omissões.
+Não altera funcionalidades, dependências de produção ou regras de autenticação.
+Sem navegador, inferência Ollama ou novo scan Bandit. Próximo: capturas e desenho
+da autenticação do painel; não confundir testes HTTP com validação visual.
+
 ## 15/10/2026 — exportação HTML autenticada — v0.24.0
 
 GET /agents/report reutiliza render_report e entrega attachment UTF-8. Mantém

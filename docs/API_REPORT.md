@@ -42,3 +42,28 @@ Três testes HTTP novos verificam conteúdo, cabeçalhos e rejeições.
 Referência primária consultada em 15/10/2026:
 [FastAPI HTMLResponse](https://fastapi.tiangolo.com/advanced/custom-response/).
 Sem novas dependências de produção. Usa as versões já fixadas no projeto.
+
+## Testar HTTP real (opcional)
+
+Na raiz, com o ambiente virtual ativado e dependências API + `httpx` instaladas:
+
+```powershell
+$env:GENSIA_TEST_REAL_HTTP = "1"
+python -m unittest discover -s tests -p test_api_socket.py -v
+Remove-Item Env:GENSIA_TEST_REAL_HTTP
+```
+
+Para a suite completa, retirar `-p test_api_socket.py`. Sem esta variável, os
+quatro testes de socket são omitidos; os restantes testes continuam disponíveis.
+Em Linux: `GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -v`.
+
+Os testes iniciam um servidor temporário em loopback numa porta efémera, reservada
+antes do arranque, com token aleatório não impresso. Não precisam do teu token nem
+de um servidor já em execução. Testam exportação e rejeições, incluindo cabeçalhos
+Authorization/Host duplicados. O servidor e o socket são encerrados no fim.
+Restrições locais que impeçam sockets provocam falha, não aprovação silenciosa.
+
+Em 15/10/2026: 171 testes passaram em Linux com este opt-in. Não representa teste
+de navegador, hardware, carga, TLS ou Windows. O produto mantém v0.24.0.
+Padrão de lifecycle baseado em [Uvicorn Config/Server](https://www.uvicorn.org/),
+documentação oficial consultada na mesma data.

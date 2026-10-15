@@ -97,9 +97,9 @@ agentes, mas não os executa. Ver [catálogo na API](docs/AGENT_CATALOG_API.md).
 
 ## Validação
 
-Na v0.24.0 os 167 testes Python passaram, com as dependências opcionais da API,
-sem omissões. HTTP validado via TestClient em processo. Uma consulta HTTP real em
-loopback foi validada anteriormente; não foi repetida neste incremento.
+Na v0.24.0 os 171 testes Python passaram, com as dependências opcionais da API
+e `GENSIA_TEST_REAL_HTTP=1`, sem omissões. Inclui quatro testes com Uvicorn real
+em loopback, além dos testes em processo. Ver [reprodução](docs/API_REPORT.md).
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.
 
 Na v0.21.0, Bandit 1.9.4 real analisou os 17 módulos Python: três avisos baixos B404, nenhum
