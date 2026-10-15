@@ -1,3 +1,10 @@
+2026-10-15 — v0.23.0 — pesquisa explícita local de memória
+python3 -m unittest discover -s tests -q: 164 descobertos, 155 passaram, 9 HTTP omitidos.
+Sete testes novos: DB ausente, chave/valor/Unicode/case, SQL e wildcards literais,
+paginação e bytes da DB preservados, argumentos inválidos, DB corrupta, CLI real.
+node --test tests/catalog_visual.test.cjs: 4 passaram (critérios, não browser).
+Sem nova instalação, scan Bandit, teste Windows ou inferência Ollama.
+
 2026-10-15 — infraestrutura visual, produto v0.22.1
 node --test tests/catalog_visual.test.cjs: quatro testes passaram.
 Integração visual: FALHOU no arranque (Chromium ausente), zero capturas.

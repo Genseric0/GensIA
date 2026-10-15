@@ -1,5 +1,17 @@
 # Progresso GensIA
 
+## 15/10/2026 — pesquisa explícita de memória — v0.23.0
+
+MemoryStore.search e CLI memory search: substring literal nas chaves e valores,
+sensível a maiúsculas/acentos, SQL parametrizado, ordenação por chave, paginação
+(20 resultados por omissão, máximo 200). Não cria DB ausente nem altera notas.
+A pesquisa mostra valores explicitamente; list continua a omiti-los. Nenhuma
+integração automática no chat, rede, embeddings ou dependência adicional.
+Sete testes novos (incluindo subprocesso CLI real). Suite Python: 164 descobertos,
+155 passaram, nove HTTP omitidos. Quatro testes Node dos critérios visuais passaram.
+Capturas HTML e inferência Ollama continuam pendentes; sem novo scan Bandit.
+Próximo: concluir capturas quando houver Chromium e retomar painel read-only.
+
 ## 15/10/2026 — infraestrutura de validação visual (produto mantém v0.22.1)
 
 Adicionado scripts/validate_catalog_visual.cjs: gera HTML da CLI, testa larguras

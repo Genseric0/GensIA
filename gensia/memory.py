@@ -72,6 +72,20 @@ class MemoryStore:
                 "SELECT key, updated_at FROM memories ORDER BY key LIMIT ? OFFSET ?", (limit, offset)
             )]
 
+    def search(self, query, limit=20, offset=0):
+        """Literal, case-sensitive substring search; values disclosed explicitly."""
+        self.validate(query, 200, "Pesquisa")
+        if type(limit) is not int or type(offset) is not int or not 1 <= limit <= 200 or offset < 0:
+            raise MemoryError("Limite: inteiro 1–200; offset inteiro não negativo.")
+        if not self.path.exists() and not self.path.is_symlink():
+            return []
+        with self.connect() as db:
+            return [dict(row) for row in db.execute(
+                "SELECT key, value, updated_at FROM memories "
+                "WHERE instr(key, ?) > 0 OR instr(value, ?) > 0 "
+                "ORDER BY key LIMIT ? OFFSET ?", (query, query, limit, offset)
+            )]
+
     def delete(self, key, approved=False):
         if not approved:
             raise MemoryError("Apagar memória exige --approve.")

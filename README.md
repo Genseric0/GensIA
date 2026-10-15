@@ -1,7 +1,10 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.22.1** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.23.0** — protótipo em evolução.
+
+Novo: [pesquisa literal nas notas locais](docs/MEMORY_SEARCH.md), com paginação,
+sem rede nem envio ao modelo: `python -m gensia memory search DNS`.
 
 Novo: [relatório visual HTML offline dos agentes](docs/CATALOG_REPORT.md), sem
 dependências adicionais. Exporta com `python -m gensia.catalog_report --output catalogo.html`
@@ -91,7 +94,7 @@ agentes, mas não os executa. Ver [catálogo na API](docs/AGENT_CATALOG_API.md).
 
 ## Validação
 
-Na v0.22.1 foram descobertos 157 testes: 148 passaram e nove testes HTTP foram
+Na v0.23.0 foram descobertos 164 testes: 155 passaram e nove testes HTTP foram
 omitidos por falta das dependências opcionais da API. Na v0.22.0 os 152 testes
 então existentes passaram com essas dependências. Uma consulta HTTP real em
 loopback foi validada anteriormente; não foi repetida neste incremento.

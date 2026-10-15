@@ -50,6 +50,10 @@ def main(argv=None) -> int:
     mem_list = mem_sub.add_parser("list")
     mem_list.add_argument("--limit", type=int, default=50)
     mem_list.add_argument("--offset", type=int, default=0)
+    mem_search = mem_sub.add_parser("search", help="pesquisa literal local; mostra valores das notas encontradas")
+    mem_search.add_argument("query", help="texto exato, sensível a maiúsculas e acentos")
+    mem_search.add_argument("--limit", type=int, default=20)
+    mem_search.add_argument("--offset", type=int, default=0)
     mem_delete = mem_sub.add_parser("delete")
     mem_delete.add_argument("key")
     mem_delete.add_argument("--approve", action="store_true")
@@ -224,6 +228,8 @@ def main(argv=None) -> int:
                 output = store.get(args.key)
             elif args.memory_command == "list":
                 output = store.list(args.limit, args.offset)
+            elif args.memory_command == "search":
+                output = store.search(args.query, args.limit, args.offset)
             else:
                 output = store.delete(args.key, args.approve)
             print(json.dumps(output, ensure_ascii=False, indent=2))
