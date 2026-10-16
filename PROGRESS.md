@@ -1,5 +1,21 @@
 # Progresso GensIA
 
+## 16/10/2026 — backup explícito da memória — v0.25.0
+
+memory backup --output cria exportação lógica JSON UTF-8 schema_version=1,
+kind=gensia.memory_backup, exported_at e notas com key/value/updated_at. Um SELECT
+numa ligação read-only, até 1000 notas; substrings limitam campos devolvidos a Python
+e validação rejeita dados fora do contrato. Sem truncar notas para as aceitar.
+Até 8 MiB serializados; sem criar destino em falhas de leitura/validação/limites.
+Criação O_EXCL com modo 0600 POSIX, flush/fsync; sem substituir ficheiro ou symlink,
+sem criar diretórios. Falha de escrita pode deixar um novo ficheiro incompleto.
+Saída da CLI só mostra contagem, tamanho, SHA-256 e encrypted=false; não as notas.
+Pattern *.memory-backup.json adicionado ao gitignore. Sem encriptação ou restauro.
+Nove testes novos; 204 passaram sem omissões, incluindo HTTP real e CLI de backup.
+SQLite WAL real com valores committed incluídos. Bandit 1.9.4 no novo módulo:
+zero achados/erros. Nenhum novo teste Windows, GUI, modelo ou scan global.
+Próximo: validar/importar este formato para DB nova, nunca substituir DB existente.
+
 ## 16/10/2026 — resolução explícita de aplicações Windows — v0.24.3
 
 Calculator/Notepad resolvidos via GetSystemDirectoryW; Explorer via

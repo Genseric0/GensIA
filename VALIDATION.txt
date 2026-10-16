@@ -1,3 +1,12 @@
+2026-10-16 — v0.25.0 — backup lógico de notas
+GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
+204 testes passaram, zero omitidos, 6,793 segundos, Linux/Python 3.12.
+Nove casos novos: UTF-8/datas/hash/source preservados, DB ausente, destino existente,
+symlinks, limites, rows inválidas, SQLite WAL real, falha fsync, CLI real/segunda criação.
+Bandit 1.9.4 memory_backup.py: 56 linhas, zero achados/erros, exit 0.
+Sem novo scan global. Backup não encriptado; restauro ainda não implementado.
+Aviso TestClient/httpx permanece; sem Windows, navegador, voz ou inferência novos.
+
 2026-10-16 — v0.24.3 — abertura Windows com executável explícito
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
 195 testes passaram, zero omitidos; 8,441 segundos, Linux/Python 3.12.

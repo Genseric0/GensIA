@@ -5,6 +5,7 @@ import os
 import sys
 from pathlib import Path
 from .memory import MemoryStore, MemoryError
+from .memory_backup import backup_notes
 from .kev import CisaKevCatalog, KevError
 from .documents import DocumentError, SafePdfDocuments, SafeTextDocuments
 from .search import LocalDocumentSearch
@@ -54,6 +55,8 @@ def main(argv=None) -> int:
     mem_search.add_argument("query", help="texto exato, sensível a maiúsculas e acentos")
     mem_search.add_argument("--limit", type=int, default=20)
     mem_search.add_argument("--offset", type=int, default=0)
+    mem_backup = mem_sub.add_parser("backup", help="exportar notas completas para um novo ficheiro JSON local")
+    mem_backup.add_argument("--output", required=True, help="novo ficheiro; contém os valores das notas")
     mem_delete = mem_sub.add_parser("delete")
     mem_delete.add_argument("key")
     mem_delete.add_argument("--approve", action="store_true")
@@ -230,6 +233,8 @@ def main(argv=None) -> int:
                 output = store.list(args.limit, args.offset)
             elif args.memory_command == "search":
                 output = store.search(args.query, args.limit, args.offset)
+            elif args.memory_command == "backup":
+                output = backup_notes(store, args.output)
             else:
                 output = store.delete(args.key, args.approve)
             print(json.dumps(output, ensure_ascii=False, indent=2))
