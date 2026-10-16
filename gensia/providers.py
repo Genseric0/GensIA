@@ -1,5 +1,6 @@
 """Providers de modelos; o Ollama só aceita um endpoint local explícito."""
 import json
+from http.client import HTTPException
 import socket
 from typing import Protocol
 from urllib.error import HTTPError, URLError
@@ -47,10 +48,16 @@ class OllamaProvider:
 
     @staticmethod
     def _validate_base_url(value):
+        if not isinstance(value, str) or any(ord(char) <= 32 or ord(char) == 127 for char in value):
+            raise ValueError("Endpoint Ollama inválido.")
         parsed = urlparse(value)
         if parsed.scheme != "http" or parsed.hostname not in {"127.0.0.1", "localhost", "::1"}:
             raise ValueError("O endpoint Ollama deve usar HTTP em localhost.")
-        if parsed.username or parsed.password or parsed.query or parsed.fragment:
+        # Accessing .port also validates nonnumeric and out-of-range ports.
+        port = parsed.port
+        if (parsed.username or parsed.password or '?' in value or '#' in value
+                or parsed.path not in ('', '/') or parsed.params
+                or parsed.netloc.endswith(':') or port == 0):
             raise ValueError("Endpoint Ollama inválido.")
         return value.rstrip("/")
 
@@ -88,14 +95,11 @@ class OllamaProvider:
             with _LOCAL_OPENER.open(request, timeout=self.timeout) as response:
                 raw = response.read(10 * 1024 * 1024 + 1)
         except HTTPError as exc:
-            detail = ""
-            try:
-                detail = json.loads(exc.read().decode("utf-8")).get("error", "")
-            except (UnicodeDecodeError, json.JSONDecodeError, AttributeError):
-                pass
-            suffix = (": " + detail) if detail else ""
-            raise ProviderUnavailable(f"Ollama respondeu HTTP {exc.code}{suffix}.") from exc
-        except (URLError, socket.timeout, TimeoutError) as exc:
+            # Untrusted error bodies may be unbounded, malformed or contain
+            # sensitive prompt content and terminal control sequences.
+            exc.close()
+            raise ProviderUnavailable(f"Ollama respondeu HTTP {exc.code}. Verifica o serviço e o modelo local.") from exc
+        except (URLError, socket.timeout, TimeoutError, HTTPException, OSError) as exc:
             raise ProviderUnavailable(
                 "Não foi possível contactar o Ollama local. Confirma se o serviço está ativo."
             ) from exc
@@ -103,10 +107,10 @@ class OllamaProvider:
             raise ProviderUnavailable("Resposta do Ollama excedeu o limite de 10 MiB.")
         try:
             data = json.loads(raw.decode("utf-8"))
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        except (UnicodeDecodeError, json.JSONDecodeError, RecursionError) as exc:
             raise ProviderUnavailable("Ollama devolveu JSON inválido.") from exc
         if not isinstance(data, dict):
             raise ProviderUnavailable("Ollama devolveu uma resposta inválida.")
-        if isinstance(data.get("error"), str):
-            raise ProviderUnavailable("Erro do Ollama: " + data["error"])
+        if "error" in data:
+            raise ProviderUnavailable("Ollama comunicou um erro. Verifica o serviço e o modelo local.")
         return data

@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import os
+import stat
 from pathlib import Path
 import subprocess
 import sys
@@ -22,19 +23,36 @@ class AuditLogger:
         self.path = Path(path)
 
     def record(self, action, outcome, target):
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        if self.path.exists() and self.path.is_symlink():
-            raise ToolError("O ficheiro de auditoria não pode ser um link simbólico.")
         event = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "action": action,
             "outcome": outcome,
             "target_fingerprint": hashlib.sha256(target.encode("utf-8")).hexdigest()[:12],
         }
-        flags = os.O_WRONLY | os.O_APPEND | os.O_CREAT
-        descriptor = os.open(self.path, flags, 0o600)
-        with os.fdopen(descriptor, "a", encoding="utf-8") as stream:
-            stream.write(json.dumps(event, ensure_ascii=False) + "\n")
+        descriptor = None
+        try:
+            self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+            # is_symlink is true even when the link target does not exist.
+            if self.path.is_symlink():
+                raise ToolError("O ficheiro de auditoria não pode ser um link simbólico.")
+            if self.path.exists() and not self.path.is_file():
+                raise ToolError("A auditoria exige um ficheiro regular.")
+            flags = os.O_WRONLY | os.O_APPEND | os.O_CREAT
+            # O_NOFOLLOW protects the final component from replacement between
+            # check/open on supporting OSes. Parent directories must be trusted.
+            flags |= getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+            descriptor = os.open(self.path, flags, 0o600)
+            opened = os.fstat(descriptor)
+            if not stat.S_ISREG(opened.st_mode) or opened.st_nlink != 1:
+                raise ToolError("A auditoria exige um ficheiro regular sem hard links adicionais.")
+            with os.fdopen(descriptor, "a", encoding="utf-8") as stream:
+                descriptor = None  # fdopen owns and closes the descriptor.
+                stream.write(json.dumps(event, ensure_ascii=False) + "\n")
+        except (OSError, UnicodeError) as exc:
+            raise ToolError("Não foi possível gravar a auditoria local; verifica pasta e permissões.") from exc
+        finally:
+            if descriptor is not None:
+                os.close(descriptor)
 
 
 class SafeDirectoryTools:

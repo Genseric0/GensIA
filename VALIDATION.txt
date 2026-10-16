@@ -1,3 +1,15 @@
+2026-10-16 — v0.24.1 — hardening de auditoria e provider
+GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
+182 testes passaram, zero omitidos. Onze regressões novas em test_security_regressions.py.
+As cinco regressões iniciais falhavam antes das correções; onze passaram depois.
+Inclui symlink pendente, troca check/open POSIX, hardlink, FIFO, log regular/0600,
+erro de permissão, corpo HTTP não lido/fechado, erro estruturado, JSON 200 com error,
+HTTP truncado e configuração inválida de URL.
+Bandit 1.9.4 real: 2581 linhas analisadas, três LOW B404, zero MEDIUM/HIGH,
+zero erros. Código de saída 1 do Bandit corresponde aos achados LOW, não crash.
+Python 3.12/Linux; dependências API do incremento anterior. Aviso de depreciação
+httpx no TestClient permanece. Sem inferência Ollama, áudio, GUI ou Windows real.
+
 2026-10-15 — regressão socket real, produto v0.24.0
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
 171 testes passaram, zero omitidos, Linux/Python 3.12.

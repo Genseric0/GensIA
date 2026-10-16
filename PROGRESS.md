@@ -1,5 +1,22 @@
 # Progresso GensIA
 
+## 16/10/2026 — robustez de auditoria/Ollama — v0.24.1
+
+Concluídas as regressões iniciadas na revisão para uso comercial. Auditoria recusa
+symlink pendente, ficheiros não regulares e hard links adicionais; usa O_NOFOLLOW
+e O_NONBLOCK onde disponíveis, valida fstat e encapsula falhas de I/O em ToolError.
+Diretórios-pai continuam a precisar de confiança; Windows sem O_NOFOLLOW mantém
+risco de troca concorrente do último componente. Não é isolamento entre clientes.
+Ollama valida porta/caminho/controlo da URL, não lê corpos de erro HTTP, fecha a
+resposta e não reflete erros remotos. Erros estruturados e HTTP truncado são
+controlados. Erros em resposta JSON 200 também não expõem conteúdo.
+Onze testes novos; 182 testes passaram, zero omitidos, incluindo HTTP real.
+Bandit 1.9.4 real: três LOW B404, zero MEDIUM/HIGH, zero erros de análise.
+docs/PRODUCT_READINESS.md documenta dados, modelo inicial local por utilizador,
+bloqueios e critérios de piloto; não declara produto pronto para venda.
+Sem inferência, Windows ou navegador novo. Próximo: leitura limitada de documentos
+durante I/O e revisão da resolução de executáveis Windows, antes de piloto.
+
 ## 15/10/2026 — regressão HTTP real — produto mantém v0.24.0
 
 Adicionados quatro testes opt-in em tests/test_api_socket.py. Uvicorn real numa

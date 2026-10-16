@@ -1,7 +1,12 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.24.0** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.24.1** — protótipo em evolução.
+
+Correções de segurança: escrita de auditoria mais restrita e tratamento de erros
+Ollama sem revelar corpos de erro. A [avaliação para uso pessoal e clientes](docs/PRODUCT_READINESS.md)
+regista os bloqueios antes de um piloto comercial; a versão ainda não está aprovada
+para venda geral ou alojamento partilhado entre clientes.
 
 Novo: [exportação HTML autenticada pela API](docs/API_REPORT.md), em
 `GET /agents/report`. É um anexo estático, não um painel interativo.
@@ -97,13 +102,13 @@ agentes, mas não os executa. Ver [catálogo na API](docs/AGENT_CATALOG_API.md).
 
 ## Validação
 
-Na v0.24.0 os 171 testes Python passaram, com as dependências opcionais da API
+Na v0.24.1 os 182 testes Python passaram, com as dependências opcionais da API
 e `GENSIA_TEST_REAL_HTTP=1`, sem omissões. Inclui quatro testes com Uvicorn real
 em loopback, além dos testes em processo. Ver [reprodução](docs/API_REPORT.md).
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.
 
-Na v0.21.0, Bandit 1.9.4 real analisou os 17 módulos Python: três avisos baixos B404, nenhum
-achado médio/alto. Isto não garante ausência de vulnerabilidades. Ollama 0.40.4
+Na v0.24.1, Bandit 1.9.4 real encontrou três avisos baixos B404, nenhum
+achado médio/alto e nenhum erro de análise. Isto não garante ausência de vulnerabilidades. Ollama 0.40.4
 real respondeu à API; inferência pendente porque a rede impediu o download do
 modelo. Ver [relatório de integração](docs/REAL_ENGINE_VALIDATION.md).
 
