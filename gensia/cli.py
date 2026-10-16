@@ -8,7 +8,8 @@ from .memory import MemoryStore, MemoryError
 from .memory_backup import backup_notes
 from .memory_restore import restore_notes
 from .kev import CisaKevCatalog, KevError
-from .documents import DocumentError, SafePdfDocuments, SafeTextDocuments
+from .documents import DocumentError, SafeTextDocuments
+from .pdf_process import SupervisedPdfDocuments
 from .search import LocalDocumentSearch
 from .security import PassiveUrlAnalyzer, SecurityError, VirusTotalUrlReputation
 from .static_analysis import BanditScanner, StaticAnalysisError
@@ -129,6 +130,9 @@ def main(argv=None) -> int:
     ask_search.add_argument("--top-k", type=int, default=5)
     ask_search.add_argument("--max-mib", type=int, default=10)
     ask_search.add_argument("--max-pages", type=int, default=25)
+    for pdf_command in (pdf_read, pdf_summary, pdf_ask, doc_search, ask_search):
+        pdf_command.add_argument("--pdf-timeout", type=float, default=30.0,
+                                 help="prazo por PDF em segundos (1–120)")
     ask = sub.add_parser("ask", help="enviar uma pergunta ao motor de IA")
     ask.add_argument("text")
     tool = sub.add_parser("tool", help="executar ferramenta local explícita")
@@ -272,7 +276,7 @@ def main(argv=None) -> int:
                     )
                 output = reader.summarize(args.path, provider, args.style, args.max_kib)
             elif args.document_command in ("pdf-read", "pdf-summarize", "pdf-ask"):
-                pdf = SafePdfDocuments(args.workspace, audit)
+                pdf = SupervisedPdfDocuments(args.workspace, audit, args.pdf_timeout)
                 if args.document_command == "pdf-read":
                     output = pdf.read_pdf(args.path, args.max_mib, args.max_pages).as_dict()
                 elif args.document_command == "pdf-summarize":
@@ -296,7 +300,7 @@ def main(argv=None) -> int:
                         args.path, args.question, provider, args.max_mib, args.max_pages
                     )
             elif args.document_command == "search":
-                output = LocalDocumentSearch(args.workspace, audit).search(
+                output = LocalDocumentSearch(args.workspace, audit, args.pdf_timeout).search(
                     args.query, args.paths, args.top_k, args.max_kib,
                     args.max_mib, args.max_pages,
                 )
@@ -307,7 +311,7 @@ def main(argv=None) -> int:
                         "Modelo não configurado. Usa --provider ollama --model NOME. "
                         "Os documentos não foram lidos."
                     )
-                output = LocalDocumentSearch(args.workspace, audit).answer(
+                output = LocalDocumentSearch(args.workspace, audit, args.pdf_timeout).answer(
                     args.question, args.paths, provider, args.top_k, args.max_kib,
                     args.max_mib, args.max_pages,
                 )

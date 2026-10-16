@@ -7,7 +7,8 @@ from pathlib import Path
 import re
 import unicodedata
 
-from .documents import DocumentError, SafePdfDocuments, SafeTextDocuments
+from .documents import DocumentError, SafeTextDocuments
+from .pdf_process import SupervisedPdfDocuments
 from .providers import ModelProvider
 from .tools import AuditLogger
 
@@ -31,9 +32,9 @@ class LocalDocumentSearch:
     MAX_RESULTS = 20
     CHUNK_CHARACTERS = 1200
 
-    def __init__(self, workspace: str | Path, audit: AuditLogger):
+    def __init__(self, workspace: str | Path, audit: AuditLogger, pdf_timeout=30.0):
         self.text = SafeTextDocuments(workspace, audit)
-        self.pdf = SafePdfDocuments(workspace, audit)
+        self.pdf = SupervisedPdfDocuments(workspace, audit, pdf_timeout)
         self.audit = audit
 
     def _text_chunks(self, path: str, content: str) -> list[Chunk]:

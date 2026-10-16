@@ -1,4 +1,4 @@
-"""Opt-in supervised PDF extraction. A process boundary, not an OS sandbox."""
+"""Supervised PDF extraction for public pipelines; not an OS sandbox."""
 import json
 import math
 import os
@@ -11,10 +11,23 @@ import tempfile
 if __name__ == '__main__' and not __package__:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from gensia.documents import DocumentError, SafePdfDocuments
+from gensia.documents import DocumentError, PdfDocument, SafePdfDocuments
 from gensia.tools import AuditLogger, ToolError
 
 MAX_OUTPUT_BYTES = 2 * 1024 * 1024
+
+
+class SupervisedPdfDocuments(SafePdfDocuments):
+    """Reuse summary/citation logic while extracting only in the worker."""
+    def __init__(self, workspace, audit, pdf_timeout=30.0):
+        super().__init__(workspace, audit)
+        self.pdf_timeout = pdf_timeout
+
+    def read_pdf(self, relative_path, max_mib=10, max_pages=25):
+        result = extract_pdf_process(self.workspace, relative_path, self.audit.path,
+                                     max_mib, max_pages, self.pdf_timeout)
+        return PdfDocument(result['path'], result['content'], result['bytes'],
+                           result['characters'], result['sha256'], result['pages'])
 
 
 def extract_pdf_process(workspace, relative_path, audit_path, max_mib=10,

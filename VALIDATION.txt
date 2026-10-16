@@ -1,3 +1,14 @@
+2026-10-16 — v0.28.0 — supervisão por omissão nos pipelines PDF
+GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
+232 testes passaram, zero omitidos; 9,240 segundos, Linux/Python 3.12/pypdf 6.20.1.
+Sete novos casos em test_pdf_pipeline.py. Leitura/pesquisa via CLI com PDF real;
+resumo/perguntas/tutor com extração e provider simulados para verificar encaminhamento
+e impedir chamada ao modelo após falha. Citações e posições de fontes preservadas.
+Uma asserção nova foi corrigida para comparar o documento após descodificar JSON;
+a suite completa foi repetida e passou. Sem inferência Ollama nova.
+Bandit 1.9.4 pdf_process.py/search.py/cli.py: 619 linhas, um LOW B404,
+zero MEDIUM/HIGH/erros. Sem scan global novo; aviso TestClient/httpx permanece.
+
 2026-10-16 — v0.27.0 — PDF supervisionado opt-in
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
 225 testes passaram, zero omitidos, 9,832 segundos, Linux/Python 3.12.

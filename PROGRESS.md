@@ -1,5 +1,22 @@
 # Progresso GensIA
 
+## 16/10/2026 — supervisão nos pipelines PDF — v0.28.0
+
+SupervisedPdfDocuments adapta o worker a PdfDocument e reutiliza resumo/perguntas
+e validação de citações existentes. CLI pdf-read/pdf-summarize/pdf-ask passam pelo
+adaptador; LocalDocumentSearch também, incluindo ask-search e StudyAgent. Opção
+--pdf-timeout nos comandos document relevantes, 30s por PDF por omissão; tutor
+mantém esse valor. Alias pdf-read-supervised preservado. Sem fallback direto.
+SafePdfDocuments permanece primitiva interna/de baixo nível usada pelo worker,
+não foi alterada para evitar recursão e manter testes unitários do parser.
+Sete testes novos: encaminhamento/limites/metadados, resumo/citações, falha antes
+do modelo, pesquisa mista com páginas/linhas, tutor, CLI com modelo simulado e
+CLI de leitura/pesquisa com pypdf real. 232 passaram, zero omitidos, incluindo
+testes anteriores de timeout real/HTTP real. Modelo real não foi usado.
+Bandit 1.9.4 nos três módulos alterados: um LOW B404, zero MEDIUM/HIGH/erros.
+Persistem ausência de quotas de RAM/disco, sandbox e teste Windows real.
+Próximo: limites de recursos do worker e validação de recuperação de falhas.
+
 ## 16/10/2026 — extração PDF supervisionada opt-in — v0.27.0
 
 Novo document pdf-read-supervised, com max_mib/max_pages e pdf-timeout 1–120s,

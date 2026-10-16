@@ -1,11 +1,11 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.27.0** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.28.0** — protótipo em evolução.
 
 Novo: [extração PDF supervisionada](docs/PDF_PROCESS.md), com processo separado e
-timeout explícito: `python -m gensia document --workspace . pdf-read-supervised exemplo.pdf`.
-O modo é opt-in; resumo e pesquisa PDF ainda não usam esta supervisão.
+timeout explícito: `python -m gensia document --workspace . pdf-read exemplo.pdf --pdf-timeout 30`.
+Leitura, resumo, perguntas, pesquisa PDF e tutor usam a supervisão por omissão.
 
 Novo: [backup explícito das notas locais](docs/MEMORY_BACKUP.md), em JSON versionado:
 `python -m gensia memory backup --output notas.memory-backup.json`.
@@ -117,7 +117,7 @@ agentes, mas não os executa. Ver [catálogo na API](docs/AGENT_CATALOG_API.md).
 
 ## Validação
 
-Na v0.27.0 os 225 testes Python passaram, com as dependências opcionais da API
+Na v0.28.0 os 232 testes Python passaram, com as dependências opcionais da API
 e `GENSIA_TEST_REAL_HTTP=1`, sem omissões. Inclui quatro testes com Uvicorn real
 em loopback, além dos testes em processo. Ver [reprodução](docs/API_REPORT.md).
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.

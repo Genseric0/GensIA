@@ -1,10 +1,10 @@
-# Extração PDF supervisionada — v0.27.0
+# Extração PDF supervisionada — v0.28.0
 
 Ativa o ambiente virtual e instala a dependência opcional, antes de executar:
 
 ```powershell
 py -3 -m pip install -r requirements-documents.txt
-py -3 -m gensia document --workspace . pdf-read-supervised exemplo.pdf --pdf-timeout 30
+py -3 -m gensia document --workspace . pdf-read exemplo.pdf --pdf-timeout 30
 ```
 
 `exemplo.pdf` deve ser um ficheiro próprio existente dentro da pasta autorizada.
@@ -13,8 +13,18 @@ Aceita `--max-mib` (1–50, padrão 10), `--max-pages` (1–100, padrão 25) e
 Não envia texto ao modelo. Conteúdo extraído é apresentado no terminal em JSON;
 o módulo mantém eventos locais de auditoria sem texto do documento.
 
-Este comando acrescenta supervisão de processo. **pdf-read, pdf-summarize,
-pdf-ask e pesquisa PDF continuam a usar o caminho anterior nesta versão.**
+Desde a v0.28.0, `pdf-read`, `pdf-summarize`, `pdf-ask`, `search` e `ask-search`
+usam a supervisão para PDFs por omissão. Cada comando aceita `--pdf-timeout`;
+na pesquisa, o prazo é por PDF, não por lote. StudyAgent usa pesquisa supervisionada
+com 30 segundos por PDF. O timeout de Ollama é independente deste prazo.
+`pdf-read-supervised` permanece disponível por compatibilidade.
+
+A classe SupervisedPdfDocuments é o adaptador recomendado em Python. Reutiliza
+as regras de resumo e citações, devolvendo PdfDocument com os mesmos campos.
+SafePdfDocuments é uma primitiva de baixo nível que ainda extrai no processo que
+a chama; o worker usa essa primitiva. Chamadas diretas a ela não ganham timeout.
+Não há fallback para extração direta quando o worker falha. Nessa situação,
+resumo/perguntas/tutor não enviam conteúdo ao modelo.
 
 ## Funcionamento e limites reais
 
@@ -46,11 +56,16 @@ consultados em 16/10/2026 indicam Python>=3.9, BSD-3-Clause e publicação em
 12/10/2026. Compatível com o requisito Python>=3.10 da GensIA e exercitado aqui
 com Python 3.12/Linux. A versão fixa não substitui futura revisão de vulnerabilidades.
 
-Nove testes em `tests/test_pdf_process.py`; suite completa com 225 testes passou,
+Nove testes em `tests/test_pdf_process.py`; na v0.27.0 a suite com 225 testes passou,
 sem omissões. Um PDF sintético real com texto foi gerado e extraído com pypdf
 real, através da CLI/worker reais. PDF malformado foi recusado. Um processo Python
 de teste bloqueado comprovou timeout e recolha do filho direto em Linux. Não é
 um ensaio de PDF malicioso, resistência a OOM ou comportamento Windows.
+
+Na v0.28.0 foram acrescentados sete testes em `tests/test_pdf_pipeline.py` e os
+232 testes passaram sem omissões. CLI de leitura e pesquisa exercitadas com PDF e
+worker reais. Resumo/perguntas/tutor usam fixtures de extração/modelo nos testes de
+encaminhamento, citações e falha antes do provider; não houve inferência real nova.
 
 Para reproduzir: `python -m unittest discover -s tests -p test_pdf_process.py -v`.
 Os dois testes de pypdf são omitidos se a dependência estiver ausente; o teste de
