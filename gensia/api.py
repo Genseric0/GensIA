@@ -10,6 +10,7 @@ from . import __version__
 from .agent_catalog import CatalogSnapshot, catalog_snapshot
 from .catalog_report import render_report
 from .protections import protection_report
+from .panel import ASSETS, panel_asset
 
 
 def validate_settings(token, port):
@@ -34,19 +35,34 @@ def diagnostics():
 def create_app(token, port=8765):
     validate_settings(token, port)
     from fastapi import FastAPI
-    from starlette.responses import JSONResponse, HTMLResponse
+    from starlette.responses import JSONResponse, HTMLResponse, Response
 
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None,
                   redirect_slashes=False)
     expected_host = f"127.0.0.1:{port}"
+    expected_origin = f"http://{expected_host}"
 
     @app.middleware("http")
     async def guard(request, call_next):
         headers = request.headers
         if headers.getlist("host") != [expected_host]:
             response = JSONResponse({"error": "host_not_allowed"}, status_code=400)
-        elif "origin" in headers:
+        elif "origin" in headers and not (
+            request.url.path == '/diagnostics' and request.method == 'GET'
+            and headers.getlist('origin') == [expected_origin]
+        ):
             response = JSONResponse({"error": "browser_origin_not_allowed"}, status_code=403)
+        elif 'sec-fetch-site' in headers and headers.getlist('sec-fetch-site') not in (
+            ['same-origin'], ['none']
+        ):
+            response = JSONResponse({'error': 'fetch_site_not_allowed'}, status_code=403)
+        elif request.url.path in ASSETS:
+            if request.method != 'GET':
+                response = JSONResponse({'error': 'read_only'}, status_code=405)
+            elif request.url.query:
+                response = JSONResponse({'error': 'query_not_allowed'}, status_code=400)
+            else:
+                response = await call_next(request)
         elif len(headers.getlist("authorization")) != 1 or not secrets.compare_digest(
             headers.get("authorization", "").encode(), ("Bearer " + token).encode()
         ):
@@ -60,13 +76,37 @@ def create_app(token, port=8765):
         response.headers["Cache-Control"] = "no-store"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
+        if request.url.path in ASSETS and response.status_code == 200:
+            response.headers['Content-Security-Policy'] = (
+                "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src data:; "
+                "base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+            )
+            response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
         if request.url.path == "/agents/report" and response.status_code == 200:
             response.headers["Content-Security-Policy"] = (
                 "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; "
                 "form-action 'none'; frame-ancestors 'none'"
             )
         response.headers["Referrer-Policy"] = "no-referrer"
+        response.headers['Cross-Origin-Resource-Policy'] = 'same-origin'
+        response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
         return response
+
+    def asset(route):
+        content, media_type = panel_asset(route)
+        return Response(content, media_type=media_type)
+
+    @app.get('/panel')
+    async def panel():
+        return asset('/panel')
+
+    @app.get('/panel.js')
+    async def panel_js():
+        return asset('/panel.js')
+
+    @app.get('/panel.css')
+    async def panel_css():
+        return asset('/panel.css')
 
     @app.get("/health")
     async def health():

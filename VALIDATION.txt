@@ -1,3 +1,22 @@
+2026-10-16 — v0.32.0 — painel local de diagnóstico com dados autenticados
+GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
+275 testes passaram, zero omitidos; 11,120 segundos, Linux/Python 3.12.
+Oito novos: seis test_panel.py e dois sockets com Uvicorn/HTTP real (sete HTTP no
+total). Assets públicos sem token/dados; Bearer continua obrigatório para dados;
+Host/métodos/query/Origin/Fetch Metadata e duplicados recusados conforme contrato.
+Só GET /diagnostics aceita Origin local única exata; demais rotas não foram alargadas.
+node --test tests/panel.test.cjs: dez passaram, zero omitidos, DOM/fetch simulados.
+Cobrem token só no cabeçalho, limpeza/refresh manual, 401, schema, 64 KiB, texto
+hostil sem HTML, cancelamento/resposta tardia, timeout e URL inadequada. Sem browser.
+Primeira suite falhou na asserção antiga de /proc do teste de timeout PDF. Teste
+atualizado para Popen real + SIGKILL + waitpid ChildProcessError; suite repetida
+e passou. Não foi alterado o caminho de timeout de produção nem omitido o teste.
+Bandit 1.9.4 api.py/panel.py: 142 LOC, zero achados/erros, exit 0; não cobre JS/CSS.
+Playwright existente launch: Chromium ausente. Sem instalações novas, screenshots,
+render/CSP de browser, teclado/acessibilidade, Windows ou inferência nova.
+Aviso TestClient/httpx permanece. Evidência parcial: docs/validation/2026-10-16-panel.json.
+Não se declara painel pronto para clientes nem execução no computador do utilizador.
+
 2026-10-16 — v0.31.0 — relatório read-only de capacidades de proteção
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
 267 testes passaram, zero omitidos; 13,822 segundos, Linux/Python 3.12.

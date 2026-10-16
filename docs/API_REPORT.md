@@ -29,7 +29,8 @@ Start-Process catalogo-novo.html
 
 Não colocar o token na URL, código, imagens ou repositório. Abrir simplesmente a
 URL no navegador não autentica: resulta em 401. Não existe cookie ou página de login.
-Pedidos com Origin continuam recusados, mesmo para a origem local; não há CORS.
+Neste endpoint /agents/report, pedidos com Origin continuam recusados, mesmo para
+a origem local; não há CORS. A exceção do painel só se aplica a GET /diagnostics.
 
 ## Proteções e validação
 
@@ -54,7 +55,7 @@ Remove-Item Env:GENSIA_TEST_REAL_HTTP
 ```
 
 Para a suite completa, retirar `-p test_api_socket.py`. Sem esta variável, os
-cinco testes de socket são omitidos; os restantes testes continuam disponíveis.
+sete testes de socket são omitidos; os restantes testes continuam disponíveis.
 Em Linux: `GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -v`.
 
 Os testes iniciam um servidor temporário em loopback numa porta efémera, reservada
@@ -73,3 +74,7 @@ O quinto teste de socket valida esse JSON, a recusa sem token e a ausência de
 aprovação comercial/aplicação de quotas pelo diagnóstico. Mantém as mesmas guardas;
 não há execução de documentos nem novos endpoints. 267 testes passaram no total
 com o opt-in HTTP real em 16/10/2026.
+
+Na v0.32.0, mais dois testes de socket validam os assets públicos do painel sem
+dados/token e a exceção restrita de Origin em /diagnostics. Sete testes de socket
+no total. O contrato autenticado de /agents/report não mudou; ver [painel](PANEL.md).

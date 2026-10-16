@@ -1,4 +1,4 @@
-# GensIA — módulo 18 (v0.18.0)
+# GensIA — guia de utilização (atualizado na v0.32.0)
 
 ## API local opcional (estado e diagnóstico)
 
@@ -29,10 +29,13 @@ testar instalações ou iniciar tarefas. Ver [contrato e exemplos](AGENT_CATALOG
 Não expõe documentos, memória, caminhos, variáveis de ambiente ou ferramentas.
 Só o lançador fornecido garante bind 127.0.0.1; não usar proxy, encaminhamento de
 portas ou Uvicorn externo com host 0.0.0.0. Host deve ser 127.0.0.1:PORTA.
-Pedidos com Origin, métodos diferentes de GET e query strings são recusados.
+Métodos diferentes de GET e query strings são recusados. Origin é recusado exceto
+para GET /diagnostics com um único valor local exato e Bearer válido.
 Sem CORS, Swagger/CDN, OpenAPI público ou access log. Token protege também /health.
 O serviço não arranca automaticamente, não tem TLS nem defesa completa contra
-outros processos locais maliciosos. Ainda não existe interface gráfica.
+outros processos locais maliciosos. Existe um [painel experimental de diagnóstico](PANEL.md)
+em /panel: estrutura estática pública, dados autenticados, sem persistir o token.
+Browser/layout reais ainda não validados; não é interface de conversa/execução.
 
 FastAPI 0.143.0 (MIT) e Uvicorn 0.54.0 (BSD-3-Clause) são opcionais.
 Versões diretas fixadas; dependências transitivas ainda não têm lock com hashes.

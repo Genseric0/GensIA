@@ -87,6 +87,25 @@ class RealHttpTests(unittest.TestCase):
         self.assertNotIn(self.token, body)
         self.assertEqual(self.request('/diagnostics', headers=self.headers()[:1])[0], 401)
 
+    def test_real_public_panel_assets_without_credential_or_data(self):
+        from gensia.panel import ASSETS, panel_asset
+        for route in ASSETS:
+            status, headers, body = self.request(route, headers=self.headers()[:1])
+            self.assertEqual(status, 200)
+            self.assertEqual(body, panel_asset(route)[0])
+            self.assertNotIn(self.token, body)
+            self.assertNotIn('Set-Cookie', headers)
+        self.assertEqual(self.request('/panel?token=PRIVATE', headers=self.headers()[:1])[0], 400)
+
+    def test_real_panel_origin_exception_and_duplicate_fetch_metadata(self):
+        origin = ('Origin', f'http://127.0.0.1:{self.port}')
+        self.assertEqual(self.request('/diagnostics', headers=self.headers() + [origin])[0], 200)
+        self.assertEqual(self.request('/diagnostics', headers=self.headers()[:1] + [origin])[0], 401)
+        self.assertEqual(self.request('/diagnostics', headers=self.headers() + [origin, origin])[0], 403)
+        self.assertEqual(self.request('/status', headers=self.headers() + [origin])[0], 403)
+        duplicate = [('Sec-Fetch-Site', 'same-origin'), ('Sec-Fetch-Site', 'same-origin')]
+        self.assertEqual(self.request('/panel', headers=self.headers()[:1] + duplicate)[0], 403)
+
     def test_missing_and_duplicate_authorization(self):
         self.assertEqual(self.request(headers=self.headers()[:1])[0], 401)
         self.assertEqual(self.request(headers=self.headers() + self.headers()[1:])[0], 401)

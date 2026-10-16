@@ -1,0 +1,13 @@
+{
+  "version": "0.32.0",
+  "date": "2026-10-16",
+  "status": "partial",
+  "environment": "Linux/Python 3.12",
+  "python_tests": {"passed": 275, "skipped": 0, "real_http_tests": 7},
+  "javascript_vm_tests": {"passed": 10, "native_browser": false},
+  "bandit_changed_python_modules": {"low": 0, "medium": 0, "high": 0, "errors": 0},
+  "browser": {"available": false, "reason": "Chromium executable missing; no installation attempted"},
+  "screenshots": [],
+  "token_included": false,
+  "commercial_approval": false
+}

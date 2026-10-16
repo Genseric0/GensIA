@@ -39,11 +39,15 @@ preflight_passed mantém o significado anterior (Bandit encontrado/modelo listad
 mesmo que as proteções sejam limitadas; não é um indicador de segurança global.
 
 A API existente inclui document_protections em `GET /diagnostics`, sem endpoint
-novo nem execução de documentos. Mantém Bearer, Host exato, rejeição de Origin,
+novo nem execução de documentos. Mantém Bearer, Host exato, restrição de Origin,
 apenas GET, ausência de query strings e no-store. O pedido HTTP é transporte do
 relatório; network_requests=false descreve a própria inspeção de capacidades,
 não nega a comunicação HTTP que o entregou. Não mostra tokens, caminhos pessoais,
 conteúdo de documentos, lista de modelos, nomes de utilizador ou ambiente.
+
+Na v0.32.0 existe um [painel experimental](PANEL.md). Só GET /diagnostics aceita
+uma única Origin local exata, ainda com Bearer; outras origens continuam recusadas,
+sem CORS. As três rotas públicas do painel servem apenas assets estáticos sem dados.
 
 ## Evidência de 16/10/2026
 

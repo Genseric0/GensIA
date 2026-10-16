@@ -51,7 +51,7 @@ de redes. Esta demonstração não utiliza um LLM.
 | Documentos | TXT/Markdown/PDF, pesquisa e respostas com referências | PDF/LLM opcionais; referências não provam veracidade |
 | Segurança | Análise passiva, Bandit, CISA KEV e VirusTotal opt-in | Sem garantia de deteção; serviços externos exigem autorização |
 | Agentes | Coordenador, segurança, revisor e tutor | Sem execução de comandos livres pelo modelo |
-| API | GET /health, /status, /diagnostics e /agents | Loopback, token, apenas leitura; sem GUI |
+| API e painel | Estado, diagnóstico, catálogo e painel experimental em /panel | Loopback, dados com token, apenas leitura; browser/layout reais pendentes |
 
 ## Evidências de engenharia
 
@@ -60,11 +60,17 @@ Bandit real analisou 17 módulos com três avisos baixos B404 e nenhum médio/al
 Uvicorn real confirmou respostas 200 autorizadas, 401 sem token e 405 para POST.
 Estes resultados não equivalem a certificação de segurança nem validação em produção.
 
+Na v0.32.0: 275 testes Python passaram, incluindo sete HTTP reais, e dez testes
+Node/VM do painel. Não são validação de navegador, layout ou CSP real. Chromium
+ausente no ambiente; não há screenshots do painel. As imagens desta galeria
+continuam a ser renderizações documentais de saídas CLI, não capturas da GUI.
+
 - [Arquitetura e fronteiras de confiança](ARCHITECTURE.md)
 - [Utilização e instalação](USAGE.md)
 - [Equipa de agentes](AGENT_TEAM.md)
 - [Integração real com motores](REAL_ENGINE_VALIDATION.md)
 - [Catálogo autenticado da API](AGENT_CATALOG_API.md)
+- [Painel experimental, autenticação e validação pendente](PANEL.md)
 - [Histórico completo de progresso](../PROGRESS.md)
 - [Registo de validações](../VALIDATION.txt)
 
@@ -82,6 +88,6 @@ as imagens SVG. Usa a biblioteca padrão e uma pasta temporária; não faz pedid
 
 ## Próximos passos
 
-Validar inferência com pesos Ollama locais e construir um painel gráfico local de
-consulta. Depois, ampliar os testes de voz e Windows. Não há promessa de que os
+Validar o painel de diagnóstico em navegador real, produzir capturas sem segredos
+e validar inferência com pesos Ollama locais. Depois, ampliar voz e Windows. Não há promessa de que os
 adaptadores existentes estejam já validados em todos os sistemas e equipamentos.

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GensIA · Diagnóstico local</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/panel.css">
+  <script src="/panel.js" defer></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" aria-label="Identificação da aplicação">
+      <div class="brand"><span class="mark" aria-hidden="true">G</span><strong>GensIA<span>PERSONAL INTELLIGENCE</span></strong></div>
+      <p class="section-label">ESPAÇO LOCAL</p>
+      <div class="nav-current">Diagnóstico <span>01</span></div>
+      <p class="sidebar-note">Uma visão do ambiente.<br>Sem executar ações.</p>
+      <div class="local-badge">Local · apenas leitura</div>
+    </aside>
+    <main>
+      <header class="topbar"><span>AMBIENTE / DIAGNÓSTICO</span><span class="prototype">Protótipo</span></header>
+      <section class="intro"><p class="eyebrow">VISIBILIDADE, SEM AUTOMATISMOS</p><h1>Conhece o teu ambiente.</h1>
+        <p>Consulta as capacidades da instalação e os seus limites, antes de confiar tarefas à GensIA.</p></section>
+      <div class="notice"><strong>Capacidade não é garantia.</strong> Este painel não testa inferência, não aplica quotas e não aprova uso comercial.</div>
+      <section class="connection" aria-labelledby="connect-title">
+        <div><h2 id="connect-title">Ligar ao diagnóstico</h2><p id="connection-status" role="status" aria-live="polite">Desligado. Introduz o token da API local.</p></div>
+        <form id="connect-form" autocomplete="off">
+          <label for="api-token">Token local</label>
+          <div class="input-row"><input id="api-token" type="password" autocomplete="off" spellcheck="false" maxlength="256" placeholder="Token da sessão, não fica guardado" disabled><button id="connect" type="submit" disabled>Consultar</button></div>
+          <small>Usado apenas no cabeçalho Authorization. Nunca coloques o token no endereço.</small>
+        </form>
+        <div class="toolbar"><button id="refresh" class="secondary" type="button" disabled hidden>Atualizar</button><button id="disconnect" class="secondary" type="button" hidden>Limpar sessão</button></div>
+        <noscript>É necessário JavaScript para a consulta autenticada. Usa python -m gensia.protections como alternativa offline.</noscript>
+      </section>
+      <section id="diagnostic-data" hidden aria-label="Metadados autenticados da instalação">
+        <div class="cards">
+          <article><p class="card-label">INSTALAÇÃO</p><h2 id="version">—</h2><p id="runtime">—</p><span class="tag">Metadados locais</span></article>
+          <article><p class="card-label">LEITURA DE DOCUMENTOS</p><h2 id="read-mode">—</h2><p id="read-detail">—</p><span class="tag">Não é snapshot</span></article>
+          <article><p class="card-label">QUOTAS DO WORKER PDF</p><h2 id="quota-state">—</h2><p>Disponibilidade, não aplicação testada.</p><span class="tag">Só no processo filho</span></article>
+        </div>
+        <section class="limits" aria-labelledby="limits-title"><div class="section-heading"><div><p class="eyebrow">LIMITES CONFIGURADOS</p><h2 id="limits-title">O que está previsto para o PDF</h2></div><span class="muted">Não são quotas globais</span></div>
+          <div class="table-wrap"><table><thead><tr><th scope="col">Recurso</th><th scope="col">Configurado</th><th scope="col">Previsto com herança</th></tr></thead><tbody id="limit-rows"></tbody></table></div>
+        </section>
+        <section class="warnings" aria-labelledby="warnings-title"><h2 id="warnings-title">Limitações a respeitar</h2><ul id="warning-list"></ul></section>
+        <p class="footnote">A atualização é manual. Não consulta notas, documentos ou modelos, nem inicia agentes.</p>
+      </section>
+      <footer>GensIA / Controlo local, permissões explícitas.</footer>
+    </main>
+  </div>
+</body>
+</html>

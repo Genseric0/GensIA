@@ -2,12 +2,13 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from gensia.documents import DocumentError
 from gensia.pdf_process import extract_pdf_process
@@ -95,15 +96,22 @@ class PdfProcessTests(unittest.TestCase):
 
     @unittest.skipUnless(sys.platform.startswith('linux'), 'Linux process existence check')
     def test_real_timeout_kills_and_reaps_direct_child(self):
-        marker = self.root / 'pid'
-        code = ('import os,sys,time; from pathlib import Path; '
-                'Path(sys.argv[1]).write_text(str(os.getpid())); time.sleep(20)')
+        children = []
+        real_popen = subprocess.Popen
+        def record_child(*args, **kwargs):
+            child = real_popen(*args, **kwargs)
+            children.append(child)
+            return child
         def slow_worker(command, **kwargs):
-            return subprocess.run([sys.executable, '-I', '-c', code, str(marker)], **kwargs)
-        with self.assertRaisesRegex(DocumentError, 'processo foi encerrado'):
-            self.extract(runner=slow_worker, timeout=1)
-        self.assertTrue(marker.exists())
-        self.assertFalse(Path('/proc', marker.read_text()).exists())
+            return subprocess.run([sys.executable, '-I', '-c', 'import time; time.sleep(20)'], **kwargs)
+        with patch('subprocess.Popen', side_effect=record_child):
+            with self.assertRaisesRegex(DocumentError, 'processo foi encerrado'):
+                self.extract(runner=slow_worker, timeout=1)
+        self.assertEqual(len(children), 1)
+        self.assertEqual(children[0].returncode, -signal.SIGKILL)
+        # Verify reaping directly, without a startup marker or /proc PID reuse race.
+        with self.assertRaises(ChildProcessError):
+            os.waitpid(children[0].pid, os.WNOHANG)
         self.assertEqual(json.loads(self.audit.read_text().splitlines()[-1])['outcome'], 'timeout')
 
     @unittest.skipUnless(importlib.util.find_spec('pypdf'), 'Optional pypdf required')

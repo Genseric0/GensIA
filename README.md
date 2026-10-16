@@ -1,7 +1,12 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.31.0** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.32.0** — protótipo em evolução.
+
+Novo: [painel local experimental de diagnóstico](docs/PANEL.md), apenas de leitura,
+em `http://127.0.0.1:8765/panel` após iniciar a API. Estrutura pública vazia; dados
+protegidos por token, só em memória no navegador. HTTP/JS testados; browser/layout
+ainda pendentes por falta de Chromium. Não é interface de chat ou execução de agentes.
 
 Novo: [diagnóstico offline das proteções](docs/PROTECTIONS.md):
 `python -m gensia.protections`. Mostra o modo de leitura e quotas previstas,
@@ -43,7 +48,7 @@ sem rede nem envio ao modelo: `python -m gensia memory search DNS`.
 
 Novo: [relatório visual HTML offline dos agentes](docs/CATALOG_REPORT.md), sem
 dependências adicionais. Exporta com `python -m gensia.catalog_report --output catalogo.html`
-sem substituir ficheiros existentes. É uma consulta estática; o painel ligado à API continua planeado.
+sem substituir ficheiros existentes. É uma consulta estática, separada do novo painel de diagnóstico.
 
 ## Demonstração visual
 
@@ -51,9 +56,11 @@ O [teste de apresentação desktop/mobile](docs/VISUAL_VALIDATION.md) gera captu
 reais quando Chromium está disponível. A execução de 15/10/2026 ficou bloqueada
 pela ausência do navegador; não há ainda screenshots HTML validados.
 
-A interface disponível é **por terminal**, acompanhada de uma API local autenticada.
+A interface principal é **por terminal**, acompanhada de API local autenticada e
+painel experimental de diagnóstico (ainda sem validação em navegador real).
 As imagens abaixo reproduzem saídas reais da CLI com dados fictícios de demonstração;
-são renderizações documentais, não capturas de um painel gráfico. A GUI está planeada.
+são renderizações documentais, não capturas do novo painel gráfico. As capturas
+reais do painel e a interface de conversa continuam pendentes.
 
 ![Terminal da GensIA e comandos disponíveis](docs/screenshots/01-terminal.svg)
 
@@ -95,7 +102,7 @@ Não é necessário instalar todas as bibliotecas para começar.
 | Cibersegurança | URLs passivas, VirusTotal opt-in, CISA KEV e adaptador Bandit |
 | API | Estado, diagnóstico e catálogo dos agentes em loopback, com token |
 | Agentes | Coordenador, segurança, revisor e tutor; tarefas locais explícitas |
-| Apresentação visual | Relatório HTML offline; painel interativo ainda planeado |
+| Apresentação visual | Relatório HTML offline e painel experimental de diagnóstico com token; browser real pendente |
 
 As capacidades opcionais precisam dos respetivos motores/modelos. Implementação
 de um adaptador não significa validação com hardware ou serviços reais.
@@ -129,8 +136,8 @@ agentes, mas não os executa. Ver [catálogo na API](docs/AGENT_CATALOG_API.md).
 
 ## Validação
 
-Na v0.31.0 os 267 testes Python passaram, com as dependências opcionais da API/PDF
-e `GENSIA_TEST_REAL_HTTP=1`, sem omissões. Inclui cinco testes com Uvicorn real
+Na v0.32.0 os 275 testes Python passaram, com as dependências opcionais da API/PDF
+e `GENSIA_TEST_REAL_HTTP=1`, sem omissões. Inclui sete testes com Uvicorn real
 em loopback, além dos testes em processo. Ver [reprodução](docs/API_REPORT.md).
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.
 Na v0.29.0, nove testes cobrem quotas PDF, incluindo processos Linux reais com falhas
@@ -139,6 +146,8 @@ Na v0.30.0, mais 14 testes cobrem abertura por descritores, trocas de caminhos,
 alterações observadas durante leitura e identidade da pasta-base no worker.
 Na v0.31.0, mais 12 testes verificam o relatório de capacidades, limites herdados,
 ausência de efeitos laterais e integrações CLI/doctor/API, incluindo HTTP real.
+Na v0.32.0, oito testes Python novos e dez Node/VM validam guardas e fluxo do painel.
+Node/VM não substitui navegador, validação visual ou CSP real. Nenhum screenshot novo.
 
 Na v0.24.1, Bandit 1.9.4 real encontrou três avisos baixos B404, nenhum
 achado médio/alto e nenhum erro de análise. Isto não garante ausência de vulnerabilidades. Ollama 0.40.4
@@ -158,7 +167,7 @@ distribuição ao projeto; as dependências mantêm as suas próprias licenças.
 
 ## Continuidade
 
-Próximo incremento: painel local read-only para consultar o diagnóstico com
-autenticação, sem CDN nem alargar CORS. Permanecem
-pendentes inferência Ollama real e painel local de leitura, sem CDN e com token.
+Próximo incremento: validar o painel em navegador real e gerar capturas desktop/mobile
+sem segredos. Permanecem pendentes inferência Ollama real, Windows real e interface
+de conversa/voz integrada, sem CDN e com permissões explícitas.
 Consultar [PROGRESS.md](PROGRESS.md) antes de iniciar alterações.

@@ -1,6 +1,6 @@
 # Preparação para uso pessoal e clientes
 
-Revisão de 16/10/2026, atualizada na v0.31.0. Estado: protótipo local; **lançamento comercial
+Revisão de 16/10/2026, atualizada na v0.32.0. Estado: protótipo local; **lançamento comercial
 geral ainda não aprovado**. Os testes validam casos concretos, não ausência de falhas.
 Inspeção e reprodução a partir do próprio código existente, sem binários de terceiros.
 
@@ -36,7 +36,7 @@ doctor nem a saída 0 de protections substituem os critérios de piloto abaixo.
 | Notas | Backup JSON v1 e restauro para DB nova testados em Linux, até 1000 notas/8 MiB | Falhas durante cópia/crash, Windows real, política de retenção e permissões verificadas |
 | Auditoria | JSONL: data, ação, resultado, fingerprint truncado do alvo | Rotação, política de retenção e indicação de falha após ação |
 | Documentos | Abertura POSIX ancorada por descritores; worker PDF com quotas Linux e recuperação testada | Equivalente Windows, quotas agregadas, snapshot sob escrita hostil e sandbox |
-| Credencial API | Um token por processo via ambiente | Integração de autenticação do painel, revogação e secret store do SO |
+| Credencial API | Token por processo via ambiente; painel de diagnóstico usa Bearer só em memória JS | Fluxo de browser real, revogação/rotação assistida e secret store do SO |
 | Modelos | Ollama local; sem fallback cloud automático | Inferência real e limites de RAM/latência verificados por configuração suportada |
 
 O fingerprint SHA-256 truncado não é anonimização: alvos previsíveis podem ser
@@ -57,7 +57,8 @@ execução bem-sucedida se a aplicação externa arrancar e depois falhar.
    rotação de logs e quotas agregadas/Windows para PDF. Tetos Linux por worker
    existem na v0.29.0; não substituem isolamento nem limites de toda a instalação.
 3. Integrações: inferência Ollama, Whisper/Piper/microfone e GUI em hardware real;
-   capturas HTML continuam pendentes. Mock não equivale a validação do motor.
+   painel de diagnóstico tem HTTP/Node/VM testados, mas browser/layout e capturas
+   reais continuam pendentes. Mock não equivale a validação do motor/browser.
 4. Distribuição: instalador reproduzível, atualização/rollback, matriz de sistemas
    suportados, testes Windows e inventário de dependências/licenças dos modelos.
 5. Comercial: pacote de suporte, escopo contratado e política de dados. Não foi

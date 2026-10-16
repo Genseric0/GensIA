@@ -1,5 +1,26 @@
 # Progresso GensIA
 
+## 16/10/2026 — painel local experimental de diagnóstico — v0.32.0
+
+Assets HTML/CSS/JS fixos em /panel, /panel.css e /panel.js, públicos só como shell
+vazia; nenhum dado/token embutido. Dados de /diagnostics continuam com Bearer.
+Exceção Origin só para GET /diagnostics com valor único local exato; sem CORS,
+sem alargar /agents/report ou outras rotas. Sec-Fetch-Site se presente só permite
+same-origin/none, sem duplicados. Host exato/GET/no-query/no-store mantidos.
+CSP só script/style/connect self, favicon data:, sem inline/frame/form, CORP/COOP.
+Token em memória JS, campo limpo, sem storage/cookie/URL. Fetch fixo, redirect error,
+credentials omit, 5s/64KiB; atualização manual, limpeza/abort e geração impedem
+resposta tardia de repor dados. textContent para metadados/warnings, sem innerHTML.
+275 testes Python passaram (oito novos), zero omitidos, 11,120s, sete HTTP reais.
+Dez testes Node/VM passaram, não são browser/layout/CSP reais. Bandit 1.9.4 nos
+dois módulos Python: 142 LOC, zero achados/erros, não analisa JS/CSS.
+Primeira suite detetou falha no teste antigo de timeout baseado em PID por ficheiro
+e /proc. Agora captura Popen real, confirma SIGKILL e waitpid já recolhido; suite
+completa repetida e passou. Sem alteração da implementação do timeout em produção.
+Playwright existente tentou launch; Chromium ausente. Não se instalou browser,
+não se geraram capturas nem se alega fluxo visual validado. Registo parcial JSON.
+Próximo: validação de browser real, teclado, CSP/rede/storage e capturas sem tokens.
+
 ## 16/10/2026 — diagnóstico read-only das proteções — v0.31.0
 
 Novo comando python -m gensia.protections, só biblioteca padrão: relatório JSON
@@ -550,12 +571,11 @@ aberta no computador do utilizador e nenhum Windows real foi usado nesta etapa.
 ## Retomar
 
 1. Ler PROGRESS.md, README.md e VALIDATION.txt.
-2. Criar painel local read-only do diagnóstico autenticado. Usar gensia.doctor
+2. Validar painel em navegador real e capturas desktop/mobile sem tokens. Usar gensia.doctor
    para verificar o ambiente e concluir inferência real quando
    houver modelo Ollama instalado. Executar scripts/validate_agents_real.py.
-   O painel read-only pode avançar sem esse motor. Criar painel
-   local read-only na mesma origem, mantendo token e sem CDN; rever Origin apenas
-   para a origem local exata. Não expor ações mutáveis.
+   O painel read-only existe sem esse motor; manter token e sem CDN, Origin apenas
+   na exceção local exata de GET /diagnostics. Não expor ações mutáveis.
 3. Não guardar conversas automaticamente nem enviar memória ao modelo por padrão.
 4. Atualizar documentação, testes e a mesma identidade do artefacto.
 

@@ -101,7 +101,8 @@ encaminhamento, citações e falha antes do provider; não houve inferência rea
 
 Para reproduzir: `python -m unittest discover -s tests -p test_pdf_process.py -v`.
 Os dois testes de pypdf são omitidos se a dependência estiver ausente; o teste de
-existência do PID é específico de Linux. Testes simulados não são contados como
+timeout/recolha é específico de Linux. Desde a v0.32.0 confirma SIGKILL e waitpid
+no Popen real, sem depender do ficheiro PID ou de /proc. Testes simulados não são contados como
 extração real. Nenhuma instalação foi feita no computador do utilizador.
 
 Na v0.29.0, nove testes novos em test_pdf_limits.py cobrem limites herdados,

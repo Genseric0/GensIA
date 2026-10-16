@@ -229,3 +229,19 @@ declarados. Schema version 1 distingue capacidades estáticas de estado runtime:
 Não consulta modelos, ficheiros ou processos. Guardas existentes mantêm token,
 Host exato, rejeição de Origin, métodos mutáveis e query strings. Agora existem
 quatro endpoints GET. Não há CORS, HTML nem rotas de execução de agentes.
+
+## Painel experimental e diagnóstico atual (v0.32.0)
+
+As secções anteriores descrevem incrementos históricos. Atualmente /agents/report
+exporta HTML autenticado e /diagnostics inclui capacidades de proteção read-only.
+Três rotas fixas /panel, /panel.js e /panel.css servem shell público sem dados/token.
+Só GET /diagnostics admite Origin única local exata, com Bearer obrigatório;
+não há CORS e as outras rotas de dados continuam a recusar Origin. Sec-Fetch-Site
+presente deve ser same-origin/none, sem duplicados. Host/métodos/query permanecem
+restritos. CSP do shell permite script/style/connect self, sem inline, form ou
+framing; JSON continua com default-src none. Assets são código confiável do projeto,
+não ficheiros do workspace pessoal. Nenhuma rota nova executa agentes/documentos.
+Token vive só na sessão JS, com limpeza manual, abort e proteção contra respostas
+tardias. Não é proteção contra navegador/extensões/processos locais comprometidos.
+HTTP e controlo de fluxo JS testados; browser/layout/CSP reais ainda por validar.
+Ver docs/PANEL.md e docs/PRODUCT_READINESS.md antes de qualquer piloto.
