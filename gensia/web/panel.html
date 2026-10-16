@@ -30,6 +30,7 @@
           <small>Usado apenas no cabeçalho Authorization. Nunca coloques o token no endereço.</small>
         </form>
         <div class="toolbar"><button id="refresh" class="secondary" type="button" disabled hidden>Atualizar</button><button id="disconnect" class="secondary" type="button" hidden>Limpar sessão</button></div>
+        <p class="muted">Após cinco minutos sem consulta manual, o painel limpa a sessão local. Não revoga o token da API. Se a página estiver suspensa, a limpeza ocorre ao retomar.</p>
         <noscript>É necessário JavaScript para a consulta autenticada. Usa python -m gensia.protections como alternativa offline.</noscript>
       </section>
       <section id="diagnostic-data" hidden aria-label="Metadados autenticados da instalação">

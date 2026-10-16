@@ -30,19 +30,24 @@ function setup(fetcher = async () => jsonResponse(fixture()), location = {}) {
   for (const name of ['refresh', 'disconnect']) elements[name].hidden = true;
   elements.refresh.disabled = true;
   elements['api-token'].disabled = true; elements.connect.disabled = true;
+  const documentEvents = {};
   const document = {getElementById(id) { assert.ok(elements[id], `Unknown DOM id ${id}`); return elements[id]; },
-    createElement() { return new Element(); }};
+    createElement() { return new Element(); },
+    addEventListener(name, handler) { documentEvents[name] = handler; }};
   const events = {}, calls = [], timers = [];
   const window = {location: {protocol: 'http:', hostname: '127.0.0.1', search: '', hash: '', ...location},
     addEventListener(name, handler) { events[name] = handler; }};
   for (const name of ['localStorage', 'sessionStorage']) Object.defineProperty(window, name, {get() { throw new Error('No token persistence'); }});
+  const clock = {wall: 1700000000000, monotonic: 0};
   const context = {document, window, AbortController, TextDecoder,
+    Date: {now: () => clock.wall}, performance: {now: () => clock.monotonic},
     fetch: async (...args) => { calls.push(args); return fetcher(...args); },
     setTimeout(cb, ms) { const timer = {cb, ms}; timers.push(timer); return timer; },
-    clearTimeout(timer) { timer.cleared = true; }};
+    clearTimeout(timer) { if (timer) timer.cleared = true; }};
   for (const name of ['localStorage', 'sessionStorage']) Object.defineProperty(context, name, {get() { throw new Error('No token persistence'); }});
   vm.runInNewContext(source, context, {timeout: 1000});
-  return {elements, events, calls, timers,
+  return {elements, events, documentEvents, calls, timers, clock,
+    advance(ms) { clock.wall += ms; clock.monotonic += ms; },
     submit(value = TOKEN) { elements['api-token'].value = value; return elements['connect-form'].handlers.submit({preventDefault() {}}); }};
 }
 
@@ -126,4 +131,93 @@ test('file pages, alternate hosts and URL credentials are not accepted', () => {
     const ui = setup(undefined, location);
     assert.equal(ui.elements['api-token'].disabled, true); assert.equal(ui.calls.length, 0);
   }
+});
+
+const IDLE_MS = 300000;
+const idleTimer = ui => ui.timers.filter(timer => timer.ms === IDLE_MS && !timer.cleared).at(-1);
+function assertExpired(ui) {
+  assert.equal(ui.elements['diagnostic-data'].hidden, true);
+  assert.equal(ui.elements['connect-form'].hidden, false);
+  assert.equal(ui.elements['api-token'].value, '');
+  assert.equal(ui.elements.version.textContent, '—');
+  assert.equal(ui.elements['limit-rows'].children.length, 0);
+  assert.equal(ui.elements['warning-list'].children.length, 0);
+  assert.match(ui.elements['connection-status'].textContent, /expirada.*não foi revogado/);
+}
+
+test('expiry clears local session at the five-minute boundary without network polling', async () => {
+  const ui = setup(); await ui.submit();
+  ui.advance(IDLE_MS - 1); ui.events.focus();
+  assert.equal(ui.elements['diagnostic-data'].hidden, false);
+  ui.advance(1); idleTimer(ui).cb(); assertExpired(ui);
+  assert.equal(ui.calls.length, 1);
+  assert.ok(ui.timers.every(timer => timer.cleared));
+  await ui.elements.refresh.handlers.click(); assert.equal(ui.calls.length, 1);
+});
+
+test('manual refresh renews the deadline, stale callbacks cannot expire the new generation', async () => {
+  const ui = setup(); await ui.submit(); const oldTimer = idleTimer(ui);
+  ui.advance(IDLE_MS - 1); await ui.elements.refresh.handlers.click();
+  assert.equal(oldTimer.cleared, true);
+  ui.advance(1); oldTimer.cb(); ui.events.focus();
+  assert.equal(ui.elements['diagnostic-data'].hidden, false);
+  ui.advance(IDLE_MS - 1); idleTimer(ui).cb(); assertExpired(ui);
+  assert.equal(ui.calls.length, 2);
+});
+
+test('overdue refresh cannot revive a token even if background timer never ran', async () => {
+  const ui = setup(); await ui.submit(); ui.advance(IDLE_MS);
+  await ui.elements.refresh.handlers.click(); assertExpired(ui);
+  assert.equal(ui.calls.length, 1);
+});
+
+for (const event of ['focus', 'pageshow', 'visibilitychange']) {
+  test(`resuming via ${event} enforces expiry without a timer or request`, async () => {
+    const ui = setup(); await ui.submit(); ui.advance(IDLE_MS + 1000);
+    (event === 'visibilitychange' ? ui.documentEvents : ui.events)[event]();
+    assertExpired(ui); assert.equal(ui.calls.length, 1);
+  });
+}
+
+test('wall clock rollback cannot extend a session while monotonic time advances', async () => {
+  const ui = setup(); await ui.submit(); ui.clock.wall -= 3600000;
+  ui.clock.monotonic += IDLE_MS; ui.events.focus(); assertExpired(ui);
+});
+
+test('wall time enforces expiry when monotonic time stops during suspension', async () => {
+  const ui = setup(); await ui.submit(); ui.clock.wall += IDLE_MS;
+  ui.documentEvents.visibilitychange(); assertExpired(ui);
+});
+
+test('early timer firing reschedules only remaining lifetime', async () => {
+  const ui = setup(); await ui.submit(); ui.advance(100000); idleTimer(ui).cb();
+  const remainingTimer = ui.timers.at(-1); assert.equal(remainingTimer.ms, 200000);
+  assert.equal(ui.elements['diagnostic-data'].hidden, false);
+  ui.advance(200000); remainingTimer.cb(); assertExpired(ui);
+  assert.equal(ui.calls.length, 1);
+});
+
+test('late response cannot render after expiry even without resumption events', async () => {
+  let resolve;
+  const ui = setup(() => new Promise(done => { resolve = done; }));
+  const pending = ui.submit(); ui.advance(IDLE_MS);
+  resolve(jsonResponse(fixture())); await pending; assertExpired(ui);
+  assert.equal(ui.calls[0][1].signal.aborted, true);
+  assert.ok(ui.timers.every(timer => timer.cleared));
+});
+
+test('expiry aborts a pending request and late completion cannot repopulate data', async () => {
+  let resolve;
+  const ui = setup(() => new Promise(done => { resolve = done; }));
+  const pending = ui.submit(); ui.advance(IDLE_MS); idleTimer(ui).cb();
+  assert.equal(ui.calls[0][1].signal.aborted, true);
+  resolve(jsonResponse(fixture())); await pending; assertExpired(ui);
+});
+
+test('old timer after clear and reconnect cannot expire the replacement session', async () => {
+  const ui = setup(); await ui.submit(); const oldTimer = idleTimer(ui);
+  ui.elements.disconnect.handlers.click(); assert.equal(oldTimer.cleared, true);
+  ui.advance(IDLE_MS); await ui.submit('replacement'.repeat(6));
+  oldTimer.cb(); assert.equal(ui.elements['diagnostic-data'].hidden, false);
+  ui.events.pagehide(); assert.ok(ui.timers.every(timer => timer.cleared));
 });

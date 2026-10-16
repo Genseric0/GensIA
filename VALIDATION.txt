@@ -1,3 +1,21 @@
+2026-10-16 — v0.34.0 — expiração local do painel
+GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
+277 passaram, zero omitidos, 11,057s na repetição final, Linux/Python 3.12.14;
+API/PDF opcionais presentes. Ensaio anterior: 277/277 em 10,893s.
+GENSIA_PYTHON=VENV_PYTHON node --test tests/panel.test.cjs tests/panel_browser_runner.test.cjs
+30 passaram, zero omitidos: 22 painel DOM/VM (12 novos) e oito runner; helper HTTP
+real iniciado/terminado pelo Node. Relógios, eventos e fetch simulados no painel.
+Cobertura nova: prazo exato 300000ms, renovação só manual, rejeição de refresh
+vencido, focus/pageshow/visibilitychange, recuo civil, suspensão monotónica, timer
+antecipado, abort/resultado tardio e callbacks antigos. Sem polling ou storage.
+Primeiros ensaios Node: 29/30, falha de arranque do helper por Python do venv
+ausente e depois link circular na recuperação; ligação corrigida para executável
+3.12.14 existente, sem instalar pacotes, e repetição 30/30. Não se alteraram testes
+para omitir a falha. Proteção só descarta sessão no painel; token servidor permanece.
+Não repetiu o E2E real já bloqueado por Chromium ausente. Sem screenshot/browser,
+layout, suspensão real, novo Bandit/scan JS, inferência ou Windows neste incremento.
+Aviso Starlette TestClient/httpx de depreciação permanece. Não certifica produção.
+
 2026-10-16 — v0.33.0 — runner de browser e servidor de teste efémero
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
 277 passaram, zero omitidos; 10,666s, Linux/Python 3.12. Dois novos testes: configuração

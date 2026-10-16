@@ -1,4 +1,4 @@
-# Painel local de diagnóstico — v0.32.0
+# Painel local de diagnóstico — v0.34.0
 
 Atualização v0.33.0: há um [runner reproduzível de browser e capturas](BROWSER_QA.md),
 com servidor/token temporários e recusa de substituição de evidências. Nesta
@@ -36,6 +36,37 @@ Atualização manual. **Limpar sessão** apaga os dados mostrados, descarta a re
 ao token e cancela o pedido pendente. Recarregar a página exige novo token.
 Ctrl+C termina o servidor. Para rotação, terminar, gerar outro token e reiniciar;
 limpar sessão no painel não revoga o segredo do servidor.
+
+## Expiração local da sessão — v0.34.0
+
+Cinco minutos a partir do início da última **consulta manual** (Consultar/Atualizar),
+o painel limpa os metadados apresentados, descarta a referência reutilizável ao
+token e cancela o pedido pendente. Uma consulta com falha limpa a sessão de imediato.
+Mover o rato, escrever ou voltar à janela não renova o prazo. Não há polling nem
+pedido de renovação automático. Atualizar depois do prazo exige introduzir o token
+novamente; não recupera silenciosamente a credencial anterior.
+
+O prazo combina Date.now() e performance.now(): vence quando qualquer relógio
+atinge cinco minutos. Isto cobre recuo do relógio civil com tempo monotónico ativo
+e suspensão em que só o relógio civil avança. Um salto civil para a frente pode
+terminar a sessão antes do esperado. Não é um relógio de segurança independente do SO.
+
+Browsers podem atrasar timers em segundo plano ou congelar a página. Não se garante
+limpeza ao segundo numa página suspensa; o prazo é reavaliado ao retomar (focus,
+pageshow e visibilitychange), antes de reutilizar o token e antes de apresentar
+uma resposta. Callbacks de sessões anteriores não limpam a nova sessão.
+
+Esta proteção **não revoga nem altera o token no servidor**, não termina outras
+janelas e não é apagamento criptográfico. Um pedido já enviado não pode ser
+retirado do servidor; fetch/Promise/browser podem conservar referências até à
+conclusão/garbage collection. A API mantém autenticação por token da instalação,
+sem sessões por cliente. Para revogar: parar o servidor, trocar token e reiniciar.
+
+Validação incremental de 16/10/2026: 22 testes DOM/VM do painel passaram, incluindo
+12 novos de expiração. Mais oito do runner passaram, com lifecycle real do helper;
+30 Node no total. Relógios/eventos são simulados, não suspensão real de navegador.
+Suite Python: 277 passaram sem omissões, com API/PDF e HTTP real. Não se repetiu
+a tentativa E2E já bloqueada pela ausência de Chromium; nenhuma captura nova.
 
 ## Fronteira de autenticação
 
@@ -99,3 +130,8 @@ Fontes primárias/documentação consultadas em 16/10/2026:
 [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch),
 [CSP connect-src](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/connect-src).
 Nenhuma dependência nova de produção; FastAPI/Starlette/Uvicorn já fixados.
+
+Para o prazo local, documentação primária consultada em 16/10/2026:
+[performance.now e diferenças durante suspensão](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now),
+[Page Visibility](https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API),
+[setTimeout e throttling](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout).

@@ -1,6 +1,6 @@
 # Preparação para uso pessoal e clientes
 
-Revisão de 16/10/2026, atualizada na v0.33.0. Estado: protótipo local; **lançamento comercial
+Revisão de 16/10/2026, atualizada na v0.34.0. Estado: protótipo local; **lançamento comercial
 geral ainda não aprovado**. Os testes validam casos concretos, não ausência de falhas.
 Inspeção e reprodução a partir do próprio código existente, sem binários de terceiros.
 
@@ -36,12 +36,14 @@ doctor nem a saída 0 de protections substituem os critérios de piloto abaixo.
 | Notas | Backup JSON v1 e restauro para DB nova testados em Linux, até 1000 notas/8 MiB | Falhas durante cópia/crash, Windows real, política de retenção e permissões verificadas |
 | Auditoria | JSONL: data, ação, resultado, fingerprint truncado do alvo | Rotação, política de retenção e indicação de falha após ação |
 | Documentos | Abertura POSIX ancorada por descritores; worker PDF com quotas Linux e recuperação testada | Equivalente Windows, quotas agregadas, snapshot sob escrita hostil e sandbox |
-| Credencial API | Token por processo via ambiente; painel de diagnóstico usa Bearer só em memória JS | Fluxo de browser real, revogação/rotação assistida e secret store do SO |
+| Credencial API | Token por processo via ambiente; painel usa Bearer em memória JS com limpeza após cinco minutos sem consulta manual | Fluxo de browser real, revogação/rotação assistida e secret store do SO |
 | Modelos | Ollama local; sem fallback cloud automático | Inferência real e limites de RAM/latência verificados por configuração suportada |
 
 O fingerprint SHA-256 truncado não é anonimização: alvos previsíveis podem ser
 adivinhados. A auditoria não é inviolável, não tem fsync/assinatura e não prova
 execução bem-sucedida se a aplicação externa arrancar e depois falhar.
+Expiração do painel é só local: não revoga o token da API nem afeta outras janelas;
+páginas suspensas só verificam o prazo quando o JavaScript volta a executar.
 
 ## Bloqueios por prioridade
 

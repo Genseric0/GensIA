@@ -5,17 +5,38 @@
   const connect = byId('connect'), refresh = byId('refresh'), clear = byId('disconnect');
   const data = byId('diagnostic-data'), status = byId('connection-status');
   let token = '', controller = null, generation = 0;
+  const idleMs = 5 * 60 * 1000;
+  let idleTimer = null, wallDeadline = 0, monotonicDeadline = 0;
   const resources = [
     ['address_space_bytes', 'Espaço virtual', 'bytes'], ['cpu_seconds', 'Tempo de CPU', 's'],
     ['file_bytes', 'Tamanho por ficheiro', 'bytes'], ['core_bytes', 'Core dump', 'bytes'],
   ];
   function disconnect(message = 'Sessão limpa. Introduz o token para voltar a consultar.') {
+    clearTimeout(idleTimer); idleTimer = null; wallDeadline = 0; monotonicDeadline = 0;
     generation++; if (controller) controller.abort(); controller = null; token = '';
     input.value = ''; form.hidden = false; data.hidden = true; clear.hidden = true;
     refresh.hidden = true; refresh.disabled = true; connect.disabled = false;
     byId('limit-rows').replaceChildren(); byId('warning-list').replaceChildren();
     for (const id of ['version', 'runtime', 'read-mode', 'read-detail', 'quota-state']) byId(id).textContent = '—';
     status.textContent = message;
+  }
+  function remaining() {
+    return Math.min(wallDeadline - Date.now(), monotonicDeadline - performance.now());
+  }
+  function expireIfDue() {
+    if (!token || remaining() > 0) return false;
+    disconnect('Sessão local expirada após cinco minutos sem consulta manual. O token da API não foi revogado.');
+    return true;
+  }
+  function renewIdleDeadline(current) {
+    clearTimeout(idleTimer);
+    wallDeadline = Date.now() + idleMs;
+    monotonicDeadline = performance.now() + idleMs;
+    function check() {
+      if (current !== generation || !token) return;
+      if (!expireIfDue()) idleTimer = setTimeout(check, Math.max(1, remaining()));
+    }
+    idleTimer = setTimeout(check, idleMs);
   }
   const safeText = value => typeof value === 'string' ? value.slice(0, 200) : 'Não informado';
   function amount(value, unit) {
@@ -65,6 +86,7 @@
     data.hidden = false;
   }
   async function load(isRefresh) {
+    if (isRefresh && expireIfDue()) return;
     const candidate = isRefresh ? token : input.value.trim(); input.value = '';
     if (!/^[A-Za-z0-9]{32,256}$/.test(candidate)) { disconnect('Token inválido: usa 32–256 caracteres alfanuméricos.'); return; }
     if (controller) controller.abort();
@@ -73,6 +95,7 @@
     refresh.hidden = false; refresh.disabled = true; connect.disabled = true;
     data.hidden = true; status.textContent = 'A consultar metadados locais…';
     const timer = setTimeout(() => request.abort(), 5000);
+    renewIdleDeadline(current);
     try {
       const response = await fetch('/diagnostics', {method: 'GET', mode: 'same-origin', credentials: 'omit',
         cache: 'no-store', redirect: 'error', referrerPolicy: 'no-referrer',
@@ -81,9 +104,10 @@
       if (!response.ok) throw new Error('unavailable');
       const report = await boundedJson(response);
       if (current !== generation) return;
+      if (expireIfDue()) return;
       render(report); status.textContent = 'Metadados recebidos. Capacidades não equivalem a aplicação validada.';
     } catch (error) {
-      if (current === generation) disconnect(error.message === 'unauthorized' ? 'Token recusado. Introduz novamente o token local.' : 'Consulta falhou ou excedeu o prazo. A sessão foi limpa; tenta novamente.');
+      if (current === generation && !expireIfDue()) disconnect(error.message === 'unauthorized' ? 'Token recusado. Introduz novamente o token local.' : 'Consulta falhou ou excedeu o prazo. A sessão foi limpa; tenta novamente.');
     } finally {
       clearTimeout(timer); if (current === generation) { controller = null; refresh.disabled = false; connect.disabled = false; }
     }
@@ -92,6 +116,9 @@
   refresh.addEventListener('click', () => load(true));
   clear.addEventListener('click', () => disconnect());
   window.addEventListener('pagehide', () => disconnect());
+  window.addEventListener('focus', expireIfDue);
+  window.addEventListener('pageshow', expireIfDue);
+  document.addEventListener('visibilitychange', expireIfDue);
   if (window.location.protocol !== 'http:' || window.location.hostname !== '127.0.0.1' || window.location.search || window.location.hash) {
     status.textContent = 'Abre o painel pela API em http://127.0.0.1:PORTA/panel, sem query ou fragmento.';
     return;

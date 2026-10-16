@@ -1,7 +1,7 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.33.0** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.34.0** — protótipo em evolução.
 
 Novo: [runner E2E do painel](docs/BROWSER_QA.md), com servidor e token temporários,
 política de rede da página e capturas condicionadas a verificações. A tentativa
@@ -141,7 +141,7 @@ agentes, mas não os executa. Ver [catálogo na API](docs/AGENT_CATALOG_API.md).
 
 ## Validação
 
-Na v0.33.0 os 277 testes Python passaram, com as dependências opcionais da API/PDF
+Na v0.34.0 os 277 testes Python passaram, com as dependências opcionais da API/PDF
 e `GENSIA_TEST_REAL_HTTP=1`, sem omissões. Inclui sete testes com Uvicorn real
 em loopback, além dos testes em processo. Ver [reprodução](docs/API_REPORT.md).
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.
@@ -156,6 +156,10 @@ Node/VM não substitui navegador, validação visual ou CSP real. Nenhum screens
 Na v0.33.0, dois testes Python novos e oito Node validam contratos/lifecycle do
 runner. 18 testes Node do painel/runner passaram com GENSIA_PYTHON configurado;
 o E2E real continua bloqueado antes do fluxo. Sem instalação automática de browser.
+Na v0.34.0, a sessão local do painel expira após cinco minutos sem consulta manual;
+não revoga o token da API. 12 testes Node novos cobrem prazos, suspensão simulada,
+relógios e respostas tardias; 30 Node passaram no total, sem omissões, com helper
+real e GENSIA_PYTHON configurado. Ver [limites e execução](docs/PANEL.md).
 
 Na v0.24.1, Bandit 1.9.4 real encontrou três avisos baixos B404, nenhum
 achado médio/alto e nenhum erro de análise. Isto não garante ausência de vulnerabilidades. Ollama 0.40.4
@@ -177,6 +181,7 @@ distribuição ao projeto; as dependências mantêm as suas próprias licenças.
 
 Próximo: executar o runner num ambiente com Chromium e rever capturas desktop/mobile
 sem segredos; enquanto esse pré-requisito faltar, não repetir a mesma tentativa.
-Pode avançar a expiração local por inatividade da sessão do painel. Permanecem pendentes inferência Ollama real, Windows real e interface
+Próximo incremento de segurança: rever rotação assistida da credencial local, sem
+confundir limpeza no browser com revogação no servidor. Permanecem pendentes inferência Ollama real, Windows real e interface
 de conversa/voz integrada, sem CDN e com permissões explícitas.
 Consultar [PROGRESS.md](PROGRESS.md) antes de iniciar alterações.

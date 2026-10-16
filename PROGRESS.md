@@ -1,5 +1,33 @@
 # Progresso GensIA
 
+## 16/10/2026 — expiração local da sessão do painel — v0.34.0
+
+O painel limpa metadados/referência reutilizável ao token e aborta o pedido após
+cinco minutos desde o início da última consulta manual. Atualizar dentro do prazo
+renova-o; eventos de foco/visibilidade não renovam. Verifica prazo antes de refresh,
+antes de renderizar e em focus/pageshow/visibilitychange. Timer com geração impede
+callbacks antigos de limparem sessão nova. Date.now + performance.now cobrem recuo
+civil com monotónico ativo e suspensão em que só o civil avança; não são relógio
+independente do SO. Página congelada limpa quando JS retoma, não ao segundo exato.
+Não revoga credencial da API, não afeta outras janelas nem garante zeroização de
+referências internas de fetch/browser. Sem storage, polling ou novas rotas/dependências.
+
+12 testes Node novos: fronteira de cinco minutos, renovação, refresh vencido,
+três eventos de retoma, alterações dos relógios, timer antecipado, respostas
+tardias, abort e callback de sessão antiga. 30 Node passaram sem omissões (22
+DOM/VM + oito runner), incluindo helper HTTP real; não é execução de browser.
+277 Python passaram sem omissões com API/PDF e GENSIA_TEST_REAL_HTTP=1.
+Primeiro ensaio Node falhou no helper porque o interpretador do venv tinha link
+ausente; tentativa de recriação produziu loop, corrigido no ambiente de testes
+com link explícito para Python 3.12.14 existente. Pacotes preservados, sem downloads;
+suite repetida passou. Não é alteração da configuração da aplicação ou do PC do utilizador.
+
+Docs de relógio/timers MDN consultadas em 16/10/2026. Sem novo Bandit (incremento
+de lógica JS), browser real, screenshot, inferência, Windows ou aprovação comercial.
+Não repetir E2E bloqueado idêntico; executar quando Chromium estiver disponível.
+Próximo módulo: rever rotação assistida do token local com revogação efetiva por
+reinício do servidor, sem adicionar uma rota mutável não autorizada.
+
 ## 16/10/2026 — runner E2E do painel e controlo de evidências — v0.33.0
 
 Novo validate_panel_browser.cjs + panel_test_server.py: browser novo não persistente,
