@@ -2,6 +2,7 @@
 from datetime import datetime, timezone
 import hashlib
 import json
+import ntpath
 import os
 import stat
 from pathlib import Path
@@ -106,12 +107,42 @@ class SafeDirectoryTools:
         self.audit.record(action, outcome, target)
 
 
+def _windows_directory(api_name):
+    """Query the OS; do not trust environment variables or the current directory."""
+    import ctypes
+    from ctypes import wintypes
+    try:
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        function = getattr(kernel, api_name)
+        function.argtypes = [wintypes.LPWSTR, wintypes.UINT]
+        function.restype = wintypes.UINT
+        buffer = ctypes.create_unicode_buffer(32768)
+        length = function(buffer, len(buffer))
+        if not 0 < length < len(buffer):
+            raise ToolError("O Windows não devolveu um diretório de sistema válido.")
+        return buffer.value
+    except (OSError, AttributeError) as exc:
+        raise ToolError("Não foi possível consultar os diretórios do Windows.") from exc
+
+
 class AppLauncher:
     WINDOWS_APPS = {
-        "calculator": ["calc.exe"],
-        "notepad": ["notepad.exe"],
-        "files": ["explorer.exe"],
+        "calculator": ("GetSystemDirectoryW", "calc.exe"),
+        "notepad": ("GetSystemDirectoryW", "notepad.exe"),
+        "files": ("GetSystemWindowsDirectoryW", "explorer.exe"),
     }
+
+    @classmethod
+    def _resolve_executable(cls, app):
+        api_name, filename = cls.WINDOWS_APPS[app]
+        directory = _windows_directory(api_name)
+        drive, tail = ntpath.splitdrive(directory)
+        if (len(drive) != 2 or drive[1] != ':' or not drive[0].isascii()
+                or not drive[0].isalpha() or not tail.startswith('\\')
+                or any(ord(char) < 32 or char in '\"<>|?*' for char in directory)
+                or ':' in tail or ntpath.normpath(directory) != directory.rstrip('\\')):
+            raise ToolError("O Windows devolveu um caminho de sistema inválido.")
+        return ntpath.join(directory, filename), directory
 
     def __init__(self, audit, platform_name=None, runner=None):
         self.audit = audit
@@ -129,8 +160,10 @@ class AppLauncher:
             self.audit.record("open_app", "unsupported", app)
             raise ToolError("A abertura de aplicações está implementada apenas para Windows.")
         try:
-            self.runner(self.WINDOWS_APPS[app], shell=False, close_fds=True)
-        except OSError as exc:
+            executable, directory = self._resolve_executable(app)
+            self.runner([executable], executable=executable, cwd=directory,
+                        shell=False, close_fds=True)
+        except (OSError, ToolError) as exc:
             self.audit.record("open_app", "error", app)
             raise ToolError("O Windows não conseguiu abrir a aplicação.") from exc
         self.audit.record("open_app", "success", app)

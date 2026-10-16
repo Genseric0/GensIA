@@ -176,8 +176,9 @@ class CliTests(unittest.TestCase):
             calls.append((command, kwargs))
         with tempfile.TemporaryDirectory() as directory:
             launcher = AppLauncher(AuditLogger(Path(directory) / "audit.jsonl"), "win32", runner)
-            launcher.open("notepad", approved=True)
-        self.assertEqual(calls[0][0], ["notepad.exe"])
+            with patch('gensia.tools._windows_directory', return_value=r'C:\Windows\System32'):
+                launcher.open("notepad", approved=True)
+        self.assertEqual(calls[0][0], [r"C:\Windows\System32\notepad.exe"])
         self.assertFalse(calls[0][1]["shell"])
 
     def test_unknown_app_is_denied(self):

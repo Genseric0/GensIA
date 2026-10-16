@@ -1,6 +1,6 @@
 # Preparação para uso pessoal e clientes
 
-Revisão de 16/10/2026, atualizada na v0.24.2. Estado: protótipo local; **lançamento comercial
+Revisão de 16/10/2026, atualizada na v0.24.3. Estado: protótipo local; **lançamento comercial
 geral ainda não aprovado**. Os testes validam casos concretos, não ausência de falhas.
 Inspeção e reprodução a partir do próprio código existente, sem binários de terceiros.
 
@@ -44,8 +44,9 @@ execução bem-sucedida se a aplicação externa arrancar e depois falhar.
 1. Segurança dos acessos locais: diretórios-pai da auditoria devem ser confiáveis;
    O_NOFOLLOW protege o último componente apenas onde existe. Memória/documentos
    ainda não têm isolamento robusto contra outro processo hostil com as mesmas
-   permissões. Abertura Windows ainda usa nomes de executáveis e requer revisão
-   da resolução de caminhos e teste real. Não executar a GensIA como administrador.
+   permissões. Abertura Windows passou a usar caminhos absolutos consultados pela
+   WinAPI na v0.24.3; requer teste real de compatibilidade, wrappers e permissões
+   dos diretórios de sistema. Não executar a GensIA como administrador.
 2. Operação: backup/restauro, migrações SQLite, recuperação após disco cheio,
    rotação de logs e limites reais de memória/CPU durante processamento de PDF.
 3. Integrações: inferência Ollama, Whisper/Piper/microfone e GUI em hardware real;

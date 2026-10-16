@@ -1,3 +1,13 @@
+2026-10-16 — v0.24.3 — abertura Windows com executável explícito
+GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
+195 testes passaram, zero omitidos; 8,441 segundos, Linux/Python 3.12.
+Sete novos testes em test_windows_launcher.py: três apps, ambiente adverso,
+negações antes do lookup, falhas sem fallback, caminhos inválidos, executable
+ausente e contrato simulado do buffer Unicode WinAPI. Processo runner simulado.
+Bandit 1.9.4 tools.py: 149 linhas, um LOW B404, zero MEDIUM/HIGH, zero erros.
+Exit 1 corresponde ao LOW. Não houve execução Windows, GUI, áudio ou inferência.
+Sem scan global novo; aviso de depreciação httpx no TestClient permanece.
+
 2026-10-16 — v0.24.2 — documentos com leitura limitada
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
 188 testes passaram, zero omitidos, Linux/Python 3.12; 6,715 segundos.

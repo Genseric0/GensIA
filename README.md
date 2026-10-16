@@ -1,7 +1,10 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.24.2** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.24.3** — protótipo em evolução.
+
+Novo: [aplicações Windows com caminho absoluto](docs/WINDOWS_APPS.md), obtido das
+APIs do sistema, sem procurar executáveis no PATH. Validação Windows real pendente.
 
 Novo: [leitura limitada de TXT/Markdown/PDF](docs/DOCUMENT_LIMITS.md), incluindo
 recusa se o conteúdo ultrapassar o limite entre a verificação e a leitura.
@@ -105,7 +108,7 @@ agentes, mas não os executa. Ver [catálogo na API](docs/AGENT_CATALOG_API.md).
 
 ## Validação
 
-Na v0.24.2 os 188 testes Python passaram, com as dependências opcionais da API
+Na v0.24.3 os 195 testes Python passaram, com as dependências opcionais da API
 e `GENSIA_TEST_REAL_HTTP=1`, sem omissões. Inclui quatro testes com Uvicorn real
 em loopback, além dos testes em processo. Ver [reprodução](docs/API_REPORT.md).
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.

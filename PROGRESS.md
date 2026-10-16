@@ -1,5 +1,19 @@
 # Progresso GensIA
 
+## 16/10/2026 — resolução explícita de aplicações Windows — v0.24.3
+
+Calculator/Notepad resolvidos via GetSystemDirectoryW; Explorer via
+GetSystemWindowsDirectoryW, usando ctypes da biblioteca padrão. Caminho absoluto
+passado no argv e em executable; cwd é o diretório de sistema consultado.
+Sem PATH, SystemRoot/WINDIR, associação de ficheiros, shell ou fallback por nome.
+Confirmação e allowlist mantidas. Lookup inválido ou executável ausente gera erro.
+Sete testes novos e adaptação do teste antigo de argumento explícito: 195 testes
+passaram, zero omitidos, incluindo HTTP real. APIs/processos Windows simulados;
+nenhuma aplicação aberta. Bandit 1.9.4 apenas em tools.py: um LOW B404, zero
+MEDIUM/HIGH e zero erros. Não houve novo scan global.
+Windows 32/64-bit, redirecionamento WOW64, wrappers modernos e interface real
+ainda precisam de ensaio. Próximo: backup/restauro explícito da memória local.
+
 ## 16/10/2026 — leitura limitada durante I/O — v0.24.2
 
 TXT/Markdown/PDF usam read(limite + 1) em contexto binário em vez de read_bytes
