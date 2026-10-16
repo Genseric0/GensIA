@@ -9,6 +9,7 @@ import sys
 from . import __version__
 from .agent_catalog import CatalogSnapshot, catalog_snapshot
 from .catalog_report import render_report
+from .protections import protection_report
 
 
 def validate_settings(token, port):
@@ -26,7 +27,8 @@ def diagnostics():
         except importlib.metadata.PackageNotFoundError:
             versions[name] = None
     return {"python": platform.python_version(), "packages": versions,
-            "model_connectivity_tested": False, "personal_data_accessed": False}
+            "model_connectivity_tested": False, "personal_data_accessed": False,
+            "document_protections": protection_report()}
 
 
 def create_app(token, port=8765):

@@ -1,6 +1,6 @@
 # Preparação para uso pessoal e clientes
 
-Revisão de 16/10/2026, atualizada na v0.30.0. Estado: protótipo local; **lançamento comercial
+Revisão de 16/10/2026, atualizada na v0.31.0. Estado: protótipo local; **lançamento comercial
 geral ainda não aprovado**. Os testes validam casos concretos, não ausência de falhas.
 Inspeção e reprodução a partir do próprio código existente, sem binários de terceiros.
 
@@ -26,6 +26,10 @@ com dados e credenciais exclusivos dessa instalação. Uma instalação de teste
 cliente é a hipótese inicial de arquitetura, ainda não um instalador disponível.
 O token único atual não representa identidade de cliente nem controlo de funções.
 Não alojar esta API como serviço partilhado entre clientes ou expô-la na Internet.
+
+O [diagnóstico de proteções](PROTECTIONS.md) informa capacidades e quotas previstas
+no ambiente, sem aplicar limites ou aprovar a instalação. Nem preflight_passed do
+doctor nem a saída 0 de protections substituem os critérios de piloto abaixo.
 
 | Dados | Estado atual | Necessário antes do piloto com dados reais |
 | --- | --- | --- |

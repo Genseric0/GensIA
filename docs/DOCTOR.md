@@ -1,4 +1,4 @@
-# Diagnóstico local — v0.20.0
+# Diagnóstico local — atualizado na v0.31.0
 
 Antes de iniciar os agentes, na pasta do projeto:
 
@@ -21,6 +21,8 @@ não instala Bandit, não descarrega pesos e não inicia serviços.
 - Ollama: um único pedido GET `/api/tags` ao endpoint local, sem corpo ou prompt.
 - Modelo: correspondência exata com a etiqueta devolvida pelo servidor. Não usa
   aliases implicitamente: `modelo` e `modelo:latest` não são tratados como iguais.
+- Documentos: capacidades de abertura por descritores e backend de quotas Linux,
+  sem aplicar limites nem abrir ficheiros pessoais. Ver [interpretação](PROTECTIONS.md).
 
 Usa o transporte existente, sem proxies do ambiente ou redirecionamentos HTTP.
 Não lê documentos, não consulta memória nem guarda relatório automaticamente.
@@ -49,6 +51,9 @@ utilizáveis, qualidade ou execução sem cloud. Mesmo um servidor em loopback p
 encaminhar pedidos: usar pesos locais e desativar cloud na configuração do Ollama.
 Os campos `inference_validated` e `execution_validated` permanecem falsos neste
 diagnóstico. Para a validação real, usar `scripts/validate_agents_real.py`.
+O campo checks.document_protections é informativo e não altera preflight_passed.
+Para consultar apenas proteções, **sem o pedido local ao Ollama**, executar
+`python -m gensia.protections`; esse comando não exige dependências opcionais.
 
 ## Configuração
 

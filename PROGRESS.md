@@ -1,5 +1,25 @@
 # Progresso GensIA
 
+## 16/10/2026 — diagnóstico read-only das proteções — v0.31.0
+
+Novo comando python -m gensia.protections, só biblioteca padrão: relatório JSON
+do modo descriptor_relative/path_compatibility, backend Linux de quotas e tetos
+configurados/previstos com limites herdados menores. Consulta getrlimit sem aplicar
+setrlimit; não abre documentos, acede a notas, inicia processos ou usa rede.
+Estados available_unverified/unsupported/unavailable, sem texto de exceções nem
+relatórios de quotas parciais. execution_validated/enforcement_validated e aprovação
+comercial são sempre falsos. Saída 0 significa produção do relatório, não segurança.
+Doctor inclui checks.document_protections sem mudar o preflight Bandit/modelo;
+GET /diagnostics inclui o mesmo relatório com guardas anteriores, sem endpoint novo.
+12 testes novos (nove unitários/CLI, doctor, API e socket real); 267 passaram,
+zero omitidos, 13,822s, Linux/Python 3.12, PDF/quotas e cinco testes HTTP reais.
+Uma montagem de mocks no teste read-only foi corrigida (patch de importlib afetava
+a resolução de outros patches); suite repetida integralmente, sem erro de produção.
+Bandit 1.9.4 nos três módulos: 239 LOC, zero achados/erros. CLI real observou
+descriptor_relative/linux_rlimit disponível não validado; amostra JSON guardada.
+Sem dependências novas, Windows real, inferência nova, GUI ou instalação no PC.
+Próximo: painel local read-only do diagnóstico, com autenticação e sem CORS amplo.
+
 ## 16/10/2026 — abertura POSIX de documentos por descritores — v0.30.0
 
 Novo document_io.py: abre cada componente com dir_fd/O_DIRECTORY/O_NOFOLLOW,
@@ -530,7 +550,7 @@ aberta no computador do utilizador e nenhum Windows real foi usado nesta etapa.
 ## Retomar
 
 1. Ler PROGRESS.md, README.md e VALIDATION.txt.
-2. Expor no diagnóstico as proteções de documentos/quotas ativas. Usar gensia.doctor
+2. Criar painel local read-only do diagnóstico autenticado. Usar gensia.doctor
    para verificar o ambiente e concluir inferência real quando
    houver modelo Ollama instalado. Executar scripts/validate_agents_real.py.
    O painel read-only pode avançar sem esse motor. Criar painel

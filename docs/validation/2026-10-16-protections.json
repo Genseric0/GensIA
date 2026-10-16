@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "gensia_version": "0.31.0",
+  "platform": "linux",
+  "document_reads": {
+    "mode": "descriptor_relative",
+    "capability_available": true,
+    "execution_validated": false,
+    "transactional_snapshot": false
+  },
+  "pdf_worker": {
+    "separate_process_implemented": true,
+    "wall_timeout_implemented": true,
+    "resource_limits": {
+      "state": "available_unverified",
+      "backend": "linux_rlimit",
+      "configured_caps": {
+        "address_space_bytes": 536870912,
+        "cpu_seconds": 30,
+        "file_bytes": 2097152,
+        "core_bytes": 0
+      },
+      "planned_caps": {
+        "address_space_bytes": 536870912,
+        "cpu_seconds": 30,
+        "file_bytes": 2097152,
+        "core_bytes": 0
+      },
+      "enforcement_validated": false,
+      "limits_changed": false
+    }
+  },
+  "network_requests": false,
+  "processes_started": false,
+  "personal_data_accessed": false,
+  "limits_changed": false,
+  "os_sandbox": false,
+  "commercial_approval": false,
+  "warnings": [
+    "Não é sandbox, snapshot transacional nem aprovação para uso comercial."
+  ]
+}

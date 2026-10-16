@@ -1,3 +1,19 @@
+2026-10-16 — v0.31.0 — relatório read-only de capacidades de proteção
+GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
+267 testes passaram, zero omitidos; 13,822 segundos, Linux/Python 3.12.
+12 novos: nove em test_protections.py, um doctor, um API em processo e um HTTP
+com Uvicorn/socket real. CLI real devolveu descriptor_relative/linux_rlimit
+available_unverified; saída integral em docs/validation/2026-10-16-protections.json.
+Testes: quotas herdadas menores, estados unsupported/unavailable sem dados de erro,
+ausência de alterações nas quotas reais do pai e de ficheiros pessoais/rede/processos,
+modo de compatibilidade simulado, relatórios independentes, CLI real/argumentos,
+preflight doctor não confundido com segurança, API autenticada sem token no corpo.
+Primeira suite detetou erro de configuração de mocks num teste novo, corrigido;
+suite completa repetida e passou. Inclui testes prévios de PDF/quotas e cinco HTTP
+reais. Sem Windows real, inferência, GUI/áudio novos. Aviso TestClient/httpx permanece.
+Bandit 1.9.4 protections.py/doctor.py/api.py: 239 LOC, zero achados/erros, exit 0.
+Sem scan global novo nem aplicação das quotas pelo diagnóstico. Não aprova produção.
+
 2026-10-16 — v0.30.0 — abertura POSIX de documentos por descritores
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
 255 testes passaram, zero omitidos; 11,154 segundos, Linux/Python 3.12/pypdf 6.20.1.

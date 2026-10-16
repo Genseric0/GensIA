@@ -76,6 +76,17 @@ class RealHttpTests(unittest.TestCase):
         self.assertIn("frame-ancestors 'none'", headers['content-security-policy'])
         self.assertNotIn(self.token, body)
 
+    def test_real_diagnostics_protection_report(self):
+        import json
+        status, headers, body = self.request('/diagnostics')
+        self.assertEqual(status, 200)
+        report = json.loads(body)['document_protections']
+        self.assertEqual(report['schema_version'], 1)
+        self.assertFalse(report['commercial_approval'])
+        self.assertFalse(report['limits_changed'])
+        self.assertNotIn(self.token, body)
+        self.assertEqual(self.request('/diagnostics', headers=self.headers()[:1])[0], 401)
+
     def test_missing_and_duplicate_authorization(self):
         self.assertEqual(self.request(headers=self.headers()[:1])[0], 401)
         self.assertEqual(self.request(headers=self.headers() + self.headers()[1:])[0], 401)

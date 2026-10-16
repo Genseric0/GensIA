@@ -15,6 +15,16 @@ AVAILABLE = {"state": "available", "version": "1.9.4", "execution_validated": Fa
 
 
 class DoctorTests(unittest.TestCase):
+    def test_protections_are_reported_without_changing_dependency_preflight(self):
+        with patch('gensia.doctor._bandit_check', return_value=AVAILABLE), patch(
+                'gensia.doctor.OllamaProvider.list_models', return_value=['test:small']):
+            report = diagnose('test:small')
+        self.assertTrue(report['preflight_passed'])
+        protections = report['checks']['document_protections']
+        self.assertFalse(protections['commercial_approval'])
+        self.assertFalse(protections['limits_changed'])
+        self.assertIn('não aprova segurança', report['limitations'])
+
     def test_dependencies_present_are_not_claimed_as_executed(self):
         with patch("gensia.doctor._bandit_check", return_value=AVAILABLE), patch(
                 "gensia.doctor.OllamaProvider.list_models", return_value=["test:small"]):

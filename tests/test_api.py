@@ -81,9 +81,20 @@ class ApiTests(unittest.TestCase):
     def test_diagnostics_has_only_allowlisted_data(self):
         with patch.dict("os.environ", {"VIRUSTOTAL_API_KEY": "SECRET", "GENSIA_API_TOKEN": "PRIVATE"}):
             response = self.client.get("/diagnostics")
-        self.assertEqual(set(response.json()), {"python", "packages", "model_connectivity_tested", "personal_data_accessed"})
+        self.assertEqual(set(response.json()), {"python", "packages", "model_connectivity_tested",
+                                               "personal_data_accessed", "document_protections"})
         self.assertNotIn("SECRET", response.text)
         self.assertNotIn("PRIVATE", response.text)
+
+    def test_diagnostics_protections_do_not_expose_execution_or_approval(self):
+        report = self.client.get('/diagnostics').json()['document_protections']
+        self.assertEqual(report['schema_version'], 1)
+        self.assertFalse(report['personal_data_accessed'])
+        self.assertFalse(report['network_requests'])
+        self.assertFalse(report['processes_started'])
+        self.assertFalse(report['limits_changed'])
+        self.assertFalse(report['commercial_approval'])
+        self.assertFalse(report['pdf_worker']['resource_limits']['enforcement_validated'])
 
     def test_launcher_loopback_and_no_proxy(self):
         with patch.dict("os.environ", {"GENSIA_API_TOKEN": "a" * 64}), patch("uvicorn.run") as run:

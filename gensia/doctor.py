@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 
 from . import __version__
 from .providers import OllamaProvider, ProviderUnavailable
+from .protections import protection_report
 
 
 def _bandit_check():
@@ -63,12 +64,15 @@ def diagnose(model=None, endpoint="http://127.0.0.1:11434", timeout=2.0):
         actions.append("Executar scripts/validate_agents_real.py para validar geração e análise reais.")
     return {
         "gensia_version": __version__, "preflight_passed": passed,
-        "checks": {"bandit": bandit, "ollama": ollama, "model": selected},
+        "checks": {"bandit": bandit, "ollama": ollama, "model": selected,
+                   "document_protections": protection_report()},
         "next_actions": actions, "prompts_sent": False, "downloads_started": False,
         "services_started": False, "cloud_fallback": False,
         "limitations": "Verifica metadados e listagem, não executa Bandit nem inferência. "
                        "Modelo listado não comprova pesos utilizáveis, qualidade ou execução sem cloud. "
-                       "Usar pesos locais e desativar cloud no servidor Ollama.",
+                       "Usar pesos locais e desativar cloud no servidor Ollama. "
+                       "preflight_passed refere-se apenas a Bandit/modelo, não aprova segurança; "
+                       "capacidades de documentos não são testes de aplicação das proteções.",
     }
 
 
