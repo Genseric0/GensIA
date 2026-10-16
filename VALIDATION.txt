@@ -1,3 +1,12 @@
+2026-10-16 — v0.26.0 — restauro de notas para base nova
+GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
+216 testes passaram, zero omitidos; 7,117 segundos, Linux/Python 3.12.
+Doze testes novos em test_memory_restore.py; roundtrip real SQLite e CLI,
+recusa de destino existente/symlink, autorização, entrada inválida, duplicados,
+limites, base vazia, SQL como dados, falha fsync e pasta ausente.
+Bandit 1.9.4 memory_restore.py: 108 linhas, zero achados/erros, exit 0.
+Sem scan global novo ou Windows/crash/pypdf/Ollama real. Aviso httpx permanece.
+
 2026-10-16 — v0.25.0 — backup lógico de notas
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
 204 testes passaram, zero omitidos, 6,793 segundos, Linux/Python 3.12.

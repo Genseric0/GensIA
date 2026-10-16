@@ -47,9 +47,9 @@ pasta e não o anexes ao repositório. O nome recomendado `*.memory-backup.json`
 está no gitignore, que não protege ficheiros já tracked ou com outro nome.
 Não há envio a serviços externos nem agendamento automático.
 
-Restauro ainda não implementado nesta versão. Mantém a origem e não trates esta
-exportação como recuperação completa já validada. O próximo incremento validará
-o formato e criará uma DB nova sem substituir notas existentes.
+O [restauro para DB nova](MEMORY_RESTORE.md) foi acrescentado na v0.26.0 e o ciclo
+backup/restauro foi testado com SQLite real em Linux. Mantém a origem até rever o
+conteúdo restaurado. Recuperação após crash e Windows real continuam pendentes.
 
 ## Validação
 

@@ -1,5 +1,20 @@
 # Progresso GensIA
 
+## 16/10/2026 — restauro para DB nova — v0.26.0
+
+memory --db NOVA restore --input BACKUP --approve valida UTF-8/JSON v1, campos
+exatos, tipos, datas com timezone, limites 8 MiB/1000 notas, duplicados, números
+não permitidos e surrogates isolados. Entrada regular sem symlink, leitura limitada.
+Cria schema conhecido em diretório temporário privado, insere com parâmetros,
+verifica integrity_check e fecha SQLite antes de copiar para descritor O_EXCL do
+destino. Assim SQLite nunca abre um caminho de destino que possa ser substituído
+entre reserva e ligação. Sem sobrescrever DB existente, sem criar pastas-pai.
+Preserva valores/datas e origem; falha de escrita pode deixar uma DB nova incompleta.
+Doze testes novos; 216 passaram sem omissões, incluindo roundtrip, SQL como dados,
+CLI real e segunda tentativa recusada. Bandit 1.9.4 no módulo: zero achados/erros.
+Sem encriptação, merge, autenticação do ficheiro ou migração. Windows real e crash
+durante cópia continuam por testar. Próximo: extração PDF em processo com timeout.
+
 ## 16/10/2026 — backup explícito da memória — v0.25.0
 
 memory backup --output cria exportação lógica JSON UTF-8 schema_version=1,

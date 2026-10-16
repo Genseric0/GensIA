@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from .memory import MemoryStore, MemoryError
 from .memory_backup import backup_notes
+from .memory_restore import restore_notes
 from .kev import CisaKevCatalog, KevError
 from .documents import DocumentError, SafePdfDocuments, SafeTextDocuments
 from .search import LocalDocumentSearch
@@ -57,6 +58,9 @@ def main(argv=None) -> int:
     mem_search.add_argument("--offset", type=int, default=0)
     mem_backup = mem_sub.add_parser("backup", help="exportar notas completas para um novo ficheiro JSON local")
     mem_backup.add_argument("--output", required=True, help="novo ficheiro; contém os valores das notas")
+    mem_restore = mem_sub.add_parser("restore", help="restaurar backup validado para a base nova indicada por --db")
+    mem_restore.add_argument("--input", required=True, help="backup JSON local")
+    mem_restore.add_argument("--approve", action="store_true")
     mem_delete = mem_sub.add_parser("delete")
     mem_delete.add_argument("key")
     mem_delete.add_argument("--approve", action="store_true")
@@ -235,6 +239,8 @@ def main(argv=None) -> int:
                 output = store.search(args.query, args.limit, args.offset)
             elif args.memory_command == "backup":
                 output = backup_notes(store, args.output)
+            elif args.memory_command == "restore":
+                output = restore_notes(store, args.input, args.approve)
             else:
                 output = store.delete(args.key, args.approve)
             print(json.dumps(output, ensure_ascii=False, indent=2))
