@@ -12,6 +12,7 @@ if __name__ == '__main__' and not __package__:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from gensia.documents import DocumentError, PdfDocument, SafePdfDocuments
+from gensia.pdf_limits import apply_worker_limits, validate_worker_limits
 from gensia.tools import AuditLogger, ToolError
 
 MAX_OUTPUT_BYTES = 2 * 1024 * 1024
@@ -45,7 +46,7 @@ def extract_pdf_process(workspace, relative_path, audit_path, max_mib=10,
         reader = SafePdfDocuments(workspace, audit)
         _, label = reader._resolve(relative_path)
         request = json.dumps({'workspace': str(reader.workspace), 'path': label,
-                              'audit': str(audit_file), 'max_mib': max_mib,
+                              'max_mib': max_mib,
                               'max_pages': max_pages}).encode('utf-8')
         if len(request) > 65536:
             raise DocumentError('Caminhos PDF excedem o limite de comunicação.')
@@ -64,12 +65,17 @@ def extract_pdf_process(workspace, relative_path, audit_path, max_mib=10,
                     audit.record('read_pdf_process', 'timeout', label)
                     raise DocumentError('A extração PDF excedeu o prazo; o processo foi encerrado.') from exc
                 if completed.returncode != 0:
-                    raise DocumentError('A extração PDF falhou. Verifica o PDF, auditoria e requirements-documents.txt.')
+                    audit.record('read_pdf_process', 'error', label)
+                    raise DocumentError('A extração PDF falhou ou atingiu um limite de recursos. Verifica o PDF e requirements-documents.txt.')
                 output.seek(0)
                 raw = output.read(MAX_OUTPUT_BYTES + 1)
         if len(raw) > MAX_OUTPUT_BYTES:
             raise DocumentError('Resultado PDF excedeu 2 MiB.')
-        result = json.loads(raw.decode('utf-8'))
+        envelope = json.loads(raw.decode('utf-8'))
+        if (not isinstance(envelope, dict) or set(envelope) != {'document', 'resource_limits'}
+                or not validate_worker_limits(envelope['resource_limits'])):
+            raise DocumentError('Limites ou resultado do worker PDF inválidos.')
+        result = envelope['document']
         if not isinstance(result, dict) or set(result) != {'path', 'bytes', 'characters', 'sha256', 'pages', 'content'}:
             raise DocumentError('Resultado PDF inválido.')
         if (result['path'] != label or not isinstance(result['content'], str)
@@ -82,7 +88,8 @@ def extract_pdf_process(workspace, relative_path, audit_path, max_mib=10,
                 or any(char not in '0123456789abcdef' for char in result['sha256'])):
             raise DocumentError('Metadados PDF inválidos.')
         result['supervision'] = {'separate_process': True, 'timeout_seconds': timeout,
-                                 'os_sandbox': False}
+                                 'os_sandbox': False, 'resource_limits': envelope['resource_limits']}
+        audit.record('read_pdf_process', 'success', label)
         return result
     except (OSError, ToolError, UnicodeError, ValueError, RecursionError) as exc:
         raise DocumentError('Não foi possível executar ou validar a extração PDF supervisionada.') from exc
@@ -90,13 +97,18 @@ def extract_pdf_process(workspace, relative_path, audit_path, max_mib=10,
 
 def _worker():
     try:
+        limits = apply_worker_limits()
         raw = sys.stdin.buffer.read(65537)
         if len(raw) > 65536:
             return 8
         request = json.loads(raw.decode('utf-8'))
-        reader = SafePdfDocuments(request['workspace'], AuditLogger(request['audit']))
+        # Worker logs stay private/temporary; only the parent writes the user's log.
+        # RLIMIT_FSIZE must not prevent appending to a large preexisting user log.
+        reader = SafePdfDocuments(request['workspace'], AuditLogger(Path.cwd() / 'worker-audit.jsonl'))
         document = reader.read_pdf(request['path'], request['max_mib'], request['max_pages'])
-        sys.stdout.buffer.write(json.dumps(document.as_dict(), ensure_ascii=False).encode('utf-8'))
+        envelope = {'document': document.as_dict(), 'resource_limits': limits}
+        sys.stdout.buffer.write(json.dumps(envelope, ensure_ascii=False).encode('utf-8'))
+        sys.stdout.buffer.flush()
         return 0
     except Exception:
         # Do not propagate parser logs, local paths or document contents as errors.

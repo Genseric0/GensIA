@@ -1,5 +1,23 @@
 # Progresso GensIA
 
+## 16/10/2026 — quotas do worker PDF e recuperação — v0.29.0
+
+Novo pdf_limits.py, só biblioteca padrão: em Linux aplica e confirma soft/hard
+RLIMIT_AS 512 MiB, RLIMIT_CPU 30s, RLIMIT_FSIZE 2 MiB por ficheiro e CORE=0 antes
+do pedido/parser. Nunca eleva limites herdados menores. Falha Linux interrompe
+antes da leitura; outras plataformas reportam applied=false e conservam timeout.
+Worker devolve envelope com documento/relatório validado pelo pai, que só aceita
+sucesso Linux com relatório completo. Auditoria interna fica temporária; pai
+regista sucesso/erro/timeout sem sujeitar o log persistente à quota do filho.
+Nove testes novos; 241 passaram sem omissões em Linux/Python 3.12, HTTP/pypdf reais.
+Alocação de 1 GiB recusada, escrita limitada a 2 MiB, filho encerrado por CPU
+(limite 1s apenas no teste); quotas do pai intactas. Após falha real de recursos,
+novo pedido extraiu PDF real, mesmo com log persistente maior que 2 MiB.
+Bandit 1.9.4 nos dois módulos: 139 LOC, um LOW B404, zero MEDIUM/HIGH/erros.
+Não é sandbox, quota agregada de disco/RAM/processos, ensaio PDF-bomba ou Windows
+real; sem inferência Ollama nova. Fontes Python 3.12 resource consultadas hoje.
+Próximo: abertura de documentos robusta contra trocas concorrentes de caminhos.
+
 ## 16/10/2026 — supervisão nos pipelines PDF — v0.28.0
 
 SupervisedPdfDocuments adapta o worker a PdfDocument e reutiliza resumo/perguntas
@@ -492,7 +510,8 @@ aberta no computador do utilizador e nenhum Windows real foi usado nesta etapa.
 ## Retomar
 
 1. Ler PROGRESS.md, README.md e VALIDATION.txt.
-2. Usar gensia.doctor para verificar o ambiente e concluir inferência real quando
+2. Reforçar abertura de documentos contra trocas concorrentes. Usar gensia.doctor
+   para verificar o ambiente e concluir inferência real quando
    houver modelo Ollama instalado. Executar scripts/validate_agents_real.py.
    O painel read-only pode avançar sem esse motor. Criar painel
    local read-only na mesma origem, mantendo token e sem CDN; rever Origin apenas

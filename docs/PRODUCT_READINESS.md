@@ -1,6 +1,6 @@
 # Preparação para uso pessoal e clientes
 
-Revisão de 16/10/2026, atualizada na v0.28.0. Estado: protótipo local; **lançamento comercial
+Revisão de 16/10/2026, atualizada na v0.29.0. Estado: protótipo local; **lançamento comercial
 geral ainda não aprovado**. Os testes validam casos concretos, não ausência de falhas.
 Inspeção e reprodução a partir do próprio código existente, sem binários de terceiros.
 
@@ -31,7 +31,7 @@ Não alojar esta API como serviço partilhado entre clientes ou expô-la na Inte
 | --- | --- | --- |
 | Notas | Backup JSON v1 e restauro para DB nova testados em Linux, até 1000 notas/8 MiB | Falhas durante cópia/crash, Windows real, política de retenção e permissões verificadas |
 | Auditoria | JSONL: data, ação, resultado, fingerprint truncado do alvo | Rotação, política de retenção e indicação de falha após ação |
-| Documentos | Extração PDF supervisionada na CLI, pesquisa e tutor, pypdf real testado | Quotas RAM/disco, caminhos concorrentes, Windows e sandbox |
+| Documentos | Extração PDF supervisionada; limites Linux de espaço virtual/CPU/ficheiro/core, recuperação e pypdf real testados | Quotas Windows/agregadas, caminhos concorrentes e sandbox |
 | Credencial API | Um token por processo via ambiente | Integração de autenticação do painel, revogação e secret store do SO |
 | Modelos | Ollama local; sem fallback cloud automático | Inferência real e limites de RAM/latência verificados por configuração suportada |
 
@@ -48,7 +48,8 @@ execução bem-sucedida se a aplicação externa arrancar e depois falhar.
    WinAPI na v0.24.3; requer teste real de compatibilidade, wrappers e permissões
    dos diretórios de sistema. Não executar a GensIA como administrador.
 2. Operação: backup/restauro, migrações SQLite, recuperação após disco cheio,
-   rotação de logs e limites reais de memória/CPU durante processamento de PDF.
+   rotação de logs e quotas agregadas/Windows para PDF. Tetos Linux por worker
+   existem na v0.29.0; não substituem isolamento nem limites de toda a instalação.
 3. Integrações: inferência Ollama, Whisper/Piper/microfone e GUI em hardware real;
    capturas HTML continuam pendentes. Mock não equivale a validação do motor.
 4. Distribuição: instalador reproduzível, atualização/rollback, matriz de sistemas

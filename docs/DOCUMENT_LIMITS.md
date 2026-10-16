@@ -30,8 +30,10 @@ no módulo documents.py. Não foi executado pypdf real neste incremento.
 
 O limite é de bytes de entrada, com overhead dos buffers Python. Não é um teto
 de memória/CPU de todo o processo: PDF pode descomprimir para um volume maior e
-o parser não tem quotas de recursos do SO. Desde a v0.28.0, os comandos públicos
-usam [processo separado com timeout](PDF_PROCESS.md). A leitura não resolve
+a primitiva SafePdfDocuments isoladamente não aplica quotas do SO. Desde a v0.28.0,
+os comandos públicos usam [processo separado com timeout](PDF_PROCESS.md); a v0.29.0
+acrescenta nesse worker limites Linux de espaço de endereçamento/CPU/ficheiro/core.
+Windows continua sem essas quotas. A leitura não resolve
 trocas hostis de caminhos entre validação e abertura nem garante snapshot coerente
 se outro processo modificar bytes do mesmo ficheiro. Não usar árvores alteradas
 em simultâneo para dados de clientes.

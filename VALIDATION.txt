@@ -1,3 +1,19 @@
+2026-10-16 — v0.29.0 — quotas Linux do worker PDF e recuperação
+GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
+241 testes passaram, zero omitidos; 10,032 segundos, Linux/Python 3.12/pypdf 6.20.1.
+Nove novos testes em test_pdf_limits.py: limites herdados, plataforma não suportada
+simulada, relatórios incompletos/excessivos, falha antes do parser e confirmação.
+Processos Linux reais: bytearray de 1 GiB recusado sob RLIMIT_AS de até 512 MiB,
+escrita acima de 2 MiB recusada por RLIMIT_FSIZE, RLIMIT_CORE=0 confirmado e
+RLIMIT_CPU encerrou filho com SIGKILL (1s apenas nesse teste; produção 30s).
+Limites do processo pai permaneceram inalterados. Falha de recursos num filho
+sintético seguida de extração com pypdf real no pedido seguinte; log persistente
+do pai maior que 2 MiB não impediu extração. Inclui testes anteriores de timeout,
+CLI PDF, encaminhamento simulado ao modelo e HTTP real. Sem ensaio PDF-bomba,
+Windows, GUI, voz ou inferência real nova; aviso TestClient/httpx permanece.
+Bandit 1.9.4 pdf_process.py/pdf_limits.py: 139 LOC, um LOW B404 (subprocess),
+zero MEDIUM/HIGH/erros; exit 1 pelo LOW. Não foi repetido scan global.
+
 2026-10-16 — v0.28.0 — supervisão por omissão nos pipelines PDF
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
 232 testes passaram, zero omitidos; 9,240 segundos, Linux/Python 3.12/pypdf 6.20.1.

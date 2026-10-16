@@ -11,6 +11,14 @@ from unittest.mock import Mock
 
 from gensia.documents import DocumentError
 from gensia.pdf_process import extract_pdf_process
+from gensia.pdf_limits import ADDRESS_SPACE_BYTES, CPU_SECONDS, FILE_BYTES
+
+
+def limit_report():
+    if not sys.platform.startswith('linux'):
+        return {'applied': False, 'platform': sys.platform}
+    return {'applied': True, 'platform': sys.platform, 'address_space_bytes': ADDRESS_SPACE_BYTES,
+            'cpu_seconds': CPU_SECONDS, 'file_bytes': FILE_BYTES, 'core_bytes': 0}
 
 
 class PdfProcessTests(unittest.TestCase):
@@ -30,6 +38,10 @@ class PdfProcessTests(unittest.TestCase):
                 'sha256': 'a' * 64, 'pages': 1, 'content': 'text'}
 
     def runner_for(self, raw, code=0):
+        try:
+            raw = json.dumps({'document': json.loads(raw), 'resource_limits': limit_report()}).encode()
+        except (ValueError, UnicodeError):
+            pass
         def run(command, **kwargs):
             kwargs['stdout'].write(raw)
             return SimpleNamespace(returncode=code)

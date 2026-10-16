@@ -1,11 +1,14 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.28.0** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.29.0** — protótipo em evolução.
 
 Novo: [extração PDF supervisionada](docs/PDF_PROCESS.md), com processo separado e
 timeout explícito: `python -m gensia document --workspace . pdf-read exemplo.pdf --pdf-timeout 30`.
 Leitura, resumo, perguntas, pesquisa PDF e tutor usam a supervisão por omissão.
+Em Linux, o worker agora limita espaço de endereçamento (512 MiB), CPU (30s),
+tamanho por ficheiro escrito (2 MiB) e core dumps (0); mantém tetos herdados menores.
+Não é sandbox. Windows conserva timeout, sem estas quotas; ver o guia acima.
 
 Novo: [backup explícito das notas locais](docs/MEMORY_BACKUP.md), em JSON versionado:
 `python -m gensia memory backup --output notas.memory-backup.json`.
@@ -117,10 +120,12 @@ agentes, mas não os executa. Ver [catálogo na API](docs/AGENT_CATALOG_API.md).
 
 ## Validação
 
-Na v0.28.0 os 232 testes Python passaram, com as dependências opcionais da API
+Na v0.29.0 os 241 testes Python passaram, com as dependências opcionais da API/PDF
 e `GENSIA_TEST_REAL_HTTP=1`, sem omissões. Inclui quatro testes com Uvicorn real
 em loopback, além dos testes em processo. Ver [reprodução](docs/API_REPORT.md).
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.
+Nove testes novos cobrem quotas PDF, incluindo processos Linux reais com falhas
+de alocação/escrita/CPU e extração de PDF bem-sucedida após falha de recursos.
 
 Na v0.24.1, Bandit 1.9.4 real encontrou três avisos baixos B404, nenhum
 achado médio/alto e nenhum erro de análise. Isto não garante ausência de vulnerabilidades. Ollama 0.40.4
@@ -140,6 +145,7 @@ distribuição ao projeto; as dependências mantêm as suas próprias licenças.
 
 ## Continuidade
 
-Próximo incremento: concluir inferência com um modelo Ollama instalado; depois integrar
-resultados no painel local de leitura, sem CDN e com token.
+Próximo incremento: reforçar a abertura de documentos contra troca concorrente de
+caminhos/ficheiros, sem alegar isolamento Windows ainda não validado. Permanecem
+pendentes inferência Ollama real e painel local de leitura, sem CDN e com token.
 Consultar [PROGRESS.md](PROGRESS.md) antes de iniciar alterações.
