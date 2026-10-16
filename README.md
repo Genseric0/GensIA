@@ -1,7 +1,11 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.29.0** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.30.0** — protótipo em evolução.
+
+Novo: [abertura POSIX por descritores](docs/DOCUMENT_IO.md), com recusa de trocas
+observadas, symlinks e hard links adicionais antes de devolver texto. Windows
+mantém o caminho limitado anterior, sem esta proteção contra trocas concorrentes.
 
 Novo: [extração PDF supervisionada](docs/PDF_PROCESS.md), com processo separado e
 timeout explícito: `python -m gensia document --workspace . pdf-read exemplo.pdf --pdf-timeout 30`.
@@ -120,12 +124,14 @@ agentes, mas não os executa. Ver [catálogo na API](docs/AGENT_CATALOG_API.md).
 
 ## Validação
 
-Na v0.29.0 os 241 testes Python passaram, com as dependências opcionais da API/PDF
+Na v0.30.0 os 255 testes Python passaram, com as dependências opcionais da API/PDF
 e `GENSIA_TEST_REAL_HTTP=1`, sem omissões. Inclui quatro testes com Uvicorn real
 em loopback, além dos testes em processo. Ver [reprodução](docs/API_REPORT.md).
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.
-Nove testes novos cobrem quotas PDF, incluindo processos Linux reais com falhas
+Na v0.29.0, nove testes cobrem quotas PDF, incluindo processos Linux reais com falhas
 de alocação/escrita/CPU e extração de PDF bem-sucedida após falha de recursos.
+Na v0.30.0, mais 14 testes cobrem abertura por descritores, trocas de caminhos,
+alterações observadas durante leitura e identidade da pasta-base no worker.
 
 Na v0.24.1, Bandit 1.9.4 real encontrou três avisos baixos B404, nenhum
 achado médio/alto e nenhum erro de análise. Isto não garante ausência de vulnerabilidades. Ollama 0.40.4
@@ -145,7 +151,7 @@ distribuição ao projeto; as dependências mantêm as suas próprias licenças.
 
 ## Continuidade
 
-Próximo incremento: reforçar a abertura de documentos contra troca concorrente de
-caminhos/ficheiros, sem alegar isolamento Windows ainda não validado. Permanecem
+Próximo incremento: tornar explícitas no diagnóstico local as proteções de
+documentos/quotas realmente disponíveis no ambiente. Permanecem
 pendentes inferência Ollama real e painel local de leitura, sem CDN e com token.
 Consultar [PROGRESS.md](PROGRESS.md) antes de iniciar alterações.

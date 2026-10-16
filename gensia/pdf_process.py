@@ -46,6 +46,7 @@ def extract_pdf_process(workspace, relative_path, audit_path, max_mib=10,
         reader = SafePdfDocuments(workspace, audit)
         _, label = reader._resolve(relative_path)
         request = json.dumps({'workspace': str(reader.workspace), 'path': label,
+                              'workspace_identity': list(reader._workspace_identity),
                               'max_mib': max_mib,
                               'max_pages': max_pages}).encode('utf-8')
         if len(request) > 65536:
@@ -105,6 +106,8 @@ def _worker():
         # Worker logs stay private/temporary; only the parent writes the user's log.
         # RLIMIT_FSIZE must not prevent appending to a large preexisting user log.
         reader = SafePdfDocuments(request['workspace'], AuditLogger(Path.cwd() / 'worker-audit.jsonl'))
+        if list(reader._workspace_identity) != request['workspace_identity']:
+            return 8
         document = reader.read_pdf(request['path'], request['max_mib'], request['max_pages'])
         envelope = {'document': document.as_dict(), 'resource_limits': limits}
         sys.stdout.buffer.write(json.dumps(envelope, ensure_ascii=False).encode('utf-8'))

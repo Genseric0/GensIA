@@ -1,4 +1,4 @@
-# Leitura de documentos — limites da v0.24.2
+# Leitura de documentos — limites atuais e histórico
 
 A GensIA consulta primeiro o tamanho do ficheiro e depois lê, no máximo, o limite
 configurado mais um byte para a aplicação. Esse byte permite recusar o documento
@@ -33,10 +33,12 @@ de memória/CPU de todo o processo: PDF pode descomprimir para um volume maior e
 a primitiva SafePdfDocuments isoladamente não aplica quotas do SO. Desde a v0.28.0,
 os comandos públicos usam [processo separado com timeout](PDF_PROCESS.md); a v0.29.0
 acrescenta nesse worker limites Linux de espaço de endereçamento/CPU/ficheiro/core.
-Windows continua sem essas quotas. A leitura não resolve
-trocas hostis de caminhos entre validação e abertura nem garante snapshot coerente
-se outro processo modificar bytes do mesmo ficheiro. Não usar árvores alteradas
-em simultâneo para dados de clientes.
+Windows continua sem essas quotas. Desde a v0.30.0, a [abertura POSIX por descritores](DOCUMENT_IO.md)
+recusa symlinks/hard links adicionais e substituições observadas, mantendo a árvore
+ancorada em diretórios abertos. Verifica metadados antes/depois da leitura; não
+garante snapshot coerente sob escrita hostil. Em Windows, o caminho de leitura
+anterior permanece, sem a proteção POSIX contra trocas concorrentes. Não usar
+árvores alteradas em simultâneo para dados de clientes.
 
 Referência primária consultada em 16/10/2026:
 [Python 3.12 BufferedReader.read](https://docs.python.org/3.12/library/io.html#io.BufferedReader.read).

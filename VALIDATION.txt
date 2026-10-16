@@ -1,3 +1,20 @@
+2026-10-16 — v0.30.0 — abertura POSIX de documentos por descritores
+GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
+255 testes passaram, zero omitidos; 11,154 segundos, Linux/Python 3.12/pypdf 6.20.1.
+14 novos casos em test_document_io.py com ficheiros temporários reais e hooks
+determinísticos: symlink final/pai, diretório ancorado após rename, ficheiro regular
+substituído entre stat/open, FIFO sem leitura/bloqueio, pasta-base substituída,
+hard links, escrita in-place e crescimento. Metadados/hash UTF-8 preservados.
+12 ciclos de sucesso/falha não alteraram número de descritores em /proc/self/fd.
+Recusa antes do modelo/parser; worker compara identidade da base antes de ler,
+com limites simulados nesse teste em processo. Compatibilidade sem dir_fd simulada;
+testes antigos de crescimento/erro de stream continuam nessa via explicitamente.
+Inclui testes existentes com worker/pypdf/CLI/quotas Linux e HTTP reais. Não é
+ensaio adversarial de snapshot, Windows ou outros POSIX reais; sem inferência,
+GUI ou áudio novos. Aviso TestClient/httpx permanece.
+Bandit 1.9.4 nos três módulos alterados: 470 LOC, um LOW B404 (subprocess),
+zero MEDIUM/HIGH/erros; exit 1 pelo LOW. Sem scan global novo.
+
 2026-10-16 — v0.29.0 — quotas Linux do worker PDF e recuperação
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
 241 testes passaram, zero omitidos; 10,032 segundos, Linux/Python 3.12/pypdf 6.20.1.

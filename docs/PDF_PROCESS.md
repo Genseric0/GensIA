@@ -1,4 +1,4 @@
-# Extração PDF supervisionada — v0.29.0
+# Extração PDF supervisionada — v0.30.0
 
 Ativa o ambiente virtual e instala a dependência opcional, antes de executar:
 
@@ -34,6 +34,11 @@ com timeout. O worker é iniciado no mesmo Python, em modo `-I -B`, com lista de
 argumentos, `shell=False` e diretório temporário. Reutiliza SafePdfDocuments:
 recusa traversal/symlinks, lê bytes limitados e verifica páginas/texto.
 Resultados e erros do parser não são usados como comandos.
+
+Desde a v0.30.0, o pedido inclui a identidade da pasta-base validada pelo pai.
+O worker recusa uma identidade diferente antes de ler o documento. Em POSIX com
+suporte, o parser também usa [abertura por descritores](DOCUMENT_IO.md), sem seguir
+symlinks e com verificação antes/depois da leitura; não é um snapshot transacional.
 
 Em timeout, subprocess.run termina e recolhe o filho direto. O arranque inicial
 do processo pode não ser interrompível em todas as plataformas; o timeout não

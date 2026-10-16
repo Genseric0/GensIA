@@ -9,6 +9,7 @@ import re
 
 from .providers import ModelProvider
 from .tools import AuditLogger
+from .document_io import ConfinedReadError, DESCRIPTOR_READS_SUPPORTED, read_confined
 
 
 class DocumentError(RuntimeError):
@@ -59,7 +60,26 @@ class SafeTextDocuments:
             raise DocumentError("A pasta-base não existe ou não está acessível.") from exc
         if not self.workspace.is_dir():
             raise DocumentError("A pasta-base deve ser um diretório.")
+        try:
+            info = self.workspace.stat()
+            self._workspace_identity = (info.st_dev, info.st_ino)
+        except OSError as exc:
+            raise DocumentError("A pasta-base não está acessível.") from exc
         self.audit = audit
+
+    def _read_bytes(self, target, label, limit):
+        if DESCRIPTOR_READS_SUPPORTED:
+            try:
+                return read_confined(self.workspace, label, limit, self._workspace_identity)
+            except ConfinedReadError as exc:
+                raise DocumentError(str(exc)) from exc
+        # Compatibility path only where descriptor-relative opening is unavailable.
+        # This bounded read does NOT provide the POSIX race protection.
+        if target.stat().st_size > limit:
+            raise DocumentError("O documento excede o limite configurado.")
+        with target.open("rb") as stream:
+            raw = stream.read(limit + 1)
+        return raw
 
     def _resolve(self, relative_path: str | Path) -> tuple[Path, str]:
         candidate = Path(relative_path)
@@ -94,11 +114,7 @@ class SafeTextDocuments:
             raise DocumentError(f"--max-kib deve estar entre 1 e {self.MAX_READ_KIB}.")
         target, label = self._resolve(relative_path)
         try:
-            size = target.stat().st_size
-            if size > max_kib * 1024:
-                raise DocumentError("O documento excede o limite configurado.")
-            with target.open("rb") as stream:
-                raw = stream.read(max_kib * 1024 + 1)
+            raw = self._read_bytes(target, label, max_kib * 1024)
         except DocumentError:
             self.audit.record("read_document", "denied", label)
             raise
@@ -190,11 +206,7 @@ class SafePdfDocuments(SafeTextDocuments):
             raise DocumentError(f"--max-pages deve estar entre 1 e {self.MAX_PAGES}.")
         target, label = self._resolve(relative_path)
         try:
-            size = target.stat().st_size
-            if size > max_mib * 1024 * 1024:
-                raise DocumentError("O PDF excede o limite configurado.")
-            with target.open("rb") as stream:
-                raw = stream.read(max_mib * 1024 * 1024 + 1)
+            raw = self._read_bytes(target, label, max_mib * 1024 * 1024)
         except DocumentError:
             self.audit.record("read_pdf", "denied", label)
             raise

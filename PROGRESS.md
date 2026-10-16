@@ -1,5 +1,25 @@
 # Progresso GensIA
 
+## 16/10/2026 — abertura POSIX de documentos por descritores — v0.30.0
+
+Novo document_io.py: abre cada componente com dir_fd/O_DIRECTORY/O_NOFOLLOW,
+confirma identidade inicial da pasta-base, valida ficheiro regular com nlink=1,
+compara stat/fstat antes da leitura limitada e metadados depois. NONBLOCK evita
+bloqueio em FIFO trocado após stat. ExitStack fecha descritores em todos os ramos.
+TXT/Markdown e leitura interna de PDF usam o módulo onde suportado; em Windows
+permanece a leitura limitada anterior, sem alegar proteção equivalente. Erros na
+via POSIX não tentam fallback. Worker PDF recebe identidade inicial do pai e
+recusa mudança da pasta-base antes da leitura, sem alterar quotas existentes.
+14 testes novos de races determinísticos, âncora após rename, hard links, FIFO,
+alteração in-place, crescimento, fecho de recursos e contrato da identidade PDF.
+255 testes passaram, zero omitidos, 11,154s, Linux/Python 3.12, pypdf e HTTP reais.
+Casos de worker/modelo relevantes usam mocks; não houve inferência Ollama nova.
+Bandit 1.9.4 em document_io.py/documents.py/pdf_process.py: 470 LOC, um LOW B404,
+zero MEDIUM/HIGH/erros. Sem scan global novo. Guias/readme/avaliação atualizados.
+Limites: não é sandbox/snapshot transacional; timestamps dependem do filesystem,
+inicialização exige ambiente confiável, Windows e outros POSIX reais não testados.
+Próximo: diagnóstico local das proteções de documentos/quotas ativas no ambiente.
+
 ## 16/10/2026 — quotas do worker PDF e recuperação — v0.29.0
 
 Novo pdf_limits.py, só biblioteca padrão: em Linux aplica e confirma soft/hard
@@ -510,7 +530,7 @@ aberta no computador do utilizador e nenhum Windows real foi usado nesta etapa.
 ## Retomar
 
 1. Ler PROGRESS.md, README.md e VALIDATION.txt.
-2. Reforçar abertura de documentos contra trocas concorrentes. Usar gensia.doctor
+2. Expor no diagnóstico as proteções de documentos/quotas ativas. Usar gensia.doctor
    para verificar o ambiente e concluir inferência real quando
    houver modelo Ollama instalado. Executar scripts/validate_agents_real.py.
    O painel read-only pode avançar sem esse motor. Criar painel

@@ -30,7 +30,8 @@ class BoundedDocumentTests(unittest.TestCase):
         audit = Mock()
         with tempfile.TemporaryDirectory() as temp:
             reader = (SafePdfDocuments if pdf else SafeTextDocuments)(temp, audit)
-            with patch.object(reader, '_resolve', return_value=(target, 'fixture')):
+            with patch('gensia.documents.DESCRIPTOR_READS_SUPPORTED', False), \
+                    patch.object(reader, '_resolve', return_value=(target, 'fixture')):
                 with patch('gensia.documents.importlib.import_module') as parser:
                     with self.assertRaisesRegex(DocumentError, 'durante a leitura'):
                         if pdf:
@@ -91,7 +92,8 @@ class BoundedDocumentTests(unittest.TestCase):
             target.open.return_value = stream
             audit = Mock()
             reader = SafeTextDocuments(temp, audit)
-            with patch.object(reader, '_resolve', return_value=(target, 'fixture.txt')):
+            with patch('gensia.documents.DESCRIPTOR_READS_SUPPORTED', False), \
+                    patch.object(reader, '_resolve', return_value=(target, 'fixture.txt')):
                 with self.assertRaises(DocumentError) as error:
                     reader.read('fixture.txt')
             self.assertTrue(stream.closed)

@@ -1,6 +1,6 @@
 # Preparação para uso pessoal e clientes
 
-Revisão de 16/10/2026, atualizada na v0.29.0. Estado: protótipo local; **lançamento comercial
+Revisão de 16/10/2026, atualizada na v0.30.0. Estado: protótipo local; **lançamento comercial
 geral ainda não aprovado**. Os testes validam casos concretos, não ausência de falhas.
 Inspeção e reprodução a partir do próprio código existente, sem binários de terceiros.
 
@@ -31,7 +31,7 @@ Não alojar esta API como serviço partilhado entre clientes ou expô-la na Inte
 | --- | --- | --- |
 | Notas | Backup JSON v1 e restauro para DB nova testados em Linux, até 1000 notas/8 MiB | Falhas durante cópia/crash, Windows real, política de retenção e permissões verificadas |
 | Auditoria | JSONL: data, ação, resultado, fingerprint truncado do alvo | Rotação, política de retenção e indicação de falha após ação |
-| Documentos | Extração PDF supervisionada; limites Linux de espaço virtual/CPU/ficheiro/core, recuperação e pypdf real testados | Quotas Windows/agregadas, caminhos concorrentes e sandbox |
+| Documentos | Abertura POSIX ancorada por descritores; worker PDF com quotas Linux e recuperação testada | Equivalente Windows, quotas agregadas, snapshot sob escrita hostil e sandbox |
 | Credencial API | Um token por processo via ambiente | Integração de autenticação do painel, revogação e secret store do SO |
 | Modelos | Ollama local; sem fallback cloud automático | Inferência real e limites de RAM/latência verificados por configuração suportada |
 
@@ -44,7 +44,9 @@ execução bem-sucedida se a aplicação externa arrancar e depois falhar.
 1. Segurança dos acessos locais: diretórios-pai da auditoria devem ser confiáveis;
    O_NOFOLLOW protege o último componente apenas onde existe. Memória/documentos
    ainda não têm isolamento robusto contra outro processo hostil com as mesmas
-   permissões. Abertura Windows passou a usar caminhos absolutos consultados pela
+   permissões. Documentos usam descritores POSIX na v0.30.0; o caminho Windows
+   continua sem essa proteção contra trocas concorrentes. Abertura de aplicações
+   Windows passou a usar caminhos absolutos consultados pela
    WinAPI na v0.24.3; requer teste real de compatibilidade, wrappers e permissões
    dos diretórios de sistema. Não executar a GensIA como administrador.
 2. Operação: backup/restauro, migrações SQLite, recuperação após disco cheio,
