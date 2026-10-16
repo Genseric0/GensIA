@@ -1,3 +1,14 @@
+2026-10-16 — v0.27.0 — PDF supervisionado opt-in
+GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
+225 testes passaram, zero omitidos, 9,832 segundos, Linux/Python 3.12.
+Nove testes novos: contrato do processo, limites, traversal, saída inválida/grande,
+metadados, erro sanitizado, timeout real, PDF inválido real e CLI com texto real.
+pypdf 6.20.1 instalado no venv; fixture PDF sintética com Helvetica/stream de texto.
+Teste de timeout usa filho Python sintético bloqueado, não um PDF malicioso real;
+o PID deixou de existir em /proc após o timeout. APIs Windows não foram exercitadas.
+Bandit 1.9.4 pdf_process.py: 83 linhas, um LOW B404, zero MEDIUM/HIGH/erros; exit 1.
+Sem scan global novo, GUI, inferência ou voz; aviso TestClient/httpx permanece.
+
 2026-10-16 — v0.26.0 — restauro de notas para base nova
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
 216 testes passaram, zero omitidos; 7,117 segundos, Linux/Python 3.12.

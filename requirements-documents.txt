@@ -1,0 +1,2 @@
+# Optional PDF extraction; Python >=3.10 for GensIA. No crypto/font extras.
+pypdf==6.20.1

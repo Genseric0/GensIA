@@ -1,5 +1,22 @@
 # Progresso GensIA
 
+## 16/10/2026 — extração PDF supervisionada opt-in — v0.27.0
+
+Novo document pdf-read-supervised, com max_mib/max_pages e pdf-timeout 1–120s,
+30s por omissão. Worker próprio em Python -I -B, shell=False, cwd temporário,
+PYTHONPATH/PYTHONHOME removidos, stderr descartado, pedido JSON por stdin e saída
+em ficheiro temporário lida com limite de 2 MiB. Reutiliza leitura confinada e
+limitada existente. Valida schema/metadados de saída; erros sem conteúdo do parser.
+subprocess.run mata e recolhe o filho direto em timeout. Não é sandbox do SO;
+sem quota de RAM/disco/rede, sem garantia sobre processos descendentes. Outros
+comandos PDF continuam no caminho anterior. Não se declara migração completa.
+requirements-documents.txt fixa pypdf 6.20.1 (BSD-3-Clause, Python>=3.9; GensIA>=3.10),
+metadados primários/release 12/10/2026 verificados e pacote instalado só no ambiente
+de desenvolvimento. Nove testes novos; 225 passaram sem omissões, incluindo CLI
+com PDF sintético e pypdf real, erro real e timeout real com filho recolhido.
+Bandit 1.9.4 apenas novo módulo: um LOW B404, zero MEDIUM/HIGH e zero erros.
+Próximo: propagar a supervisão para resumo/perguntas/pesquisa PDF, com compatibilidade.
+
 ## 16/10/2026 — restauro para DB nova — v0.26.0
 
 memory --db NOVA restore --input BACKUP --approve valida UTF-8/JSON v1, campos

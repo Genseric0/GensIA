@@ -102,6 +102,11 @@ def main(argv=None) -> int:
     pdf_read.add_argument("path", help="caminho relativo à pasta-base")
     pdf_read.add_argument("--max-mib", type=int, default=10)
     pdf_read.add_argument("--max-pages", type=int, default=25)
+    pdf_supervised = document_sub.add_parser("pdf-read-supervised", help="extrair PDF num processo separado com timeout")
+    pdf_supervised.add_argument("path")
+    pdf_supervised.add_argument("--max-mib", type=int, default=10)
+    pdf_supervised.add_argument("--max-pages", type=int, default=25)
+    pdf_supervised.add_argument("--pdf-timeout", type=float, default=30.0)
     pdf_summary = document_sub.add_parser("pdf-summarize", help="resumir PDF com o provider escolhido")
     pdf_summary.add_argument("path", help="caminho relativo à pasta-base")
     pdf_summary.add_argument("--style", choices=("concise", "study"), default="study")
@@ -254,6 +259,10 @@ def main(argv=None) -> int:
             reader = SafeTextDocuments(args.workspace, audit)
             if args.document_command == "read":
                 output = reader.read(args.path, args.max_kib).as_dict()
+            elif args.document_command == "pdf-read-supervised":
+                from .pdf_process import extract_pdf_process
+                output = extract_pdf_process(args.workspace, args.path, args.audit,
+                                             args.max_mib, args.max_pages, args.pdf_timeout)
             elif args.document_command == "summarize":
                 provider = _provider(args, parser)
                 if isinstance(provider, UnconfiguredProvider):
