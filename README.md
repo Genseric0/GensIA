@@ -1,7 +1,12 @@
 # GensIA
 
 Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.32.0** — protótipo em evolução.
+explícito sobre ferramentas e dados. Versão atual: **0.33.0** — protótipo em evolução.
+
+Novo: [runner E2E do painel](docs/BROWSER_QA.md), com servidor e token temporários,
+política de rede da página e capturas condicionadas a verificações. A tentativa
+real ficou blocked por falta de Chromium; não há screenshots nem validação visual.
+Os contratos e o ciclo de vida do servidor de teste foram validados separadamente.
 
 Novo: [painel local experimental de diagnóstico](docs/PANEL.md), apenas de leitura,
 em `http://127.0.0.1:8765/panel` após iniciar a API. Estrutura pública vazia; dados
@@ -136,7 +141,7 @@ agentes, mas não os executa. Ver [catálogo na API](docs/AGENT_CATALOG_API.md).
 
 ## Validação
 
-Na v0.32.0 os 275 testes Python passaram, com as dependências opcionais da API/PDF
+Na v0.33.0 os 277 testes Python passaram, com as dependências opcionais da API/PDF
 e `GENSIA_TEST_REAL_HTTP=1`, sem omissões. Inclui sete testes com Uvicorn real
 em loopback, além dos testes em processo. Ver [reprodução](docs/API_REPORT.md).
 Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.
@@ -148,6 +153,9 @@ Na v0.31.0, mais 12 testes verificam o relatório de capacidades, limites herdad
 ausência de efeitos laterais e integrações CLI/doctor/API, incluindo HTTP real.
 Na v0.32.0, oito testes Python novos e dez Node/VM validam guardas e fluxo do painel.
 Node/VM não substitui navegador, validação visual ou CSP real. Nenhum screenshot novo.
+Na v0.33.0, dois testes Python novos e oito Node validam contratos/lifecycle do
+runner. 18 testes Node do painel/runner passaram com GENSIA_PYTHON configurado;
+o E2E real continua bloqueado antes do fluxo. Sem instalação automática de browser.
 
 Na v0.24.1, Bandit 1.9.4 real encontrou três avisos baixos B404, nenhum
 achado médio/alto e nenhum erro de análise. Isto não garante ausência de vulnerabilidades. Ollama 0.40.4
@@ -167,7 +175,8 @@ distribuição ao projeto; as dependências mantêm as suas próprias licenças.
 
 ## Continuidade
 
-Próximo incremento: validar o painel em navegador real e gerar capturas desktop/mobile
-sem segredos. Permanecem pendentes inferência Ollama real, Windows real e interface
+Próximo: executar o runner num ambiente com Chromium e rever capturas desktop/mobile
+sem segredos; enquanto esse pré-requisito faltar, não repetir a mesma tentativa.
+Pode avançar a expiração local por inatividade da sessão do painel. Permanecem pendentes inferência Ollama real, Windows real e interface
 de conversa/voz integrada, sem CDN e com permissões explícitas.
 Consultar [PROGRESS.md](PROGRESS.md) antes de iniciar alterações.

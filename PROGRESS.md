@@ -1,5 +1,26 @@
 # Progresso GensIA
 
+## 16/10/2026 — runner E2E do painel e controlo de evidências — v0.33.0
+
+Novo validate_panel_browser.cjs + panel_test_server.py: browser novo não persistente,
+token aleatório sem reutilizar credenciais, socket loopback efémero reservado,
+health autenticado, ambiente filho reduzido, sem shell/downloads. Política de GET
+da página na mesma origem, verificações de auth/teclado/limpeza/reload/storage/CSP,
+layout 1440/390/320 e guardas antes de PNG (token vazio/ausente no texto/URL fixa).
+Diretório e ficheiros novos exclusivos; manifestos sanitizados, estados passed/
+blocked/failed, limpeza do próprio browser/helper e sem uso de serviço existente.
+Fluxo completo ainda não executado: tentativa real Playwright 1.62.1 encontrou
+Chromium ausente e parou em browser_launch, browser_flow_started=false, sem iniciar
+helper ou gerar screenshots. Manifesto docs/validation/panel-browser-v033/validation.json.
+277 testes Python passaram, zero omitidos, 10,666s; dois novos validam configuração
+e API temporária real com autenticação/encerramento. 18 Node passaram, zero omitidos
+com GENSIA_PYTHON, oito novos de contratos, bloqueio, preservação e lifecycle real.
+Bandit 1.9.4 no helper Python: 35 LOC, zero achados/erros; não analisa JS.
+Package local Playwright 1.62.1 Apache-2.0/Node>=20 e docs oficiais consultados;
+nenhuma dependência nova de produção ou instalação. Não se afirma release mais recente.
+Próximo: E2E real quando Chromium existir, sem repetir bloqueio idêntico; pode
+avançar expiração local da sessão por inatividade. Sem aprovação comercial nova.
+
 ## 16/10/2026 — painel local experimental de diagnóstico — v0.32.0
 
 Assets HTML/CSS/JS fixos em /panel, /panel.css e /panel.js, públicos só como shell
@@ -571,7 +592,9 @@ aberta no computador do utilizador e nenhum Windows real foi usado nesta etapa.
 ## Retomar
 
 1. Ler PROGRESS.md, README.md e VALIDATION.txt.
-2. Validar painel em navegador real e capturas desktop/mobile sem tokens. Usar gensia.doctor
+2. Executar runner de browser quando Chromium existir; não repetir bloqueio sem
+   alteração do ambiente. Pode avançar expiração local da sessão do painel.
+   Usar gensia.doctor
    para verificar o ambiente e concluir inferência real quando
    houver modelo Ollama instalado. Executar scripts/validate_agents_real.py.
    O painel read-only existe sem esse motor; manter token e sem CDN, Origin apenas

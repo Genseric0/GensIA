@@ -1,6 +1,6 @@
 # Preparação para uso pessoal e clientes
 
-Revisão de 16/10/2026, atualizada na v0.32.0. Estado: protótipo local; **lançamento comercial
+Revisão de 16/10/2026, atualizada na v0.33.0. Estado: protótipo local; **lançamento comercial
 geral ainda não aprovado**. Os testes validam casos concretos, não ausência de falhas.
 Inspeção e reprodução a partir do próprio código existente, sem binários de terceiros.
 
@@ -58,7 +58,9 @@ execução bem-sucedida se a aplicação externa arrancar e depois falhar.
    existem na v0.29.0; não substituem isolamento nem limites de toda a instalação.
 3. Integrações: inferência Ollama, Whisper/Piper/microfone e GUI em hardware real;
    painel de diagnóstico tem HTTP/Node/VM testados, mas browser/layout e capturas
-   reais continuam pendentes. Mock não equivale a validação do motor/browser.
+   reais continuam pendentes. Runner E2E reproduzível na v0.33.0 registou blocked
+   por falta de Chromium; não fecha esse requisito. Mock não equivale a validação
+   do motor/browser. Ver docs/BROWSER_QA.md.
 4. Distribuição: instalador reproduzível, atualização/rollback, matriz de sistemas
    suportados, testes Windows e inventário de dependências/licenças dos modelos.
 5. Comercial: pacote de suporte, escopo contratado e política de dados. Não foi

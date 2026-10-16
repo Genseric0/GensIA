@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "status": "blocked",
+  "checks": [],
+  "metrics": [],
+  "screenshots": [],
+  "external_attempts": 0,
+  "page_errors": 0,
+  "csp_violations": 0,
+  "token_recorded": false,
+  "browser_flow_started": false,
+  "cleanup": {
+    "browser_closed": true,
+    "server_stopped": true
+  },
+  "playwright": "1.62.1",
+  "browser_executable_present": false,
+  "failure_stage": "browser_launch",
+  "failure_reason": "browser_executable_missing"
+}

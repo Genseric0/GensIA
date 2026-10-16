@@ -1,5 +1,10 @@
 # Painel local de diagnóstico — v0.32.0
 
+Atualização v0.33.0: há um [runner reproduzível de browser e capturas](BROWSER_QA.md),
+com servidor/token temporários e recusa de substituição de evidências. Nesta
+execução registou Chromium ausente, sem iniciar o fluxo nem produzir screenshots.
+Os limites de validação deste painel continuam a aplicar-se.
+
 Painel experimental, apenas de leitura, servido pela API existente em
 `http://127.0.0.1:8765/panel`. HTML/CSS/JavaScript locais, sem framework, CDN,
 analytics ou dependência de frontend. Mostra só metadados do diagnóstico: versão,
