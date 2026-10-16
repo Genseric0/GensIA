@@ -90,14 +90,15 @@ class SafeTextDocuments:
         return target, candidate.as_posix()
 
     def read(self, relative_path: str | Path, max_kib: int = 64) -> TextDocument:
-        if not 1 <= max_kib <= self.MAX_READ_KIB:
+        if type(max_kib) is not int or not 1 <= max_kib <= self.MAX_READ_KIB:
             raise DocumentError(f"--max-kib deve estar entre 1 e {self.MAX_READ_KIB}.")
         target, label = self._resolve(relative_path)
         try:
             size = target.stat().st_size
             if size > max_kib * 1024:
                 raise DocumentError("O documento excede o limite configurado.")
-            raw = target.read_bytes()
+            with target.open("rb") as stream:
+                raw = stream.read(max_kib * 1024 + 1)
         except DocumentError:
             self.audit.record("read_document", "denied", label)
             raise
@@ -183,7 +184,7 @@ class SafePdfDocuments(SafeTextDocuments):
     def read_pdf(
         self, relative_path: str | Path, max_mib: int = 10, max_pages: int = 25
     ) -> PdfDocument:
-        if not 1 <= max_mib <= self.MAX_READ_MIB:
+        if type(max_mib) is not int or not 1 <= max_mib <= self.MAX_READ_MIB:
             raise DocumentError(f"--max-mib deve estar entre 1 e {self.MAX_READ_MIB}.")
         if not 1 <= max_pages <= self.MAX_PAGES:
             raise DocumentError(f"--max-pages deve estar entre 1 e {self.MAX_PAGES}.")
@@ -192,7 +193,8 @@ class SafePdfDocuments(SafeTextDocuments):
             size = target.stat().st_size
             if size > max_mib * 1024 * 1024:
                 raise DocumentError("O PDF excede o limite configurado.")
-            raw = target.read_bytes()
+            with target.open("rb") as stream:
+                raw = stream.read(max_mib * 1024 * 1024 + 1)
         except DocumentError:
             self.audit.record("read_pdf", "denied", label)
             raise

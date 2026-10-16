@@ -1,3 +1,12 @@
+2026-10-16 — v0.24.2 — documentos com leitura limitada
+GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
+188 testes passaram, zero omitidos, Linux/Python 3.12; 6,715 segundos.
+Seis novos testes em test_document_limits.py; quatro falhavam antes da correção.
+Crescimento após stat é injetado com streams instrumentados. Ficheiros no limite
+usam temporários reais. Parser PDF simulado; não é validação de pypdf real.
+Bandit 1.9.4: documents.py, 293 linhas, zero achados/erros, exit 0.
+Sem novo scan global, inferência, navegador ou Windows. Aviso TestClient/httpx permanece.
+
 2026-10-16 — v0.24.1 — hardening de auditoria e provider
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
 182 testes passaram, zero omitidos. Onze regressões novas em test_security_regressions.py.

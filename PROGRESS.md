@@ -1,5 +1,20 @@
 # Progresso GensIA
 
+## 16/10/2026 — leitura limitada durante I/O — v0.24.2
+
+TXT/Markdown/PDF usam read(limite + 1) em contexto binário em vez de read_bytes
+sem limite. Stat continua a recusar ficheiros já grandes; crescimento após stat
+é detetado pelo byte extra, sem carregar todo o conteúdo novo. Limites de tamanho
+recusam bool, float e string na API Python. Sem alteração dos comandos CLI.
+Seis testes novos: crescimento TXT/PDF, tamanhos exatos/UTF-8/hash, PDF completo
+no limite (parser simulado), tipos inválidos e encerramento em erro de leitura.
+Antes da correção, quatro dos seis testes falhavam. Depois: 188 testes passaram,
+zero omitidos, incluindo HTTP real. Bandit 1.9.4 no módulo documents.py: zero
+achados, zero erros. Não houve nova análise de todos os módulos neste incremento.
+Persistem riscos de troca concorrente de caminhos e custo descomprimido do parser
+PDF. Windows, GUI e inferência Ollama continuam sem validação nova.
+Próximo: rever resolução de executáveis Windows; depois isolamento e backup/restauro.
+
 ## 16/10/2026 — robustez de auditoria/Ollama — v0.24.1
 
 Concluídas as regressões iniciadas na revisão para uso comercial. Auditoria recusa

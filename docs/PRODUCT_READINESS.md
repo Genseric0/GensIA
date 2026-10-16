@@ -1,6 +1,6 @@
 # Preparação para uso pessoal e clientes
 
-Revisão de 16/10/2026, v0.24.1. Estado: protótipo local; **lançamento comercial
+Revisão de 16/10/2026, atualizada na v0.24.2. Estado: protótipo local; **lançamento comercial
 geral ainda não aprovado**. Os testes validam casos concretos, não ausência de falhas.
 Inspeção e reprodução a partir do próprio código existente, sem binários de terceiros.
 
@@ -31,7 +31,7 @@ Não alojar esta API como serviço partilhado entre clientes ou expô-la na Inte
 | --- | --- | --- |
 | Notas | SQLite: chave, valor, updated_at; leitura/gravação explícitas | Backup e restauro testados, política de retenção, permissões verificadas |
 | Auditoria | JSONL: data, ação, resultado, fingerprint truncado do alvo | Rotação, política de retenção e indicação de falha após ação |
-| Documentos | Ficheiros fornecidos explicitamente por workspace | Leitura limitada durante I/O e proteção contra trocas concorrentes de caminhos |
+| Documentos | Ficheiros explícitos por workspace, leitura de bytes limitada durante I/O | Proteção contra trocas concorrentes de caminhos e isolamento do parser PDF |
 | Credencial API | Um token por processo via ambiente | Integração de autenticação do painel, revogação e secret store do SO |
 | Modelos | Ollama local; sem fallback cloud automático | Inferência real e limites de RAM/latência verificados por configuração suportada |
 
@@ -47,7 +47,7 @@ execução bem-sucedida se a aplicação externa arrancar e depois falhar.
    permissões. Abertura Windows ainda usa nomes de executáveis e requer revisão
    da resolução de caminhos e teste real. Não executar a GensIA como administrador.
 2. Operação: backup/restauro, migrações SQLite, recuperação após disco cheio,
-   rotação de logs e limites reais de leitura/processamento de PDF.
+   rotação de logs e limites reais de memória/CPU durante processamento de PDF.
 3. Integrações: inferência Ollama, Whisper/Piper/microfone e GUI em hardware real;
    capturas HTML continuam pendentes. Mock não equivale a validação do motor.
 4. Distribuição: instalador reproduzível, atualização/rollback, matriz de sistemas
