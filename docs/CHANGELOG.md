@@ -17,3 +17,14 @@ incrementos0.35–0.60 foram restaurados. A base real foi auditada e testada nov
 - Auditoria inicial,segurança,dados,QA e checklist com evidências verificáveis.
 
 O estado final e o commit validado são registados em TEST_REPORT/RELEASE_CHECKLIST.
+# Correções após execução real de CI — 21/10/2026
+
+- Windows: recusados destinos symlink antes de criação de export/backup/restauro.
+- Fixtures SQLite fecham conexões explicitamente, mantendo transações; novas
+  regressões confirmam fecho/rollback e guardas antes de efeitos.
+- Relatórios estáticos normalizam caminhos relativos com `/` em todas as plataformas.
+- Auditoria strict usa inventário de todas as dependências não editable, com
+  verificação de que apenas a própria GensIA é editable.
+- Chromium E2E aprovado remotamente; quatro capturas reais verificadas e guardadas.
+- Concorrência do CI evita duplicar push/PR da mesma branch e distingue forks.
+

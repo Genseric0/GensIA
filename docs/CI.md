@@ -140,3 +140,8 @@ impede nova resolução, pois cada distribuição já consta do inventário. A G
 continua coberta pela revisão, Bandit e regressões. Não se ignora nenhum identificador
 de vulnerabilidade; falhas de consulta continuam a bloquear o job. A validação local
 deste comando não substitui a consulta do resultado remoto do commit corrigido.
+
+O grupo de concorrência usa repositório de origem e branch: push e PR da mesma
+branch cancelam trabalho duplicado. Branches homónimas de forks têm grupos
+distintos. A alteração segue a [documentação de concorrência do GitHub](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency),
+consultada em 21/10/2026. Não modifica permissões ou acesso a secrets.

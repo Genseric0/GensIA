@@ -11,12 +11,12 @@ FastAPI; interface web servida pelo próprio computador, sem CDN.
 
 **Candidata 0.61.0 — RELEASE BLOCKED.** Esta branch recupera uma conversa funcional
 e corrige falhas de autorização, privacidade e integridade reproduzidas na base
-remota0.34. A avaliação está em [RELEASE_CHECKLIST](docs/RELEASE_CHECKLIST.md) e
+remota 0.34. A avaliação está em [RELEASE_CHECKLIST](docs/RELEASE_CHECKLIST.md) e
 [TEST_REPORT](docs/TEST_REPORT.md). Serviços sintéticos não comprovam pesos reais.
 
 ## Instalar e abrir
 
-Python3.12/3.13 são as configurações previstas no CI. O núcleo declara >=3.10;
+Python 3.12/3.13 são as configurações previstas no CI. O núcleo declara >=3.10;
 essa versão mínima precisa de validação própria. Ollama e um modelo local confiável
 devem estar previamente instalados para conversar.
 
@@ -93,7 +93,9 @@ python -m coverage run --branch --source=gensia -m unittest discover -s tests -v
 python -m coverage report --show-missing
 node --test tests/*.test.cjs
 python -m bandit -r gensia --severity-level medium --ignore-nosec
-python -m pip_audit --strict
+python -c "from pathlib import Path; Path('artifacts').mkdir(exist_ok=True)"
+python -m pip freeze --all --exclude-editable > artifacts/audit-requirements.txt
+python -m pip_audit --strict --disable-pip --no-deps -r artifacts/audit-requirements.txt
 python scripts/check_secrets.py
 python -m build --wheel --no-isolation
 python scripts/verify_installed.py dist
@@ -103,8 +105,10 @@ Definir GENSIA_TEST_REAL_HTTP=1 para testes HTTP reais em loopback e GENSIA_PYTH
 com o caminho absoluto do Python virtual para os helpers Node.
 [CI.md](docs/CI.md) contém comandos PowerShell completos. Playwright/Chromium são
 requisitos de QA, sem dependência em tempo de execução do produto.
+O inventário de advisories exclui a própria GensIA editable, ainda não publicada
+no PyPI. O CI verifica que nenhum pacote de terceiros editable é omitido.
 
-A matriz CI valida Linux/Windows, Python3.12/3.13, extras, build e segurança.
+A matriz CI valida Linux/Windows, Python 3.12/3.13, extras, build e segurança.
 Consultar resultados por commit no [GitHub Actions](https://github.com/Genseric0/GensIA/actions).
 O workflow não executa desenvolvimento permanente nem configura um agente Goose.
 
@@ -124,7 +128,7 @@ O workflow não executa desenvolvimento permanente nem configura um agente Goose
 
 ## Maturidade
 
-O alvo é um utilizador local, com serviço em127.0.0.1. O token autentica o processo;
+O alvo é um utilizador local, com serviço em 127.0.0.1. O token autentica o processo;
 não há contas de clientes, RBAC ou isolamento entre organizações. Internet e venda
 como serviço partilhado exigem trabalho adicional. Hardware de voz, modelo real,
 Windows e recuperação operacional precisam de evidência específica. Os testes não

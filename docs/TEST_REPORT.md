@@ -30,6 +30,7 @@ GENSIA_TEST_REAL_HTTP=1 python -m coverage run --branch --source=gensia -m unitt
 python -m coverage report --show-missing
 GENSIA_PYTHON="$(python -c 'import sys; print(sys.executable)')" node --test tests/*.test.cjs
 python -m pip check
+python -c "from pathlib import Path; Path('artifacts').mkdir(exist_ok=True)"
 python -m pip freeze --all --exclude-editable > artifacts/audit-requirements.txt
 python -m pip_audit --strict --disable-pip --no-deps -r artifacts/audit-requirements.txt --progress-spinner off
 python -m bandit -r gensia --severity-level medium --confidence-level low --ignore-nosec
@@ -65,6 +66,25 @@ corrigida sem ignorar advisories de dependências. A repetição Linux passou co
 366 testes, incluindo seis regressões novas: guardas de destino e fecho/rollback
 de conexões. O pacote foi reconstruído e o verificador isolado voltou a passar.
 Ver checklist para a repetição remota.
+
+Na repetição do PR, run39520718320, Linux3.12/3.13, Chromium e security passaram.
+Windows passou as correções de SQLite/symlink e revelou uma falha restante no
+relatório estático: separadores `\\` em vez de `/` no JSON. O código de produção
+agora usa `Path.as_posix()` nos rótulos relativos, preservando caminhos nativos
+para subprocessos. Os dez testes do scanner passaram após a correção; a matriz
+remota deve confirmar a repetição completa. As25 omissões Windows são testes
+POSIX/Linux explicitamente condicionados, não testes removidos para obter aprovação.
+
+## Medição controlada do transporte
+
+Executado `ChatHttpTests.setUpClass()` com o mesmo servidor sintético, uma chamada
+de aquecimento e50 chamadas sequenciais de chat por `case.request(body)`, medidas
+com `time.perf_counter`. Mensagem fixa: "Explica DNS com um exemplo."; um cliente.
+Resultado:50 HTTP200,zero falhas, p50 1.522ms, p95 empírico2.893ms, máximo32.191ms.
+Foi usada a48.ª amostra ordenada como percentil95. Servidor encerrado com
+`doClassCleanups()`. Esta medição avalia somente overhead local de HTTP/autenticação
+e serialização com resposta sintética. Não mede inferência, carga concorrente,
+capacidade de hardware ou SLA; não pode sustentar alegações comerciais de desempenho.
 
 Não houve inferência com pesos Ollama, Whisper/Piper reais, microfone, validação
 Windows nativa, carga representativa de clientes ou avaliação de SLA. Os tempos
