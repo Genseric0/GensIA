@@ -9,7 +9,7 @@ Assistente pessoal modular para conversar com um modelo local, consultar documen
 guardar notas e executar operações explícitas no computador. Python, SQLite e
 FastAPI; interface web servida pelo próprio computador, sem CDN.
 
-**Candidata 0.61.0 — RELEASE BLOCKED.** Esta branch recupera uma conversa funcional
+**Candidata 0.62.0 — RELEASE BLOCKED.** Esta branch recupera uma conversa funcional
 e corrige falhas de autorização, privacidade e integridade reproduzidas na base
 remota 0.34. A avaliação está em [RELEASE_CHECKLIST](docs/RELEASE_CHECKLIST.md) e
 [TEST_REPORT](docs/TEST_REPORT.md). Serviços sintéticos não comprovam pesos reais.
@@ -77,11 +77,14 @@ python -m gensia --help
 python -m gensia --provider ollama --model NOME_DO_MODELO_LOCAL ask "Explica DNS"
 python -m gensia memory --db notas.sqlite3 set idioma Português
 python -m gensia memory --db notas.sqlite3 search idioma
+python -m gensia memory --db notas.sqlite3 check
 python -m gensia memory --db notas.sqlite3 backup --output notas-novas.memory-backup.json
 python -m gensia memory --db restaurada.sqlite3 restore --input notas-novas.memory-backup.json --approve
 ```
 
 Backups são texto simples, sem cifragem. Restauro recusa destinos existentes.
+`memory check` verifica integridade e notas numa transação de leitura; requer
+Python3.11+ e não repara a base. Ver [MEMORY_RECOVERY](docs/MEMORY_RECOVERY.md).
 Transcrição exige checkpoint .pt local confiável; ver [VOICE_HARDENING](docs/VOICE_HARDENING.md).
 
 ## Testes e build

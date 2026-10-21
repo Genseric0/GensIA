@@ -122,3 +122,10 @@ e após erros SQL/de aplicação, e rollback das alterações pendentes. Execuç
 local direcionada:38 testes memory/backup/restore e24 testes de hardening,
 todos aprovados, sem omissões. A repetição Windows deve ser consultada no CI;
 estes resultados Linux, por si só, não a substituem.
+# Incremento v0.62.0 — 21/10/2026
+
+Novo comando explícito `memory check`: verificação SQLite completa e validação
+lógica limitada, sem devolver notas ou pedir mutações. Onze regressões novas
+incluem corrupção física de página e índice, WAL e ensaio de restauro. O plano,
+limites e comandos de recuperação estão em [MEMORY_RECOVERY.md](MEMORY_RECOVERY.md).
+Não equivale a reparação física, teste de falha de energia ou aprovação comercial.

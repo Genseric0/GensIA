@@ -1,3 +1,11 @@
+2026-10-21 — v0.62.0 — memory check
+GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
+377PASS/0skip/0fail,21.272s.11novos de integridade/privacidade/orçamento/WAL/recuperação.
+Coverage87%(statements2818,missing320,branches854,partial140).
+BanditMED/HIGH0;signatures140files/0findings.
+Limites SQLiteporligação/VM/tempo cooperativo;não é deadline rígido/sandbox/reparação.
+Ver docs/MEMORY_RECOVERY.md;CI do commit atual em PR1/checks.
+
 2026-10-21 — v0.61.0 — hardening e conversa
 GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
 366PASS/0skip/0fail,22.883s;coverage86%(statements2770,missing321,branches838,partial138).

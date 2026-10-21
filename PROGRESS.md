@@ -1,5 +1,18 @@
 # Progresso GensIA
 
+## 21/10/2026 — verificação e recuperação da memória — v0.62.0
+
+Novo `memory check`, com transação de leitura, validação de notas e integridade
+SQLite completa. Sem conteúdo privado na saída, reparação ou criação de base
+ausente. Tetos por ligação para strings/SQL/expressões, instruções VM e tempo
+cooperativo. Onze regressões novas passam, incluindo corrupção real de página
+e índice secundário, WAL, orçamento e backup/restauro para base nova.
+Suíte completa local:377 Python PASS/0 omitidos em21.272s;coverage87% combinado.
+Bandit sem médios/elevados;scanner140 ficheiros/0 assinaturas. Comandos e limites
+em docs/MEMORY_RECOVERY.md. Sem dependências novas ou hardware/modelos testados.
+Próximo: ensaio de recuperação após interrupção de processo/disco cheio; modelos
+e voz reais continuam gate comercial. Checks atuais: PR1, sem alterar main.
+
 ## 20–21/10/2026 — hardening e conversa local — v0.61.0
 
 Retomado o remoto206f4d1(v0.34), com baseline independente277Python/34Node.

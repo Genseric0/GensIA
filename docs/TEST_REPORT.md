@@ -1,4 +1,16 @@
-# Testes — 21/10/2026 — v0.61.0
+# Testes — 21/10/2026 — v0.62.0
+
+## Incremento de memória0.62
+
+Onze regressões novas em test_memory_check.py. Suíte completa com extras e HTTP
+real:377 testes Python aprovados,zero omitidos/falhas,21.272s. Coverage combinado
+87% exibido:2818 statements,320 não executados,854 ramos,140 parciais. Bandit
+sem médios/elevados;scanner limitado140 ficheiros/0 achados. Ver MEMORY_RECOVERY.md
+para corrupção real, WAL, limites e ensaio de recuperação. Não se validou falha
+de energia, disco cheio ou hardware do cliente. Os [checks do PR1](https://github.com/Genseric0/GensIA/pull/1/checks)
+são a referência para o commit corrente; os resultados0.61 abaixo são históricos.
+
+## Evidência anterior — v0.61.0
 
 Estado: **RELEASE BLOCKED**. Resultados reais no ambiente Linux/Python3.12.14,
 Node24.19.0, dependências isoladas em `.venv`; não são testes no PC do cliente.

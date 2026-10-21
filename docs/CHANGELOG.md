@@ -28,3 +28,10 @@ O estado final e o commit validado são registados em TEST_REPORT/RELEASE_CHECKL
 - Chromium E2E aprovado remotamente; quatro capturas reais verificadas e guardadas.
 - Concorrência do CI evita duplicar push/PR da mesma branch e distingue forks.
 
+# v0.62.0 — 21/10/2026
+
+- Comando `memory check` para integridade SQLite e notas, numa transação de leitura.
+- Limites por ligação/VM/tempo; erros e relatórios sem conteúdo das notas.
+- Onze regressões de corrupção, WAL, limites, CLI e recuperação para base nova.
+- Manual operacional em MEMORY_RECOVERY.md. Sem novas dependências ou reparação automática.
+
