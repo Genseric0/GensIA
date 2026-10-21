@@ -17,6 +17,10 @@ reparação da origem, cloud ou dependências novas. CI atual em PR1/checks.
 Estado RELEASE BLOCKED para distribuição comercial. Próximo: validar percurso
 operacional no hardware alvo com modelo/voz reais e concluir distribuição/licenças;
 WAL/multi-base e sandbox de bases hostis não são suportados por este incremento.
+PrimeiroCI0.64 revelou asserção dependente da ordem de listagem do filesystem em
+Ubuntu3.12/3.13. Corrigida para comparação sem ordem, mantendo guarda de órfãos;
+17 regressões direcionadas PASS. O run39589478006 fica como evidência de falha;
+repetição final consultável em PR1/checks.
 
 ## 21/10/2026 — publicação e falhas da memória — v0.63.0
 

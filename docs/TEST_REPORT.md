@@ -30,6 +30,13 @@ sandbox de bases hostis. Ver MEMORY_RECOVERY.md para procedimento e limites.
 CI do commit atual nos [checks do PR1](https://github.com/Genseric0/GensIA/pull/1/checks);
 resultados0.63 e anteriores abaixo são históricos. Interface sem alterações.
 
+Primeiro CI0.64:[run39589478006](https://github.com/Genseric0/GensIA/actions/runs/39589478006),
+commit5898983: os jobs Ubuntu3.12/3.13 falharam numa asserção nova que assumia
+ordem de Path.iterdir(). Os ficheiros eram os mesmos, em ordem inversa. Corrigido
+para assertCountEqual, preservando a verificação de ausência de órfãos. Regressão
+direcionada17 PASS após a correção. Consultar checks do PR para a repetição final;
+não se apresenta esse primeiro run como verde.
+
 ## Incremento0.63 — publicação e interrupções
 
 Suíte final local Linux/Python3.12.14: **394 PASS,0 omitidos,0 falhas,21.612s**.

@@ -91,7 +91,7 @@ with MemoryStore(sys.argv[1]).connect(write=True) as db:
         self.assertFalse(any(self.source.path.as_uri() in str(call) for call in calls.call_args_list))
         self.assertEqual(before, self.digest(self.source.path))
         self.assertEqual(MemoryStore(self.target).get('private-key'), self.source.get('private-key'))
-        self.assertEqual(list(self.root.iterdir()), [self.source.path, self.target])
+        self.assertCountEqual(self.root.iterdir(), [self.source.path, self.target])
 
     def test_real_hot_journal_recovers_only_copy_and_preserves_both_original_files(self):
         self.make_hot_journal()
