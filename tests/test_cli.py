@@ -90,7 +90,10 @@ class CliTests(unittest.TestCase):
             def __enter__(self): return self
             def __exit__(self, *args): pass
             def read(self, size): return b'{"message":{"content":" Ola local "}}'
-        mocked.return_value = Response()
+        class Metadata(Response):
+            def read(self, size):
+                return b'{"details":{"format":"gguf"},"model_info":{"general.architecture":"llama"}}'
+        mocked.side_effect = [Metadata(), Response()]
         provider = OllamaProvider("llama-teste")
         self.assertEqual(provider.reply("Explica NAT"), "Ola local")
         request = mocked.call_args.args[0]

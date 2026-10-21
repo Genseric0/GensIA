@@ -7,6 +7,12 @@ from unittest.mock import Mock, patch
 from gensia.voice import MicrophoneRecorder, PiperSynthesizer, VoiceError, WhisperTranscriber
 
 
+def checkpoint(directory):
+    path = Path(directory) / 'synthetic.pt'
+    path.write_bytes(b'synthetic checkpoint, never executed')
+    return path
+
+
 class VoiceTests(unittest.TestCase):
     def test_missing_file_is_rejected_before_import(self):
         with patch("gensia.voice.importlib.import_module") as importer:
@@ -27,7 +33,7 @@ class VoiceTests(unittest.TestCase):
             path.write_bytes(b"RIFF")
             with patch("gensia.voice.importlib.import_module", side_effect=ModuleNotFoundError):
                 with self.assertRaisesRegex(VoiceError, "openai-whisper"):
-                    WhisperTranscriber().transcribe(path)
+                    WhisperTranscriber(checkpoint=checkpoint(directory)).transcribe(path)
 
     def test_transcribes_with_official_python_interface(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -43,8 +49,9 @@ class VoiceTests(unittest.TestCase):
             whisper = Mock()
             whisper.load_model.return_value = model
             with patch("gensia.voice.importlib.import_module", return_value=whisper):
-                result = WhisperTranscriber("base", "cpu").transcribe(path, "pt")
-            whisper.load_model.assert_called_once_with("base", device="cpu")
+                local = checkpoint(directory)
+                result = WhisperTranscriber("base", "cpu", checkpoint=local).transcribe(path, "pt")
+            whisper.load_model.assert_called_once_with(str(local.resolve()), device="cpu")
             model.transcribe.assert_called_once_with(
                 str(path.resolve()), task="transcribe", fp16=False, language="pt"
             )
@@ -60,7 +67,7 @@ class VoiceTests(unittest.TestCase):
             model.transcribe.return_value = {"text": "hello", "language": "en"}
             whisper = Mock(load_model=Mock(return_value=model))
             with patch("gensia.voice.importlib.import_module", return_value=whisper):
-                result = WhisperTranscriber().transcribe(path, "auto")
+                result = WhisperTranscriber(checkpoint=checkpoint(directory)).transcribe(path, "auto")
             self.assertNotIn("language", model.transcribe.call_args.kwargs)
             self.assertEqual(result.language, "en")
 
@@ -72,7 +79,7 @@ class VoiceTests(unittest.TestCase):
             whisper = Mock(load_model=Mock(return_value=model))
             with patch("gensia.voice.importlib.import_module", return_value=whisper):
                 with self.assertRaisesRegex(VoiceError, "não encontrou fala"):
-                    WhisperTranscriber().transcribe(path)
+                    WhisperTranscriber(checkpoint=checkpoint(directory)).transcribe(path)
 
     def test_configuration_is_bounded(self):
         with self.assertRaises(ValueError):
@@ -116,8 +123,9 @@ class PiperTests(unittest.TestCase):
             self.assertEqual(output.read_bytes()[:4], b"RIFF")
             self.assertEqual(result["output"], str(output))
         command, options = calls[0]
-        self.assertEqual(command[-1], "Olá; $(whoami)")
-        self.assertIn("--", command)
+        self.assertNotIn("Olá; $(whoami)", command)
+        self.assertEqual(options['input'], "Olá; $(whoami)\n")
+        self.assertIn("-I", command)
         self.assertFalse(options["shell"])
 
     def test_refuses_overwrite_without_approval(self):
@@ -140,7 +148,7 @@ class PiperTests(unittest.TestCase):
             voice = self.voice_files(directory)
             output = Path(directory) / "fala.wav"
             output.write_bytes(b"original")
-            with self.assertRaisesRegex(VoiceError, "modelo incompatível"):
+            with self.assertRaisesRegex(VoiceError, "O Piper falhou"):
                 PiperSynthesizer(runner=runner).synthesize(
                     "Olá", voice, output, approve_overwrite=True
                 )

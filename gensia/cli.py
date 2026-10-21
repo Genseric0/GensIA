@@ -76,8 +76,10 @@ def main(argv=None) -> int:
     transcribe.add_argument("--language", default="pt", help="código de idioma ou auto")
     transcribe.add_argument("--device", choices=tuple(sorted(WhisperTranscriber.DEVICES)), default="cpu")
     transcribe.add_argument("--max-mib", type=int, default=500)
+    transcribe.add_argument("--checkpoint", help="ficheiro .pt local confiável; necessário para transcrever sem download")
     synthesize = voice_sub.add_parser("synthesize", help="criar um WAV local com Piper")
-    synthesize.add_argument("text")
+    synthesize.add_argument("text", nargs="?")
+    synthesize.add_argument("--stdin", action="store_true", help="ler texto UTF-8 limitado de stdin, sem texto em argv")
     synthesize.add_argument("--voice", required=True, help="ficheiro local VOZ.onnx")
     synthesize.add_argument("--output", required=True, help="ficheiro WAV de destino")
     synthesize.add_argument("--approve-overwrite", action="store_true")
@@ -207,18 +209,24 @@ def main(argv=None) -> int:
                 )
             print(json.dumps(output, ensure_ascii=False, indent=2))
             return 0
-        except (SecurityError, KevError, StaticAnalysisError) as exc:
+        except (SecurityError, KevError, StaticAnalysisError, ToolError) as exc:
             print(str(exc), file=sys.stderr)
             return 9
     if args.command == "voice":
         try:
             if args.voice_command == "transcribe":
-                engine = WhisperTranscriber(args.whisper_model, args.device, args.max_mib)
+                engine = WhisperTranscriber(args.whisper_model, args.device, args.max_mib, checkpoint=args.checkpoint)
                 output = engine.transcribe(args.file, args.language).as_dict()
             elif args.voice_command == "synthesize":
                 engine = PiperSynthesizer(args.tts_timeout)
+                if args.stdin:
+                    if args.text is not None:
+                        raise VoiceError('Escolhe texto posicional ou --stdin, não ambos.')
+                    text = engine.read_stdin(sys.stdin.buffer)
+                else:
+                    text = args.text
                 output = engine.synthesize(
-                    args.text, args.voice, args.output, args.approve_overwrite
+                    text, args.voice, args.output, args.approve_overwrite
                 )
             elif args.voice_command == "devices":
                 output = {"input_devices": MicrophoneRecorder().list_devices()}

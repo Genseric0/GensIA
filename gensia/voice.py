@@ -4,6 +4,7 @@ import importlib
 from pathlib import Path
 import re
 import os
+import stat
 import subprocess
 import sys
 import tempfile
@@ -12,6 +13,26 @@ import wave
 
 class VoiceError(RuntimeError):
     """Erro previsível do módulo de voz."""
+
+
+def _validate_text(text, maximum, message):
+    if (not isinstance(text, str) or not text.strip() or len(text) > maximum
+            or any((ord(char) < 32 and char not in '\t\n\r') or 127 <= ord(char) <= 159 for char in text)):
+        raise VoiceError(message)
+    try:
+        text.encode('utf-8', errors='strict')
+    except UnicodeError:
+        raise VoiceError(message) from None
+    return text.strip()
+
+
+def _promote_audio(temporary, output, approve_overwrite):
+    if approve_overwrite is True:
+        os.replace(temporary, output)
+    else:
+        # Atomic exclusive publication: a late-created destination must survive.
+        os.link(temporary, output)
+        temporary.unlink()
 
 
 @dataclass(frozen=True)
@@ -43,7 +64,8 @@ class WhisperTranscriber:
     DEVICES = frozenset(("cpu", "cuda"))
     EXTENSIONS = frozenset((".wav", ".mp3", ".flac", ".m4a", ".ogg", ".webm"))
 
-    def __init__(self, model: str = "base", device: str = "cpu", max_mib: int = 500):
+    def __init__(self, model: str = "base", device: str = "cpu", max_mib: int = 500,
+                 checkpoint: str | Path | None = None):
         if model not in self.MODELS:
             raise ValueError(f"Modelo Whisper inválido: {model}")
         if device not in self.DEVICES:
@@ -53,6 +75,21 @@ class WhisperTranscriber:
         self.model = model
         self.device = device
         self.max_bytes = max_mib * 1024 * 1024
+        self.checkpoint = checkpoint
+
+    def _checkpoint_path(self):
+        if self.checkpoint is None:
+            raise VoiceError('Fornece --checkpoint com um ficheiro .pt local confiável; não são descarregados modelos.')
+        try:
+            path = Path(self.checkpoint).expanduser()
+            info = path.lstat()
+            if (path.suffix.lower() != '.pt' or not stat.S_ISREG(info.st_mode)
+                    or info.st_nlink != 1 or not 1 <= info.st_size <= 4 * 1024**3
+                    or getattr(info, 'st_file_attributes', 0) & 0x400):
+                raise ValueError('invalid checkpoint')
+            return path.resolve(strict=True)
+        except (OSError, ValueError, TypeError):
+            raise VoiceError('Checkpoint deve ser .pt local regular, sem links e até 4 GiB.') from None
 
     def _validate_file(self, audio_file: str | Path) -> Path:
         path = Path(audio_file).expanduser()
@@ -71,6 +108,8 @@ class WhisperTranscriber:
     def _validate_language(language: str | None) -> str | None:
         if language is None:
             return None
+        if not isinstance(language, str):
+            raise VoiceError("Idioma inválido; usa um código como pt, en ou 'auto'.")
         language = language.strip().lower()
         if language == "auto":
             return None
@@ -81,6 +120,7 @@ class WhisperTranscriber:
     def transcribe(self, audio_file: str | Path, language: str | None = "pt") -> Transcript:
         path = self._validate_file(audio_file)
         language = self._validate_language(language)
+        checkpoint = self._checkpoint_path()
         try:
             whisper = importlib.import_module("whisper")
         except (ImportError, ModuleNotFoundError) as exc:
@@ -88,22 +128,27 @@ class WhisperTranscriber:
                 "Whisper não está instalado. Instala 'openai-whisper' e o FFmpeg."
             ) from exc
         try:
-            model = whisper.load_model(self.model, device=self.device)
+            model = whisper.load_model(str(checkpoint), device=self.device)
             options = {"task": "transcribe", "fp16": self.device == "cuda"}
             if language is not None:
                 options["language"] = language
             result = model.transcribe(str(path), **options)
         except VoiceError:
             raise
-        except Exception as exc:
-            raise VoiceError(f"A transcrição falhou: {exc}") from exc
+        except Exception:
+            raise VoiceError("A transcrição falhou; verifica o áudio, checkpoint e dependências locais.") from None
         if not isinstance(result, dict):
             raise VoiceError("O Whisper devolveu uma resposta inválida.")
-        text = str(result.get("text", "")).strip()
-        if not text:
+        text = result.get("text", "")
+        if isinstance(text, str) and not text.strip():
             raise VoiceError("O Whisper não encontrou fala no ficheiro.")
+        text = _validate_text(text, 100000, 'O Whisper devolveu texto inválido ou excessivo.')
         detected = result.get("language")
         segments = result.get("segments")
+        if detected is not None and (not isinstance(detected, str) or not re.fullmatch(r'[a-z]{2,3}', detected)):
+            raise VoiceError('O Whisper devolveu idioma inválido.')
+        if segments is not None and (not isinstance(segments, list) or len(segments) > 100000):
+            raise VoiceError('O Whisper devolveu segmentos inválidos.')
         return Transcript(
             text=text,
             language=str(detected) if detected else language,
@@ -117,6 +162,7 @@ class PiperSynthesizer:
     """Cria um WAV local através da CLI oficial do Piper, sem reprodução."""
 
     MAX_TEXT = 5000
+    MAX_WAV_BYTES = 64 * 1024 * 1024
 
     def __init__(self, timeout: float = 120.0, runner=subprocess.run):
         if not 1 <= timeout <= 600:
@@ -147,7 +193,7 @@ class PiperSynthesizer:
         if not parent.is_dir():
             raise VoiceError("A pasta de destino não existe.")
         output = parent / requested.name
-        if output.exists() and not approve_overwrite:
+        if output.exists() and approve_overwrite is not True:
             raise VoiceError("O WAV já existe; usa --approve-overwrite para o substituir.")
         if output.exists() and not output.is_file():
             raise VoiceError("O destino existente não é um ficheiro.")
@@ -162,8 +208,7 @@ class PiperSynthesizer:
     ) -> dict:
         if not isinstance(text, str) or not text.strip():
             raise VoiceError("O texto para síntese está vazio.")
-        if len(text) > self.MAX_TEXT or "\x00" in text:
-            raise VoiceError(f"Texto inválido ou acima de {self.MAX_TEXT} caracteres.")
+        text = _validate_text(text, self.MAX_TEXT, f'Texto inválido ou acima de {self.MAX_TEXT} caracteres.')
         voice, _config = self._voice_files(voice_file)
         output = self._output_path(output_file, approve_overwrite)
         descriptor, temporary_name = tempfile.mkstemp(
@@ -171,47 +216,73 @@ class PiperSynthesizer:
         )
         os.close(descriptor)
         temporary = Path(temporary_name)
-        temporary.unlink()
         command = [
             sys.executable,
+            "-I",
+            "-X", "utf8",
             "-m",
             "piper",
             "-m",
             str(voice),
             "-f",
             str(temporary),
-            "--",
-            text.strip(),
         ]
         try:
             completed = self.runner(
                 command,
                 shell=False,
-                capture_output=True,
+                input=' '.join(text.splitlines()) + '\n',
+                encoding='utf-8',
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
                 text=True,
                 timeout=self.timeout,
             )
             if completed.returncode != 0:
-                detail = (completed.stderr or "erro não especificado").strip()[:500]
-                raise VoiceError(f"O Piper falhou: {detail}")
-            if not temporary.is_file():
-                raise VoiceError("O Piper terminou sem criar o WAV.")
-            header = temporary.read_bytes()[:12]
-            if len(header) < 12 or header[:4] != b"RIFF" or header[8:12] != b"WAVE":
+                raise VoiceError("O Piper falhou; verifica a voz e as dependências locais.")
+            info = temporary.lstat()
+            if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or not 12 <= info.st_size <= self.MAX_WAV_BYTES:
+                raise VoiceError('O Piper criou uma saída inválida ou excessiva.')
+            descriptor = os.open(temporary, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_NONBLOCK', 0))
+            try:
+                opened = os.fstat(descriptor)
+                if (not stat.S_ISREG(opened.st_mode) or opened.st_nlink != 1
+                        or not 12 <= opened.st_size <= self.MAX_WAV_BYTES
+                        or (info.st_dev, info.st_ino) != (opened.st_dev, opened.st_ino)):
+                    raise VoiceError('O Piper criou uma saída inválida ou alterada.')
+                header = os.read(descriptor, 12)
+            finally:
+                os.close(descriptor)
+            if len(header) != 12 or header[:4] != b"RIFF" or header[8:12] != b"WAVE":
                 raise VoiceError("O Piper criou um ficheiro que não é WAV válido.")
-            os.replace(temporary, output)
+            _promote_audio(temporary, output, approve_overwrite)
             return {
                 "output": str(output),
                 "bytes": output.stat().st_size,
                 "voice": voice.name,
-                "local_only": True,
+                "local_invocation": True,
+                "network_isolated": False,
+                "text_transport": "stdin",
             }
         except subprocess.TimeoutExpired as exc:
             raise VoiceError("O Piper excedeu o tempo limite.") from exc
-        except OSError as exc:
-            raise VoiceError(f"Não foi possível executar o Piper: {exc}") from exc
+        except OSError:
+            raise VoiceError("Não foi possível executar o Piper ou publicar o WAV; verifica as permissões e o destino.") from None
         finally:
             temporary.unlink(missing_ok=True)
+
+    @classmethod
+    def read_stdin(cls, stream):
+        if stream.isatty():
+            raise VoiceError('Redireciona um ficheiro UTF-8 para --stdin.')
+        raw = stream.read(cls.MAX_TEXT * 4 + 1)
+        if not isinstance(raw, bytes) or len(raw) > cls.MAX_TEXT * 4:
+            raise VoiceError('Entrada UTF-8 inválida ou excessiva.')
+        try:
+            value = raw.decode('utf-8', errors='strict')
+        except UnicodeError:
+            raise VoiceError('Entrada UTF-8 inválida ou excessiva.') from None
+        return _validate_text(value, cls.MAX_TEXT, 'Entrada UTF-8 inválida ou excessiva.')
 
 
 class MicrophoneRecorder:
@@ -242,7 +313,7 @@ class MicrophoneRecorder:
         if not parent.is_dir():
             raise VoiceError("A pasta de destino não existe.")
         output = parent / requested.name
-        if output.exists() and not approve_overwrite:
+        if output.exists() and approve_overwrite is not True:
             raise VoiceError("O WAV já existe; usa --approve-overwrite para o substituir.")
         if output.exists() and not output.is_file():
             raise VoiceError("O destino existente não é um ficheiro.")
@@ -252,8 +323,8 @@ class MicrophoneRecorder:
         sounddevice = self._sounddevice()
         try:
             devices = sounddevice.query_devices()
-        except Exception as exc:
-            raise VoiceError(f"Não foi possível consultar os dispositivos: {exc}") from exc
+        except Exception:
+            raise VoiceError("Não foi possível consultar os dispositivos locais.") from None
         result = []
         for index, device in enumerate(devices):
             inputs = int(device.get("max_input_channels", 0))
@@ -314,7 +385,7 @@ class MicrophoneRecorder:
                             raise VoiceError("O dispositivo devolveu um bloco de áudio incompleto.")
                         audio.writeframesraw(payload)
                         remaining -= count
-            os.replace(temporary, output)
+            _promote_audio(temporary, output, approve_overwrite)
             return {
                 "output": str(output),
                 "bytes": output.stat().st_size,
@@ -326,7 +397,7 @@ class MicrophoneRecorder:
             }
         except VoiceError:
             raise
-        except Exception as exc:
-            raise VoiceError(f"A gravação do microfone falhou: {exc}") from exc
+        except Exception:
+            raise VoiceError("A gravação do microfone falhou; verifica o dispositivo e as permissões.") from None
         finally:
             temporary.unlink(missing_ok=True)
