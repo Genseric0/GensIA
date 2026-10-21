@@ -61,7 +61,23 @@ Validação efetivamente executada depois da atualização:
 ```
 
 Ambos terminaram com código 0. O relatório final contém 52 distribuições e zero
-advisories conhecidos. O CI repete a consulta com o seu próprio ambiente resolvido.
+advisories conhecidos. Esse relatório inclui apenas distribuições publicadas.
+Na execução remota com a GensIA instalada em editable, a consulta direta em modo
+strict falhou por a distribuição `gensia-local` não estar publicada; `--skip-editable`
+também não resolveu a reprodução. O CI usa o inventário completo das restantes
+distribuições, sem voltar a resolver dependências:
+
+```bash
+.venv/bin/python -m pip freeze --all --exclude-editable > artifacts/audit-requirements.txt
+.venv/bin/python -m pip_audit --strict --disable-pip --no-deps -r artifacts/audit-requirements.txt --progress-spinner off --format json --output artifacts/dependencies.json
+```
+
+O workflow exige primeiro que `gensia-local` seja a única distribuição editable.
+Se aparecer outra, a auditoria falha antes da exclusão. `freeze --all` inclui os
+build tools e todas as transitivas; `--no-deps` não os omite deste inventário.
+O código da própria GensIA é analisado por Bandit, revisão e testes, não por uma
+pesquisa de uma publicação PyPI inexistente. A reprodução local com o inventário
+terminou com código 0 e zero advisories; o CI repete no seu próprio ambiente.
 O modo `--strict` trata indisponibilidade ou dados insuficientes como erro; um
 relatório sem alertas não comprova ausência de vulnerabilidades desconhecidas.
 

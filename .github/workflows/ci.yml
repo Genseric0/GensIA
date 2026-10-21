@@ -138,12 +138,20 @@ jobs:
         run: python -m bandit -r gensia --severity-level medium --confidence-level low --ignore-nosec -f json -o artifacts/bandit.json
       - name: Audit installed dependencies against published advisories
         if: always()
-        run: python -m pip_audit --strict --progress-spinner off --format json --output artifacts/dependencies.json
+        # GensIA itself is reviewed as source; it is not a published PyPI package.
+        # Assert that excluding editable installs cannot hide third-party packages.
+        # Audit exact versions from this environment without resolving them again.
+        run: |
+          python -c "import json,subprocess,sys; rows=json.loads(subprocess.check_output([sys.executable,'-m','pip','list','--editable','--format=json'])); names={r['name'].lower().replace('_','-') for r in rows}; sys.exit(0 if names == {'gensia-local'} else 'unexpected editable distributions; dependency audit blocked')"
+          python -m pip freeze --all --exclude-editable > artifacts/audit-requirements.txt
+          python -m pip_audit --strict --disable-pip --no-deps -r artifacts/audit-requirements.txt --progress-spinner off --format json --output artifacts/dependencies.json
       - name: Upload security evidence
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: security-evidence
-          path: artifacts/*.json
+          path: |
+            artifacts/*.json
+            artifacts/audit-requirements.txt
           if-no-files-found: warn
           retention-days: 7

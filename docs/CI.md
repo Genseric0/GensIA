@@ -121,3 +121,22 @@ sem PNG, em `docs/screenshots/chat-browser-2026-10-21/validation.json`.
 Nenhum screenshot pode ser atribuído a um navegador que não foi executado.
 Os contratos Node não substituem E2E visual; a integração de browser é documentada
 separadamente em INTERFACE.md.
+## Correção da consulta de dependências no CI
+
+O job de segurança inicial falhou porque `pip-audit --strict` procurou a própria
+distribuição editable `gensia-local 0.61.0` no PyPI, onde não está publicada.
+`--skip-editable` também falhou na reprodução desta instalação e não é utilizado.
+O job confirma primeiro que a única distribuição editable é `gensia-local`; qualquer
+editable adicional bloqueia a auditoria, impedindo que uma dependência de terceiros
+seja omitida silenciosamente. Depois exporta todas as versões instaladas:
+
+```bash
+python -m pip freeze --all --exclude-editable > artifacts/audit-requirements.txt
+python -m pip_audit --strict --disable-pip --no-deps -r artifacts/audit-requirements.txt --progress-spinner off --format json --output artifacts/dependencies.json
+```
+
+`freeze --all` inclui pip, setuptools e todas as transitivas instaladas. `--no-deps`
+impede nova resolução, pois cada distribuição já consta do inventário. A GensIA
+continua coberta pela revisão, Bandit e regressões. Não se ignora nenhum identificador
+de vulnerabilidade; falhas de consulta continuam a bloquear o job. A validação local
+deste comando não substitui a consulta do resultado remoto do commit corrigido.
