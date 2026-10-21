@@ -109,6 +109,20 @@ justificam apresentar estas capacidades como concluídas.
 
 ## Referências primárias
 
+### Atualização0.64 — recuperação em cópia — 21/10/2026
+
+Novo memory_recovery.py mantém SQLite afastado da origem e recupera só clone
+privado, com consentimento exato, limites e validação. Recusa WAL pelo header e
+auxiliares, super-journal por magic no trailer e tamanho de rollback excessivo
+antes de abrir SQLite; recusa schema adicional e reconstrói notas canónicas.
+Hash/estat é deteção observada de alteração, não prova de lock ou snapshot atómico.
+P1 corrigido em memory_restore.py: destino principal ausente com journal antigo
+podia produzir sucesso seguido de falha de leitura. Agora recusa todos os
+auxiliares do destino, preservando-os. Testes/causa em DATABASE_VALIDATION.md.
+17 testes novos, Bandit sem médios/elevados e scanner limitado sem assinaturas.
+Sem novas dependências, avaliação intrusiva externa ou reparação de dados reais.
+O modo não é sandbox para SQLite hostil e exige origem parada por operador.
+
 ### Atualização0.63 — integridade de ficheiros — 21/10/2026
 
 Reproduzida exposição de destino incompleto após erro ENOSPC em fsync de

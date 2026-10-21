@@ -8,6 +8,7 @@ from .memory import MemoryStore, MemoryError
 from .memory_backup import backup_notes
 from .memory_restore import restore_notes
 from .memory_check import check_memory
+from .memory_recovery import recover_copy
 from .kev import CisaKevCatalog, KevError
 from .documents import DocumentError, SafeTextDocuments
 from .pdf_process import SupervisedPdfDocuments
@@ -64,6 +65,10 @@ def main(argv=None) -> int:
     mem_restore.add_argument("--input", required=True, help="backup JSON local")
     mem_restore.add_argument("--approve", action="store_true")
     mem_sub.add_parser("check", help="verificar integridade e notas sem reparar ou exportar dados")
+    recovery = mem_sub.add_parser("recover-copy", help="recuperar notas numa base nova, com origem parada e preservada")
+    recovery.add_argument("--output", required=True, help="base de destino nova; nunca substitui a origem")
+    recovery.add_argument("--approve", action="store_true")
+    recovery.add_argument("--source-stopped", action="store_true", help="declaro que parei todos os acessos à origem e auxiliares")
     mem_delete = mem_sub.add_parser("delete")
     mem_delete.add_argument("key")
     mem_delete.add_argument("--approve", action="store_true")
@@ -262,6 +267,8 @@ def main(argv=None) -> int:
                 output = restore_notes(store, args.input, args.approve)
             elif args.memory_command == "check":
                 output = check_memory(store)
+            elif args.memory_command == "recover-copy":
+                output = recover_copy(store, args.output, args.approve, args.source_stopped)
             else:
                 output = store.delete(args.key, args.approve)
             print(json.dumps(output, ensure_ascii=False, indent=2))

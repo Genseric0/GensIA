@@ -1,5 +1,23 @@
 # Progresso GensIA
 
+## 21/10/2026 — recuperação assistida em cópia — v0.64.0
+
+Novo `memory recover-copy --output NOVA --approve --source-stopped`: origem lida
+apenas como bytes, cópia/hash verificados, recuperação SQLite só em área privada,
+validação e reconstrução de notas num esquema canónico antes da publicação.
+Suporta rollback de uma base GensIA confiável até64MiB por ficheiro/1000notas;
+recusa WAL, super-journals, expansão excessiva declarada e schemas adicionais.
+Não impõe quiescência: o operador tem de parar todos os acessos antes das flags.
+Corrigida também aceitação de auxiliares antigos no destino do restauro JSON.
+17 regressões novas PASS;suíte411 Python PASS/0 omitidos em30.502s;coverage87%
+combinado. Bandit sem médios/elevados;scanner145 ficheiros/0 assinaturas;wheel0.64
+instalado offline fora do checkout e9 etapas PASS, incluindo recover-copy/check.
+Procedimento e limites em docs/MEMORY_RECOVERY.md. Sem dados reais, hardware,
+reparação da origem, cloud ou dependências novas. CI atual em PR1/checks.
+Estado RELEASE BLOCKED para distribuição comercial. Próximo: validar percurso
+operacional no hardware alvo com modelo/voz reais e concluir distribuição/licenças;
+WAL/multi-base e sandbox de bases hostis não são suportados por este incremento.
+
 ## 21/10/2026 — publicação e falhas da memória — v0.63.0
 
 Corrigida falha reproduzida em backup/restauro: ENOSPC em fsync deixava destino

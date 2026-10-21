@@ -9,7 +9,7 @@ Assistente pessoal modular para conversar com um modelo local, consultar documen
 guardar notas e executar operações explícitas no computador. Python, SQLite e
 FastAPI; interface web servida pelo próprio computador, sem CDN.
 
-**Candidata 0.63.0 — RELEASE BLOCKED.** Esta branch recupera uma conversa funcional
+**Candidata 0.64.0 — RELEASE BLOCKED.** Esta branch recupera uma conversa funcional
 e corrige falhas de autorização, privacidade e integridade reproduzidas na base
 remota 0.34. A avaliação está em [RELEASE_CHECKLIST](docs/RELEASE_CHECKLIST.md) e
 [TEST_REPORT](docs/TEST_REPORT.md). Serviços sintéticos não comprovam pesos reais.
@@ -68,6 +68,12 @@ Backup/restauro preparam e sincronizam o ficheiro antes de publicar sem substitu
 destinos. Avisos após publicação assinalam que não se deve repetir automaticamente. Ensaios de
 interrupção e limites de recuperação estão em [MEMORY_RECOVERY](docs/MEMORY_RECOVERY.md).
 
+`memory recover-copy` recupera notas numa base nova a partir de uma origem
+parada em modo rollback, incluindo um journal pendente. Exige aprovação e
+declaração explícita de que todos os acessos foram parados. Só abre SQLite na
+cópia; verifica hashes e recusa WAL, super-journals e esquemas personalizados.
+O operador precisa de garantir a paragem: o comando não impõe esse bloqueio.
+
 O chat mantém contexto apenas na sessão do navegador. Notas persistentes continuam
 operações explícitas da CLI. Envio de emails e execução autónoma de ferramentas não
 estão implementados. Os adaptadores de voz exigem motores e modelos preparados.
@@ -85,6 +91,17 @@ python -m gensia memory --db notas.sqlite3 check
 python -m gensia memory --db notas.sqlite3 backup --output notas-novas.memory-backup.json
 python -m gensia memory --db restaurada.sqlite3 restore --input notas-novas.memory-backup.json --approve
 ```
+
+Para recuperação assistida, após parar a aplicação e todos os outros acessos
+à origem e preservar os ficheiros originais, com Python3.11+:
+
+```bash
+python -m gensia memory --db notas.sqlite3 recover-copy --output recuperada-nova.sqlite3 --approve --source-stopped
+python -m gensia memory --db recuperada-nova.sqlite3 check
+```
+
+Não apagar journals nem reutilizar um destino existente. O manual descreve
+limites e avisos. Esta operação não substitui backups externos.
 
 Backups são texto simples, sem cifragem. Restauro recusa destinos existentes.
 `memory check` verifica integridade e notas numa transação de leitura; requer

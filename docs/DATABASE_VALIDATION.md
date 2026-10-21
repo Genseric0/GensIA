@@ -1,5 +1,24 @@
 # Validação da memória e integridade de dados
 
+## Incremento0.64 — 21/10/2026
+
+Novo recover-copy: leitura de bytes da origem e journal, hashes/estat verificados,
+recuperação SQLite só na cópia, notas/integridade verificadas, esquema normalizado
+e publicação exclusiva. 17 regressões novas;suíte411 Python PASS local. Paragem
+da origem é declaração do operador, não lock verificado. Só uma base GensIA em
+rollback;WAL/multi-base/esquemas adicionais recusados. Ver MEMORY_RECOVERY.md.
+
+| Problema | Causa/correção | Evidência |
+| --- | --- | --- |
+| Hot journal impedia leitura da origem | Rollback precisa de escrita; memory_recovery.py recupera somente cópia privada com consentimento | Teste com cache spill/kill recupera101 notas; originais mantêm hashes e continuam a recusar leitura |
+| P1: restauro podia indicar sucesso com auxiliares antigos | memory_restore.py só verificava destino principal; ensure_new_database recusa também journal/WAL/SHM antes de preparar e antes de publicar | test_memory_recovery cobre todos os auxiliares e destino concorrente; nenhum é apagado |
+
+Reprodução manual da baseline072cbc6 com dados sintéticos e journal copiado:
+restored:true, seguida de erro na leitura read-only. Na versão corrigida, a
+operação é recusada e o destino principal continua ausente. Não se demonstrou
+nesse ensaio perda de notas ou divulgação entre utilizadores; não se afirma tal
+exploração. Nenhuma base real foi recuperada ou alterada.
+
 ## Incremento0.63 — 21/10/2026
 
 Antes: injeção ENOSPC em fsync deixava backup/base de destino parcialmente

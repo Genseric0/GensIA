@@ -7,6 +7,10 @@ O incremento0.63 corrige publicação parcial de backup/restauro e acrescenta
 ensaios de interrupção:394 testes locais PASS. Hot journals e órfãos continuam
 a exigir intervenção explícita; ver MEMORY_RECOVERY.md. Sem ensaio físico de
 disco cheio/corte de energia. O CI corrente deve ser consultado no PR.
+O incremento0.64 acrescenta recuperação de hot journal somente numa cópia,
+com consentimento específico, hashes e validação de notas;411 testes locais
+PASS. Não impõe lock à origem e não suporta WAL/multi-base. O ensaio não
+substitui validação operacional no hardware alvo ou recuperação física.
 Os [checks do PR1](https://github.com/Genseric0/GensIA/pull/1/checks) indicam o
 estado do commit atual. A tabela e run específico abaixo preservam a baseline0.61.
 

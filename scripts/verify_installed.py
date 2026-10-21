@@ -49,6 +49,11 @@ def main(argv=None):
              "raise SystemExit(0 if restored.get('idioma')==before else 1)"],
             [str(python), '-I', '-B', '-m', 'gensia', 'memory',
              '--db', 'restored.sqlite3', 'check'],
+            [str(python), '-I', '-B', '-m', 'gensia', 'memory',
+             '--db', 'synthetic.sqlite3', 'recover-copy', '--output', 'recovered.sqlite3',
+             '--approve', '--source-stopped'],
+            [str(python), '-I', '-B', '-m', 'gensia', 'memory',
+             '--db', 'recovered.sqlite3', 'check'],
         ]
         for command in commands:
             result = subprocess.run(command, cwd=root, stdin=subprocess.DEVNULL,

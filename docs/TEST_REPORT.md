@@ -1,4 +1,34 @@
-# Testes — 21/10/2026 — v0.63.0
+# Testes — 21/10/2026 — v0.64.0
+
+## Incremento0.64 — recuperação numa cópia
+
+Local Linux/Python3.12.14: **411 PASS,0 omitidos,0 falhas,30.502s**;17 testes novos
+em test_memory_recovery.py. Coverage combinado87%:3032 statements,338 não
+executados,926 ramos,152 parciais. Bandit sem médios/elevados;scanner limitado145
+ficheiros/0 assinaturas. Wheel0.64 instalado sem rede fora do checkout:9 etapas
+PASS, incluindo recover-copy e check sobre o resultado. Sem dependências novas.
+
+```bash
+.venv/bin/python -B -m unittest discover -s tests -p 'test_memory_recovery.py' -v
+GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
+.venv/bin/python -m coverage report
+.venv/bin/python -m bandit -r gensia --severity-level medium --confidence-level low --ignore-nosec
+.venv/bin/python scripts/check_secrets.py
+.venv/bin/python -m build --wheel --no-isolation
+.venv/bin/python scripts/verify_installed.py dist/gensia_local-0.64.0-py3-none-any.whl
+```
+
+Journal real por escrita de100 notas sintéticas/cache spill e término de processo
+antes de commit: leitura da origem continua a falhar, cópia contém valores
+confirmados e hashes dos dois originais são idênticos antes/depois. Spy confirma
+SQLite apenas nas cópias. Testados também consentimento, WAL sem auxiliares,
+super-journal/sentinel externa, tamanho excessivo, destinos/auxiliares existentes,
+alterações observadas na origem, schema adicional, falhas e avisos pós-publicação.
+Um caso de symlink é condicionado a POSIX; o CI testa ambos os sistemas.
+Não se comprovou lock à origem, snapshot atómico, hardware/corte de energia ou
+sandbox de bases hostis. Ver MEMORY_RECOVERY.md para procedimento e limites.
+CI do commit atual nos [checks do PR1](https://github.com/Genseric0/GensIA/pull/1/checks);
+resultados0.63 e anteriores abaixo são históricos. Interface sem alterações.
 
 ## Incremento0.63 — publicação e interrupções
 

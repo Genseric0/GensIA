@@ -1,4 +1,89 @@
-# Verificação e recuperação da memória — v0.63.0
+# Verificação e recuperação da memória — v0.64.0
+
+## Recuperação assistida numa cópia — 21/10/2026
+
+Novo comando para uma base de notas GensIA local confiável em modo rollback.
+Resolve o caso reproduzido na0.63: após cache spill e interrupção, um hot journal
+impede a leitura read-only, porque SQLite precisa de escrever para fazer rollback.
+A origem nunca é aberta pelo SQLite neste comando. Só são pedidos acessos de
+leitura aos seus bytes; não são apagados, renomeados ou reparados os originais.
+
+1. Parar a GensIA e todos os programas/processos que possam aceder à base e aos
+   seus auxiliares. Preservar conjuntamente os originais; não apagar o journal.
+2. Escolher uma pasta local confiável e um destino novo, sem quaisquer ficheiros
+   `-journal`, `-wal` ou `-shm` desse destino. Ter espaço para várias cópias.
+3. Usar Python3.11+ e as duas confirmações específicas:
+
+```bash
+python -m gensia memory --db notas.sqlite3 recover-copy --output recuperada-nova.sqlite3 --approve --source-stopped
+python -m gensia memory --db recuperada-nova.sqlite3 check
+```
+
+`--source-stopped` é uma declaração do operador. O programa não termina outros
+processos, não impõe lock à origem nem verifica a declaração. Não usar numa base
+ativa ou num filesystem de rede. Os hashes e estatísticas detetam alterações
+observadas; não criam snapshot atómico nem impedem escritas depois da última
+observação. `source_quiescence_enforced:false` mantém essa limitação explícita.
+
+O comando copia a base e o eventual journal para uma pasta privada na pasta do
+destino, por blocos de64KiB, com teto64MiB por ficheiro. Recusa ficheiros especiais,
+symlinks e hard links adicionais; compara identidade/tamanho/mtime/ctime antes e
+depois da leitura, hashes SHA256 de origem/cópia e outra leitura da origem antes
+de recuperar e antes de publicar. O acesso de leitura pode atualizar atime.
+`source_hashes_verified:true` só descreve as comparações realizadas, não garante
+ausência de escritores. Nenhum conteúdo de nota é incluído na saída.
+
+Antes de abrir SQLite na cópia, recusa WAL tanto pelo header da base como pela
+presença de `-wal`/`-shm`, e recusa trailers de super-journal. Também limita o
+tamanho original declarado pelo journal, páginas e sectores, impedindo expansão
+evidentemente excessiva antes dos limites SQL. Empty/zero journals são permitidos;
+headers não vazios e inválidos são recusados. Não se copiam super-journals nem
+se seguem os seus nomes para outros ficheiros. Apenas um journal rollback de
+uma base é suportado. Casos WAL/multi-base precisam de procedimento separado.
+
+SQLite recupera somente a cópia. São aplicados trusted_schema=OFF, limites de
+strings/SQL/expressões e orçamento cooperativo VM/tempo. Recuperação interna e
+I/O podem ocorrer fora do progress handler; não é deadline rígido nem sandbox
+para bases/journals hostis. SQLite e o SO devem ser confiáveis e atualizados.
+
+Depois valida notas/integridade, exige só a tabela memories e o índice automático
+esperado, exporta notas validadas e reconstrói esquema canónico numa segunda base.
+Não elimina silenciosamente tabelas/índices/triggers personalizados: recusa-os.
+Até1000 notas e os limites de backupJSONv1 continuam aplicáveis. Faz nova validação
+e publica o ficheiro completo com as guardas0.63. Não substitui a origem nem muda
+a configuração para passar a usar a cópia: essa decisão continua com o operador.
+
+Resultados incluem notas verificadas, número de ficheiros de origem e metadados
+de publicação. Falha antes de publicar não cria o destino final. Avisos depois de
+publicar indicam `do_not_retry:true`; limpeza não confirmada dá `recovered:false`
+mesmo com `destination_published:true`. Inspecionar antes de qualquer repetição.
+Interrupção pode deixar temporários privados com notas em texto simples, incluindo
+JSON e journals; não existe limpeza automática de órfãos após crash. A janela de
+hard link POSIX da0.63 mantém-se. Backups externos e retenção continuam necessários.
+
+### Validação e revisão do incremento0.64
+
+17 testes novos em test_memory_recovery.py: journal real criado por cache spill
+e término de processo, origem/journal byte a byte preservados, chamadas SQLite
+apenas nas cópias, consentimento exato, WAL com/sem auxiliares, super-journal com
+sentinel externa preservada, header de expansão excessiva, mudanças observadas na
+origem, destino/auxiliares existentes ou concorrentes, recusa de schema adicional,
+ficheiros inválidos, falhas injetadas e avisos pós-publicação. Um teste de symlink
+é específico POSIX. Não se recuperou base de cliente nem se simulou corte físico
+de energia. Suíte/CI e pacote instalado em TEST_REPORT.md e PR1/checks.
+
+Uma revisão defensiva auxiliar identificou guardas para WAL pelo header, ponteiro
+super-journal, expansão pelo journal e auxiliares no destino. Essas guardas foram
+implementadas e testadas; isto não equivale a auditoria independente certificada.
+O restauro JSON também passou a recusar auxiliares antigos do destino antes de
+ler o backup e novamente antes de publicar, preservando todos esses ficheiros.
+
+Fontes primárias consultadas em21/10/2026, sem novas dependências:
+[locking e hot journals SQLite](https://www.sqlite.org/lockingv3.html),
+[headers da base/journal](https://www.sqlite.org/fileformat.html),
+[pager.c oficial — readSuperJournal/readJournalHdr](https://github.com/sqlite/sqlite/blob/master/src/pager.c).
+Código consultado através do endpoint público contents de SQLite no GitHub;
+esta implementação não copia o pager nem substitui a recuperação SQLite.
 
 ## Publicação segura de backup e restauro — 21/10/2026
 
@@ -42,11 +127,12 @@ não são uma exploração exaustiva de todos os momentos possíveis de interrup
 Foi reproduzido um hot rollback journal após cache spill e término do processo.
 Leitura/check/backup em modo read-only podem falhar porque a recuperação SQLite
 precisa de escrita. O teste verifica essa recusa e recuperação por ligação
-explicitamente gravável apenas numa base sintética descartável. Não existe
-comando público de reparação; não apagar/renomear journals de uma base real.
+explicitamente gravável apenas numa base sintética descartável. Na0.63 não havia
+comando assistido; na0.64, recover-copy recupera só uma cópia e mantém a recusa
+de reparação da origem. Não apagar/renomear journals de uma base real.
 Parar a aplicação, preservar conjuntamente base e auxiliares antes de intervenção
-e preferir restauro lógico validado para destino novo. Recuperação assistida de
-journals permanece pendente, com consentimento e cópia verificada.
+e preferir restauro lógico validado para destino novo. O procedimento0.64 acima
+tem limites explícitos; WAL, multi-base e reparação física permanecem pendentes.
 
 Fontes primárias consultadas em 21/10/2026:
 [Python os.rename/os.link](https://docs.python.org/3.12/library/os.html#os.rename),

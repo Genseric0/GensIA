@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.64.0 — recuperação assistida numa cópia — 21/10/2026
+
+- CLI recover-copy, com aprovação e declaração específica de origem parada.
+- Captura de bytes/hash, rollback só em cópia privada, notas validadas e esquema
+  canónico publicado num destino novo. Nunca abre a origem pelo SQLite.
+- Guardas de WAL, super-journals, expansão por header, origem alterada, links,
+  tamanhos, schema adicional e auxiliares antigos no destino.
+- Restauro JSON também recusa auxiliares antigos;17 regressões novas e pacote
+  instalado validado em9 etapas. Manual e resultados em MEMORY_RECOVERY/TEST_REPORT.
+- Sem lock imposto à origem, reparação física, WAL ou novas dependências.
+
 ## 0.63.0 — publicação de backup/restauro — 21/10/2026
 
 - Corrigido destino parcial visível após falha de gravação/fsync: preparação

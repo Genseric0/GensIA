@@ -2,6 +2,13 @@
 
 Status: RELEASE BLOCKED. Target review date: 22 October 2026, Africa/Maputo.
 
+Incremental audit21/10,baseline072cbc6(v0.63):P1 reproduced with synthetic data:
+JSON restore accepted a new main filename with a pre-existing hot journal and
+reported success, then read-only access failed. Fixed in0.64 with destination
+sidecar guards and regressions.0.64 also adds explicit rollback recovery only
+on a byte-verified private copy. Full evidence/limits in DATABASE_VALIDATION.md,
+MEMORY_RECOVERY.md and TEST_REPORT.md. This is not a fresh full commercial audit.
+
 ## Verified baseline
 
 - Repository: https://github.com/Genseric0/GensIA

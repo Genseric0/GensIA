@@ -15,6 +15,14 @@ from .memory_backup import MAX_BACKUP_BYTES, MAX_NOTES
 from .publication import publish_new
 
 
+def ensure_new_database(path):
+    """No existing database or sidecars; never remove another database's files."""
+    for suffix in ('', '-journal', '-wal', '-shm'):
+        candidate = Path(str(path) + suffix)
+        if candidate.is_symlink() or candidate.exists():
+            raise MemoryError('Destino ou auxiliares já existem; nenhuma base foi substituída.')
+
+
 def _unique_object(pairs):
     result = {}
     for key, value in pairs:
@@ -95,6 +103,7 @@ def restore_notes(store: MemoryStore, source, approved=False):
     # O_EXCL alone does not reject every dangling symlink on Windows CRT.
     if store.path.is_symlink():
         raise MemoryError('Destino do restauro não pode ser link simbólico.')
+    ensure_new_database(store.path)
     notes, source_hash = _load_backup(source)
     publication = None
     try:
@@ -112,6 +121,7 @@ def restore_notes(store: MemoryStore, source, approved=False):
             def copy_completed(output):
                 with staged.open('rb') as input_stream:
                     shutil.copyfileobj(input_stream, output, length=64 * 1024)
+            ensure_new_database(store.path)
             publication = publish_new(store.path, copy_completed)
     except (OSError, sqlite3.Error) as exc:
         if publication is None:

@@ -1,3 +1,12 @@
+2026-10-21 — v0.64.0 — recuperação assistida numa cópia
+GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
+411PASS/0skip/0fail,30.502s;17novos.Coverage87%(3032statements,338missing,926branches,152partial).
+BanditMED/HIGH0;signatures145files/0findings;wheel0.64+installedverifier9PASS.
+Hotjournalreal/cache-spill/kill:recuperasócópia;origem+journalhashesidênticos.
+Rollbackúnicabase;WAL/superjournal/esquemaextra/links/expansãoexcessivarecusados.
+Consentimentoexato;quiescênciadeclaradapelooperador,nãoimposta;semsandbox/powerloss/hardware.
+RestauroJSONrecusaauxiliaresantigos;manualdocs/MEMORY_RECOVERY.md;CIcorrentePR1/checks.
+
 2026-10-21 — v0.63.0 — publicação/falhas da memória
 GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
 394PASS/0skip/0fail,21.612s;17novos.Coverage87%(2864statements,325missing,868branches,141partial).
