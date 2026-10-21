@@ -1,4 +1,5 @@
 """Fault injection and actual process termination, with synthetic data only."""
+from contextlib import closing
 import json
 import os
 from pathlib import Path
@@ -149,7 +150,7 @@ restore_notes(MemoryStore(sys.argv[1]), sys.argv[2], approved=True)
         with self.assertRaises(MemoryError):
             MemoryStore(target).get('confirmed')
         # Verify completed bytes independently, without weakening MemoryStore.
-        with sqlite3.connect(target.as_uri() + '?mode=ro', uri=True) as db:
+        with closing(sqlite3.connect(target.as_uri() + '?mode=ro', uri=True)) as db:
             self.assertEqual(db.execute('PRAGMA integrity_check').fetchone(), ('ok',))
             self.assertEqual(db.execute("SELECT value FROM memories WHERE key='confirmed'").fetchone(), ('original',))
 
@@ -197,7 +198,7 @@ with MemoryStore(sys.argv[1]).connect(write=True) as db:
         with self.assertRaises(MemoryError):
             self.store.get('confirmed')  # Read-only paths must not silently repair.
         # Explicit writable recovery only on this disposable synthetic fixture.
-        with sqlite3.connect(self.path) as recovery:
+        with closing(sqlite3.connect(self.path)) as recovery:
             self.assertEqual(recovery.execute('PRAGMA integrity_check').fetchone(), ('ok',))
         self.assertEqual(self.store.get('n0')['value'], 'a' * 4000)
         self.assertEqual(self.store.get('confirmed')['value'], 'original')
