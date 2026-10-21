@@ -1,4 +1,15 @@
-# Changel…185 tokens truncated…  silenciosa nem novas dependências. Estado comercial permanece RELEASE BLOCKED.
+# Changelog
+
+## 0.63.0 — publicação de backup/restauro — 21/10/2026
+
+- Corrigido destino parcial visível após falha de gravação/fsync: preparação
+  privada, sincronização e publicação exclusiva sem sobrescrever concorrentes.
+- Metadados distinguem destino publicado, sincronização e limpeza; avisos após
+  publicação indicam que não se deve repetir automaticamente.
+- Ensaios de término real de processos, SQLITE_FULL, rollback DELETE/WAL,
+  competição de destino e falhas ENOSPC injetadas; nenhum dado real utilizado.
+- Documentados hot journals, órfãos e a janela de hard link POSIX; sem reparação
+  silenciosa nem novas dependências. Estado comercial permanece RELEASE BLOCKED.
 
 ## 0.61.0 — candidata de hardening — 20–21/10/2026
 
