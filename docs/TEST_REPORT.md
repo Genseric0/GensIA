@@ -26,6 +26,16 @@ Oito PNG são previstos;aguardar execução e inspeção antes de declarar captu
 verificadas. CI corrente em[PR1/checks](https://github.com/Genseric0/GensIA/pull/1/checks).
 Resultados0.64 e anteriores abaixo são históricos.
 
+Primeiro Chromium0.65:[run39597189471](https://github.com/Genseric0/GensIA/actions/runs/39597189471),
+job119212932486,commit e382c04:falhou após duas capturas iniciais. Artifact12344189211
+descarregado e hash e93a26950bafd1a43101b4dc95ad53f6daef9e47bbb5a021ba6b2ea5b768df9f
+confirmado;validation.json tem passed:false. As duas imagens foram inspecionadas,
+sem corte horizontal observado. O runner lia o texto de uma etapa dentro de
+details fechado;agora abre o guia antes dessa asserção de conteúdo visível.
+Acrescentado checkpoint/failure_type fixos ao relatório, sem expor erros brutos
+ou tokens. A conclusão E2E depende da repetição;esta tentativa não é apresentada
+como validação do percurso completo.
+
 ## Incremento0.64 — recuperação numa cópia
 
 Local Linux/Python3.12.14: **413 PASS,0 omitidos,0 falhas,23.323s**;19 testes novos

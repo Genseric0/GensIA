@@ -12,7 +12,8 @@ async function main() {
   if (fs.existsSync(output)) throw new Error('evidence_directory_exists');
   fs.mkdirSync(output, {recursive:true});
   const report = {kind:'gensia.chat_browser_qa', passed:false, synthetic_model:true,
-    real_inference_tested:false, screenshots:[], checks:[], blocked_reason:null};
+    real_inference_tested:false, screenshots:[], checks:[], blocked_reason:null,
+    stage:'setup',failure_stage:null,failure_type:null};
   const save = () => fs.writeFileSync(path.join(output,'validation.json'), JSON.stringify(report,null,2)+'\n');
   let browser, child;
   try {
@@ -30,6 +31,7 @@ async function main() {
     for (const key of ['PATH','SYSTEMROOT','WINDIR','TEMP','TMP','TMPDIR']) {
       if (process.env[key]) env[key]=process.env[key];
     }
+    report.stage='server_start';
     child=spawn(process.env.GENSIA_PYTHON || 'python', ['-I','-B',path.join(__dirname,'chat_test_server.py')],
       {env,stdio:['ignore','pipe','ignore']});
     const port=await new Promise((resolve,reject) => {
@@ -62,6 +64,7 @@ async function main() {
     });
     const page=await context.newPage();
     const errors=[];page.on('pageerror',()=>errors.push('page_error'));
+    report.stage='setup_guidance';
     await page.goto(origin+'/app');
     await page.locator('#api-token').waitFor({state:'visible'});
     assert.equal(await page.locator('#prompt').isDisabled(),true);
@@ -75,13 +78,14 @@ async function main() {
     report.screenshots.push('setup-390.png');
     await page.setViewportSize({width:1440,height:1000});
     await page.locator('#setup-guide summary').click();
+    report.stage='connect_model';
     await page.locator('#api-token').fill(token);
     await page.locator('#connect').click();
     await page.waitForFunction(()=>!document.querySelector('#prompt').disabled);
     assert.equal(await page.locator('#api-token').inputValue(),'');
     assert.equal(await page.locator('#setup-progress').innerText(),'2 de 3 passos');
-    assert.equal(await page.locator('#setup-reply').innerText(),'Por testar');
     await page.locator('#setup-guide summary').click();
+    assert.equal(await page.locator('#setup-reply').innerText(),'Por testar');
     await page.screenshot({path:path.join(output,'setup-model-ready.png'),fullPage:true});
     report.screenshots.push('setup-model-ready.png');
     await page.locator('#setup-guide summary').click();
@@ -92,12 +96,14 @@ async function main() {
       await page.waitForFunction(()=>!document.querySelector('#prompt').disabled);
       if (expected) assert.match(await page.locator('.message.assistant').last().innerText(),expected);
     }
+    report.stage='conversation';
     await send('Explica DNS com um exemplo prático.', /Contexto: 1 mensagens/);
     assert.equal(await page.locator('#setup-progress').innerText(),'3 de 3 passos');
     await send('Como funciona o cache?', /Contexto: 3 mensagens/);
     report.checks.push('conversation_and_followup_context');
     await page.screenshot({path:path.join(output,'chat-desktop.png'),fullPage:true});
     report.screenshots.push('chat-desktop.png');
+    report.stage='responsive_conversation';
     for (const width of [768,390,320]) {
       await page.setViewportSize({width,height:1000});
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
@@ -106,6 +112,7 @@ async function main() {
       report.screenshots.push(`chat-${width}.png`);
     }
     report.checks.push('responsive_768_390_320_no_horizontal_overflow');
+    report.stage='privacy_and_errors';
     await send('SIMULATE_HTML', /<img src=x/);
     assert.equal(await page.locator('#messages img').count(),0);
     assert.equal(await page.evaluate(()=>window.__injected),undefined);
@@ -135,6 +142,7 @@ async function main() {
     await page.waitForFunction(()=>document.querySelector('#connection-status').textContent.includes('recusado'));
     report.checks.push('clear_session_no_storage_and_invalid_token');
     // Explicitly synthetic error response for the frontend recovery instructions.
+    report.stage='setup_error';
     await page.route('**/model', route => route.fulfill({status:503,contentType:'application/json',
       body:JSON.stringify({error:'model_not_found',message:'UNTRUSTED_DIAGNOSTIC'})}));
     await page.locator('#api-token').fill(token);await page.locator('#connect').click();
@@ -148,9 +156,12 @@ async function main() {
     await page.unroute('**/model');
     report.checks.push('setup_error_instructions_and_progress_reset_with_synthetic_error');
     assert.deepEqual(errors,[]);
-    report.passed=true;save();return 0;
+    report.passed=true;report.stage='completed';save();return 0;
   } catch (error) {
-    report.blocked_reason='browser_check_or_setup_failed';save();return 2;
+    report.blocked_reason='browser_check_or_setup_failed';
+    report.failure_stage=report.stage;
+    report.failure_type=error?.code==='ERR_ASSERTION'?'assertion':'browser_or_setup';
+    save();return 2;
   } finally {
     if (browser) await browser.close();
     if (child && child.exitCode===null) {

@@ -17,6 +17,10 @@ CI atual em PR1/checks. Estado RELEASE BLOCKED para venda; modelo/voz/hardware,
 licenças, distribuição e isolamento de clientes continuam gates separados.
 Próximo: diagnóstico operacional do modelo local e percurso de primeiro uso no
 hardware alvo; não interpretar provider sintético como inferência real.
+Primeiro Chromium0.65 falhou após duas capturas, descarregadas e inspecionadas.
+Runner ajustado para abrir details antes de ler etapa visível; checkpoints
+sanitizados acrescentados para diagnóstico. Run39597189471 permanece evidência
+de falha;consultar repetição nos checks do PR.
 
 ## 21/10/2026 — recuperação assistida em cópia — v0.64.0
 
