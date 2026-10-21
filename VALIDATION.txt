@@ -10,6 +10,9 @@ Sem pesos/audiohardware;primeiroCIWindowsfalhou,correçõesincluídaspara repeti
 Baseline worktree206f4d1:277PythonPASS/0skip11.376s,34NodePASS0.637s.
 Primeira regressão atual359PASS/1FAIL(importação API);corrigida e repetição360PASS.
 Ver docs/TEST_REPORT.md e RELEASE_CHECKLIST.md para limites e CI.
+CI final consultado:39521033113,commit04a866059fd65c1d7079c14b20f41ac620c76e02,SUCCESS6jobs.
+Linux3.12/3.13:366PythonPASS0skip;Windows3.12/3.13:341PASS25skipPOSIX/Linux.
+Node44PASS0skip e wheelverify6PASS nas4configurações.Security/ChromiumPASS.
 
 2026-10-16 — v0.34.0 — expiração local do painel
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q

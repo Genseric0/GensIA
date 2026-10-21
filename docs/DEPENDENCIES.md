@@ -38,6 +38,11 @@ pode resolver outras transitivas e não está validada por estes resultados.
 Os testes Windows/3.13 dependem dos resultados reais do CI, sem os inferir de
 uma execução Linux/3.12.
 
+Atualização: o [run39521033113](https://github.com/Genseric0/GensIA/actions/runs/39521033113)
+passou em Linux/Windows com Python3.12/3.13, incluindo instalação, testes e wheel.
+Ver TEST_REPORT.md para as omissões específicas de plataforma. Esta evidência
+não amplia automaticamente a matriz suportada para Python3.10/3.11 ou macOS.
+
 `requirements-dev.txt` e os extras fixam dependências diretas. Não fixam todos os
 pacotes transitivos nem usam hashes; futuras resoluções podem diferir. Antes de
 distribuir a clientes, repetir a instalação, `pip check`, a auditoria e os testes

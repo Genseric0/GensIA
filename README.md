@@ -131,8 +131,12 @@ O workflow não executa desenvolvimento permanente nem configura um agente Goose
 O alvo é um utilizador local, com serviço em 127.0.0.1. O token autentica o processo;
 não há contas de clientes, RBAC ou isolamento entre organizações. Internet e venda
 como serviço partilhado exigem trabalho adicional. Hardware de voz, modelo real,
-Windows e recuperação operacional precisam de evidência específica. Os testes não
+aplicações interativas Windows e recuperação operacional precisam de evidência específica. Os testes não
 garantem ausência de vulnerabilidades.
+
+O [CI do commit 04a8660](https://github.com/Genseric0/GensIA/actions/runs/39521033113)
+passou nos seis jobs, incluindo Windows/Linux, browser e segurança. A validação
+interativa de aplicações Windows e hardware continua separada destes testes.
 
 A licença de distribuição do projeto continua por definir pelo titular. Dependências
 e vozes mantêm licenças próprias; não foi atribuída uma licença em nome do autor.

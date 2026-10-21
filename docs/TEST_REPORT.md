@@ -3,6 +3,26 @@
 Estado: **RELEASE BLOCKED**. Resultados reais no ambiente Linux/Python3.12.14,
 Node24.19.0, dependências isoladas em `.venv`; não são testes no PC do cliente.
 
+## CI remoto confirmado
+
+[Run39521033113](https://github.com/Genseric0/GensIA/actions/runs/39521033113),
+commit `04a866059fd65c1d7079c14b20f41ac620c76e02`: estado final **success**,
+seis jobs concluídos com sucesso. Logs efetivamente consultados em21/10/2026:
+
+| Configuração | Python | Node | Pacote instalado |
+| --- | --- | --- | --- |
+| Ubuntu24.04 /3.12 |366 PASS,0 omitidos,23.848s |44 PASS,0 omitidos |6 etapas PASS |
+| Ubuntu24.04 /3.13 |366 PASS,0 omitidos,15.732s |44 PASS,0 omitidos |6 etapas PASS |
+| Windows2025 /3.12 |341 PASS,25 omitidos,27.071s |44 PASS,0 omitidos |6 etapas PASS |
+| Windows2025 /3.13 |341 PASS,25 omitidos,23.643s |44 PASS,0 omitidos |6 etapas PASS |
+
+Os jobs Chromium e security passaram. Scanner remoto:136 ficheiros/0 assinaturas;
+pipcheck e advisories sem achados; Bandit sem médios/elevados. As omissões Windows
+são testes condicionados a recursos POSIX/Linux: descritores relativos,
+O_NOFOLLOW, FIFO, bits de modo e limites/sinais de processos Linux, entre outros.
+Os controlos equivalentes Windows ainda exigem desenvolvimento/verificação.
+Não se apagaram testes nem se adicionaram omissões para fazer esta matriz passar.
+
 ## Baseline e regressão
 
 | Execução | Resultado |
@@ -86,8 +106,8 @@ Foi usada a48.ª amostra ordenada como percentil95. Servidor encerrado com
 e serialização com resposta sintética. Não mede inferência, carga concorrente,
 capacidade de hardware ou SLA; não pode sustentar alegações comerciais de desempenho.
 
-Não houve inferência com pesos Ollama, Whisper/Piper reais, microfone, validação
-Windows nativa, carga representativa de clientes ou avaliação de SLA. Os tempos
+Não houve inferência com pesos Ollama, Whisper/Piper reais, microfone, uso
+interativo de aplicações Windows, carga representativa de clientes ou avaliação de SLA. Os tempos
 da suíte não são benchmark do modelo nem teste de carga. Os limites de memória,
 latência e concorrência de produção continuam pendentes. Não foram executados
 ZAP, CodeQL, Semgrep, Gitleaks, OSV-Scanner ou Trivy.

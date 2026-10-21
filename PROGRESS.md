@@ -16,6 +16,13 @@ PNG reais descarregados e inspecionados. Sem pesos reais testados. PR1 aberto.
 Estado RELEASE BLOCKED: ver docs/RELEASE_CHECKLIST.md. Próximo: PR/CI efetivamente
 verificados, browser e hardware/modelo reais. Sem produção ou dados reais.
 
+Fecho da validação em21/10: PR1 aberto, commit04a8660 com seis jobs CI verdes
+(run39521033113). Windows:341 testes Python PASS/25 específicos POSIX omitidos;
+Linux:366 PASS/0 omitidos;44 Node e instalação isolada PASS em todas as quatro
+configurações. Security e Chromium PASS. As falhas dos primeiros runs foram
+corrigidas e preservadas nos relatórios. Próximo: modelo/voz/hardware e critérios
+de distribuição comercial; não repetir automaticamente o trabalho cancelado.
+
 ## 16/10/2026 — expiração local da sessão do painel — v0.34.0
 
 O painel limpa metadados/referência reutilizável ao token e aborta o pedido após

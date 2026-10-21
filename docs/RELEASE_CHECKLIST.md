@@ -13,17 +13,24 @@ para revisão e ensaio local controlado; não existe garantia de zero falhas.
 | Vulnerabilidades conhecidas da resolução instalada | Zero no pip-audit; Bandit sem médios/elevados |
 | Interface real e acessibilidade visual | Chromium remoto PASS; quatro PNG inspecionados; auditoria completa de acessibilidade pendente |
 | Modelo/voz reais | PENDENTE: pesos, dispositivos, desempenho e privacidade do daemon |
-| Windows e Python3.13 | PENDENTE de execução do CI e ensaio em hardware alvo |
-| CI obrigatório verde | PENDENTE: configuração não equivale a execução aprovada |
+| Windows e Python3.13 | PASS no CI Linux/Windows3.12/3.13; hardware e aplicações interativas pendentes |
+| CI obrigatório verde | PASS: [run39521033113](https://github.com/Genseric0/GensIA/actions/runs/39521033113), seis jobs aprovados no commit04a8660 |
 | GitHub atualizado / PR | PASS: [PR1](https://github.com/Genseric0/GensIA/pull/1), draft, sem merge |
 | Venda / vários clientes | BLOQUEADO: produto ainda local por utilizador, sem identidade/RBAC/isolamento entre clientes |
 | Licenças e distribuição | BLOQUEADO: titular deve definir licença do projeto e direitos dos pesos/vozes |
 
 ## Prioridades para fechar a entrega
 
-1. Publicar branch, abrir PR e consultar resultados reais dos jobs; corrigir falhas.
-2. Executar o runner Chromium e inspecionar PNG reais, sem confundir modelo
-   sintético com inferência. Validar teclado, contraste e todos os percursos alvo.
+Evidência remota consultada em 21/10/2026: commit
+`04a866059fd65c1d7079c14b20f41ac620c76e02`, workflow completo `success`.
+Linux:366 Python e44 Node por configuração, sem omissões. Windows:341 Python
+aprovados/25 omissões POSIX/Linux e44 Node por configuração. Build e instalação
+isolada passaram nas quatro configurações. Segurança e Chromium também passaram.
+As omissões não validam proteções POSIX em Windows. Detalhes em TEST_REPORT.md.
+
+1. Manter os checks do PR verdes; a publicação e a execução inicial estão concluídas.
+2. Complementar o Chromium aprovado com teclado, contraste, leitor de ecrã e
+   restantes percursos alvo, sem confundir modelo sintético com inferência.
 3. Num computador de teste autorizado, iniciar Ollama com cloud desativada,
    pesos locais verificados e medir conversa, cancelamento, RAM e latência.
    Ensaiar áudio com checkpoint/voz locais, sem dados pessoais iniciais.
