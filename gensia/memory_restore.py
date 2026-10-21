@@ -91,6 +91,9 @@ def _load_backup(source):
 def restore_notes(store: MemoryStore, source, approved=False):
     if approved is not True:
         raise MemoryError('Restauro exige --approve e uma base de destino nova.')
+    # O_EXCL alone does not reject every dangling symlink on Windows CRT.
+    if store.path.is_symlink():
+        raise MemoryError('Destino do restauro não pode ser link simbólico.')
     notes, source_hash = _load_backup(source)
     descriptor = None
     try:

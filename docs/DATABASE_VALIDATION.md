@@ -100,3 +100,25 @@ comprovam ACL Windows. A revisão não validou Windows/macOS,interrupção abrup
 restauro após falha de energia ou recuperação física de base corrompida. Não cria
 backups recorrentes nem configura um serviço autónomo. Uso com clientes partilhados
 continua bloqueado enquanto não existir isolamento e autorização por cliente.
+# Correções da primeira execução Windows —21/10/2026
+
+O CI Windows/Python3.13 encontrou13 erros de limpeza em fixtures SQLite e duas
+falhas na recusa de destinos simbólicos de backup/restauro. A aplicação já
+fechava a conexão da memória em `finally`; os descritores abertos eram das
+fixtures que usavam somente o contexto transacional `with sqlite3.connect()`.
+As fixtures agora combinam `closing(connection)` com o contexto transacional,
+preservando commit/rollback e fechando os handles antes da limpeza temporária.
+Não se usou garbage collection nem se omitiu qualquer teste para resolver a falha.
+
+No Windows, a criação pelo CRT pode seguir um link simbólico pendente mesmo
+com `O_CREAT|O_EXCL`. Backup e restauro agora recusam o componente final com
+`is_symlink()` antes dessa abertura. A exclusividade continua obrigatória;
+a validação não constitui isolamento contra corridas de outro processo com
+privilégios equivalentes em diretórios mutáveis.
+
+Regressões novas confirmam a recusa antes de chamar o CRT, ausência de leitura
+da origem no restauro recusado, fecho de conexões de leitura/escrita após sucesso
+e após erros SQL/de aplicação, e rollback das alterações pendentes. Execução
+local direcionada:38 testes memory/backup/restore e24 testes de hardening,
+todos aprovados, sem omissões. A repetição Windows deve ser consultada no CI;
+estes resultados Linux, por si só, não a substituem.

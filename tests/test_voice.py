@@ -121,7 +121,7 @@ class PiperTests(unittest.TestCase):
                 "Olá; $(whoami)", voice, output
             )
             self.assertEqual(output.read_bytes()[:4], b"RIFF")
-            self.assertEqual(result["output"], str(output))
+            self.assertEqual(result["output"], str(output.resolve()))
         command, options = calls[0]
         self.assertNotIn("Olá; $(whoami)", command)
         self.assertEqual(options['input'], "Olá; $(whoami)\n")

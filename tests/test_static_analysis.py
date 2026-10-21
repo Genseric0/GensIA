@@ -50,7 +50,7 @@ class BanditScannerTests(unittest.TestCase):
 
     def test_runs_with_argument_list_and_normalizes_read_only_report(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             target = root / "project;echo hacked"
             target.mkdir()
             source = target / "app.py"
@@ -77,7 +77,7 @@ class BanditScannerTests(unittest.TestCase):
 
     def test_controlled_configuration_and_private_cwd(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             (root / "app.py").write_text("assert False # nosec\n")
             (root / ".bandit").write_text("[bandit]\nskips=B101\n")
             def runner(command, **kwargs):
@@ -96,7 +96,7 @@ class BanditScannerTests(unittest.TestCase):
 
     def test_real_interpreter_excludes_project_shadow_module(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             marker = root / "executed.txt"
             (root / "bandit.py").write_text(
                 "from pathlib import Path\nPath(" + repr(str(marker)) + ").touch()\n"
@@ -120,7 +120,7 @@ class BanditScannerTests(unittest.TestCase):
 
     def test_rejects_absolute_traversal_and_non_python_file(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             (root / "note.txt").write_text("text", encoding="utf-8")
             scanner = self.scanner(root, self.fail)
             for path in (str(root / "note.txt"), "..", "note.txt"):
@@ -129,7 +129,7 @@ class BanditScannerTests(unittest.TestCase):
 
     def test_rejects_symlink_target_and_unapproved_symlink_in_tree(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             project = root / "project"
             project.mkdir()
             (project / "app.py").write_text("print('ok')", encoding="utf-8")
@@ -150,7 +150,7 @@ class BanditScannerTests(unittest.TestCase):
 
     def test_excludes_common_generated_directories_from_preflight_and_command(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             (root / "app.py").write_text("print('ok')", encoding="utf-8")
             (root / ".venv").mkdir()
             (root / ".venv" / "large.py").write_text("x" * 1000, encoding="utf-8")
@@ -178,7 +178,7 @@ class BanditScannerTests(unittest.TestCase):
 
     def test_invalid_or_oversized_report_is_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             (root / "app.py").write_text("print('ok')", encoding="utf-8")
             documents = ({}, {"results": "bad", "errors": []})
             for document in documents:
@@ -195,7 +195,7 @@ class BanditScannerTests(unittest.TestCase):
 
     def test_limits_returned_issues_and_redacts_outside_paths(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             source = root / "app.py"
             source.write_text("print('ok')", encoding="utf-8")
             document = self.result("/outside/secret.py", 501)

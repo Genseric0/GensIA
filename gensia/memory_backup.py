@@ -35,8 +35,12 @@ def backup_notes(store: MemoryStore, destination):
         raise MemoryError("Backup excede 8 MiB; nenhum ficheiro foi criado.")
     descriptor = None
     try:
-        # Exclusive creation also refuses existing and dangling symlinks.
-        descriptor = os.open(Path(destination), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        # Windows CRT creation may follow a dangling symlink even with O_EXCL.
+        # Retain the un-resolved final component and reject it explicitly.
+        path = Path(destination)
+        if path.is_symlink():
+            raise MemoryError('Destino do backup não pode ser link simbólico.')
+        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         with os.fdopen(descriptor, 'wb') as output:
             descriptor = None
             output.write(raw)

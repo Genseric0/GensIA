@@ -1,6 +1,6 @@
 """Synthetic regressions for the 2026-10-22 release database review."""
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import redirect_stderr, redirect_stdout
+from contextlib import closing, redirect_stderr, redirect_stdout
 from io import StringIO
 import json
 import os
@@ -28,7 +28,7 @@ class DatabaseHardeningTests(unittest.TestCase):
 
     def flexible_fixture(self, name, key='synthetic', value='synthetic', stamp=STAMP):
         store = MemoryStore(self.root / (name + '.sqlite3'))
-        with sqlite3.connect(store.path) as db:
+        with closing(sqlite3.connect(store.path)) as db, db:
             db.execute('CREATE TABLE memories (key, value, updated_at)')
             db.execute('INSERT INTO memories VALUES (?,?,?)', (key, value, stamp))
         return store
@@ -135,7 +135,7 @@ class DatabaseHardeningTests(unittest.TestCase):
 
     def test_get_and_backup_never_disclose_extra_schema_column(self):
         self.store.set('synthetic', 'keep')
-        with sqlite3.connect(self.store.path) as db:
+        with closing(sqlite3.connect(self.store.path)) as db, db:
             db.execute('ALTER TABLE memories ADD COLUMN extra_private')
             db.execute("UPDATE memories SET extra_private='PRIVATE'")
         self.assertEqual(set(self.store.get('synthetic')), {'key', 'value', 'updated_at'})
@@ -172,7 +172,7 @@ class DatabaseHardeningTests(unittest.TestCase):
 
     def test_invalid_utf8_is_controlled_and_never_exported(self):
         store = self.flexible_fixture('invalid-utf8')
-        with sqlite3.connect(store.path) as db:
+        with closing(sqlite3.connect(store.path)) as db, db:
             db.execute("UPDATE memories SET value=CAST(x'ff' AS TEXT)")
         self.assert_backup_refused(store)
         with self.assertRaises(MemoryError):
@@ -187,7 +187,7 @@ class DatabaseHardeningTests(unittest.TestCase):
 
     def test_duplicate_key_get_and_backup_refused(self):
         store = self.flexible_fixture('duplicates')
-        with sqlite3.connect(store.path) as db:
+        with closing(sqlite3.connect(store.path)) as db, db:
             db.execute('INSERT INTO memories VALUES (?,?,?)', ('synthetic', 'other', STAMP))
         self.assert_backup_refused(store)
         with self.assertRaises(MemoryError):
@@ -196,7 +196,7 @@ class DatabaseHardeningTests(unittest.TestCase):
     def test_invalid_last_row_cannot_create_partial_backup(self):
         self.store.set('a', 'safe')
         self.store.set('z', 'safe')
-        with sqlite3.connect(self.store.path) as db:
+        with closing(sqlite3.connect(self.store.path)) as db, db:
             db.execute("UPDATE memories SET updated_at='PRIVATE' WHERE key='z'")
         self.assert_backup_refused(self.store)
         with self.assertRaises(MemoryError):
@@ -204,7 +204,7 @@ class DatabaseHardeningTests(unittest.TestCase):
 
     def test_list_does_not_read_or_reveal_value(self):
         store = self.flexible_fixture('metadata')
-        with sqlite3.connect(store.path) as db:
+        with closing(sqlite3.connect(store.path)) as db, db:
             db.execute("UPDATE memories SET value=CAST(x'ff' AS TEXT)")
         self.assertEqual(store.list(), [{'key': 'synthetic', 'updated_at': STAMP}])
 
@@ -223,7 +223,7 @@ class DatabaseHardeningTests(unittest.TestCase):
         self.assertEqual([target.get(k) for k in ('Redes', key)], notes)
         self.assertEqual(target.search('中文')[0]['value'], notes[0]['value'])
         self.assertEqual(self.store.path.read_bytes(), source_before)
-        with sqlite3.connect(target.path) as db:
+        with closing(sqlite3.connect(target.path)) as db, db:
             self.assertEqual(db.execute('PRAGMA integrity_check').fetchone(), ('ok',))
         if os.name == 'posix':
             self.assertEqual(target.path.stat().st_mode & 0o777, 0o600)
@@ -237,7 +237,7 @@ class DatabaseHardeningTests(unittest.TestCase):
         with ThreadPoolExecutor(max_workers=4) as pool:
             list(pool.map(writer, range(4)))
         self.assertEqual(len(self.store.list(limit=200)), 61)
-        with sqlite3.connect(self.store.path) as db:
+        with closing(sqlite3.connect(self.store.path)) as db, db:
             self.assertEqual(db.execute('PRAGMA integrity_check').fetchone(), ('ok',))
 
     def test_sql_error_rolls_back_entire_transaction(self):
@@ -247,6 +247,28 @@ class DatabaseHardeningTests(unittest.TestCase):
                 db.execute('UPDATE memories SET value=? WHERE key=?', ('changed', 'synthetic'))
                 db.execute('INSERT INTO memories VALUES (?,?,?)', ('synthetic', 'duplicate', STAMP))
         self.assertEqual(self.store.get('synthetic')['value'], 'keep')
+
+    def test_store_connection_is_closed_after_success_for_read_and_write(self):
+        self.store.set('synthetic', 'keep')
+        for write in (False, True):
+            with self.subTest(write=write):
+                with self.store.connect(write=write) as db:
+                    self.assertEqual(db.execute('SELECT 1').fetchone()[0], 1)
+                with self.assertRaises(sqlite3.ProgrammingError):
+                    db.execute('SELECT 1')
+
+    def test_store_connection_is_closed_and_rolled_back_after_errors(self):
+        self.store.set('synthetic', 'keep')
+        for failure in (sqlite3.OperationalError('synthetic'), RuntimeError('synthetic')):
+            with self.subTest(type=type(failure).__name__):
+                expected = MemoryError if isinstance(failure, sqlite3.Error) else RuntimeError
+                with self.assertRaises(expected):
+                    with self.store.connect(write=True) as db:
+                        db.execute('UPDATE memories SET value=?', ('pending',))
+                        raise failure
+                with self.assertRaises(sqlite3.ProgrammingError):
+                    db.execute('SELECT 1')
+                self.assertEqual(self.store.get('synthetic')['value'], 'keep')
 
     def test_backup_refusal_cli_hides_payload_and_creates_no_file(self):
         store = self.flexible_fixture('cli', value='safe\x00PRIVATE')

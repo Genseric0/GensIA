@@ -1,4 +1,5 @@
 import hashlib
+from contextlib import closing
 import json
 import os
 from pathlib import Path
@@ -67,6 +68,16 @@ class MemoryBackupTests(unittest.TestCase):
                 backup_notes(self.store, link)
             self.assertEqual(target.read_bytes() if exists else target.exists(), b'keep' if exists else False)
 
+    def test_symlink_precheck_blocks_before_crt_file_creation(self):
+        self.store.set('a', 'value')
+        with patch.object(Path, 'is_symlink', autospec=True,
+                          side_effect=lambda path: path == self.output):
+            with patch('gensia.memory_backup.os.open') as create:
+                with self.assertRaises(MemoryError):
+                    backup_notes(self.store, self.output)
+                create.assert_not_called()
+        self.assertFalse(self.output.exists())
+
     def test_limits_never_create_truncated_backup(self):
         self.store.set('a', 'value')
         self.store.set('b', 'value')
@@ -81,7 +92,7 @@ class MemoryBackupTests(unittest.TestCase):
         for field, value in (('updated_at', 'invalid'), ('updated_at', '2026-10-16'),
                              ('value', 'x' * 4001)):
             self.store.set('a', 'value')
-            with sqlite3.connect(self.store.path) as db:
+            with closing(sqlite3.connect(self.store.path)) as db, db:
                 # Field is a fixed fixture identifier; values remain parameters.
                 if field == 'updated_at':
                     db.execute('UPDATE memories SET updated_at=?', (value,))
@@ -93,7 +104,7 @@ class MemoryBackupTests(unittest.TestCase):
 
     def test_wal_committed_values_included_without_checkpoint_copy(self):
         self.store.set('a', 'old')
-        with sqlite3.connect(self.store.path) as writer:
+        with closing(sqlite3.connect(self.store.path)) as writer, writer:
             writer.execute('PRAGMA journal_mode=WAL')
             writer.execute('UPDATE memories SET value=?', ('new',))
             writer.commit()

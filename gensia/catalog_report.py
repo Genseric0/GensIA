@@ -60,8 +60,19 @@ def main(argv=None):
         print(report)
         return 0
     try:
-        # Exclusive creation avoids a check-then-open race and refuses symlinks,
-        # including dangling ones. Parent directories are never created here.
+        # Windows CRT exclusive creation can follow a dangling symlink. Reject
+        # links/reparse points explicitly as well as retaining exclusive mode.
+        if args.output.is_symlink():
+            raise FileExistsError
+        try:
+            info = args.output.lstat()
+        except FileNotFoundError:
+            pass
+        else:
+            if getattr(info, 'st_file_attributes', 0) & 0x400:
+                raise FileExistsError
+        # Parent directories are never created here. Exclusive mode preserves
+        # existing ordinary files and concurrent ordinary destination creation.
         with args.output.open("x", encoding="utf-8", newline="\n") as output:
             output.write(report)
     except FileExistsError:

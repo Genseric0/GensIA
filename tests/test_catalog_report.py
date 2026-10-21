@@ -6,6 +6,7 @@ import io
 import tempfile
 from pathlib import Path
 from html.parser import HTMLParser
+from unittest.mock import patch
 from gensia.agent_catalog import AgentInfo, Capability
 from gensia.catalog_report import render_report, main
 
@@ -68,6 +69,22 @@ class CatalogReportTests(unittest.TestCase):
             second = subprocess.run(command, capture_output=True, timeout=10)
             self.assertEqual((first.returncode, second.returncode), (0, 13))
             self.assertEqual(path.read_text(encoding="utf-8"), render_report())
+
+    def test_dangling_symlink_is_rejected_before_platform_open(self):
+        # Exercise the guard even on platforms whose open('x') follows dangling
+        # links; this regression must not depend on filesystem link privileges.
+        with patch.object(Path, 'is_symlink', return_value=True):
+            with patch.object(Path, 'open') as opened:
+                self.assertEqual(self.export(Path('synthetic-link.html')), 13)
+        opened.assert_not_called()
+
+    def test_reparse_point_is_rejected_before_platform_open(self):
+        from types import SimpleNamespace
+        with patch.object(Path, 'is_symlink', return_value=False):
+            with patch.object(Path, 'lstat', return_value=SimpleNamespace(st_file_attributes=0x400)):
+                with patch.object(Path, 'open') as opened:
+                    self.assertEqual(self.export(Path('synthetic-reparse.html')), 13)
+        opened.assert_not_called()
 
     def test_report_has_four_cards_and_honest_state(self):
         report = render_report()

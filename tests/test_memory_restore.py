@@ -64,6 +64,17 @@ class MemoryRestoreTests(unittest.TestCase):
             restore_notes(MemoryStore(self.root / 'other.sqlite3'), link, True)
         self.assertFalse((self.root / 'other.sqlite3').exists())
 
+    def test_symlink_destination_precheck_blocks_before_source_or_crt(self):
+        with patch.object(Path, 'is_symlink', autospec=True,
+                          side_effect=lambda path: path == self.target.path):
+            with patch('gensia.memory_restore._load_backup') as load:
+                with patch('gensia.memory_restore.os.open') as create:
+                    with self.assertRaises(MemoryError):
+                        restore_notes(self.target, self.backup, True)
+                    load.assert_not_called()
+                    create.assert_not_called()
+        self.assertFalse(self.target.path.exists())
+
     def test_empty_backup_creates_usable_empty_database(self):
         self.document['notes'] = []
         self.save(self.document)
