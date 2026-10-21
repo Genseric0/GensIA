@@ -1,5 +1,22 @@
 # Progresso GensIA
 
+## 21/10/2026 — publicação e falhas da memória — v0.63.0
+
+Corrigida falha reproduzida em backup/restauro: ENOSPC em fsync deixava destino
+final visível. Novo publication.py prepara/sincroniza/fecha antes de publicar
+exclusivamente, preservando destinos concorrentes. Avisos após publicação são
+explícitos e indicam não repetir. Formato JSONv1 e autorizações preservados.
+17 regressões novas: ENOSPC injetado, processos realmente terminados, SQLITE_FULL
+real por teto de páginas, DELETE/WAL, concorrência e avisos/órfãos. Suíte394
+Python PASS/0 omitidos em21.612s;coverage87% combinado. Bandit sem médios/elevados;
+scanner143 ficheiros/0 assinaturas;wheel0.63 aprovado em sete etapas isoladas.
+Hot journal e janela de hard link POSIX reproduzidos/documentados; sem reparação
+silenciosa. Sem dependências novas, dados reais, corte de energia ou hardware
+testado. Manual em docs/MEMORY_RECOVERY.md. CI atual em PR1/checks; preservar
+distinção entre evidência local e remota. Estado RELEASE BLOCKED.
+Próximo: recuperação assistida com cópia verificada e autorização explícita;
+validação de modelo/voz/hardware continua necessária para entrega comercial.
+
 ## 21/10/2026 — verificação e recuperação da memória — v0.62.0
 
 Novo `memory check`, com transação de leitura, validação de notas e integridade

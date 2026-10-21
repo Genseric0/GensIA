@@ -147,6 +147,7 @@ class MemoryRestoreTests(unittest.TestCase):
                 restore_notes(self.target, self.backup, True)
         self.assertNotIn('PRIVATE', str(error.exception))
         self.assertIn('incompleta', str(error.exception))
+        self.assertFalse(self.target.path.exists())
         self.assertEqual(self.backup.read_bytes(), self.original)
 
     def test_real_cli_restore_and_second_attempt(self):

@@ -1,4 +1,4 @@
-# Changelog
+# Changel…185 tokens truncated…  silenciosa nem novas dependências. Estado comercial permanece RELEASE BLOCKED.
 
 ## 0.61.0 — candidata de hardening — 20–21/10/2026
 

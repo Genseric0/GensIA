@@ -111,14 +111,14 @@ class MemoryBackupTests(unittest.TestCase):
             backup_notes(self.store, self.output)
         self.assertEqual(json.loads(self.output.read_text())['notes'][0]['value'], 'new')
 
-    def test_write_failure_is_controlled_and_may_leave_partial_file(self):
+    def test_write_failure_is_controlled_without_publishing_partial_file(self):
         self.store.set('a', 'value')
         with patch('gensia.memory_backup.os.fsync', side_effect=OSError('PRIVATE')):
             with self.assertRaises(MemoryError) as error:
                 backup_notes(self.store, self.output)
         self.assertNotIn('PRIVATE', str(error.exception))
-        self.assertIn('incompleto', str(error.exception))
-        self.assertTrue(self.output.exists())
+        self.assertIn('incompleta', str(error.exception))
+        self.assertFalse(self.output.exists())
 
     def test_real_cli_summary_hides_notes_and_refuses_second_backup(self):
         self.store.set('private-key', 'PRIVATE-VALUE')

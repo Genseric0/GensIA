@@ -1,4 +1,37 @@
-# Testes — 21/10/2026 — v0.62.0
+# Testes — 21/10/2026 — v0.63.0
+
+## Incremento0.63 — publicação e interrupções
+
+Suíte final local Linux/Python3.12.14: **394 PASS,0 omitidos,0 falhas,21.612s**.
+17 testes novos em test_publication.py/test_memory_failures.py; dois testes
+anteriores de falha de gravação agora exigem destino ausente. Coverage combinado
+87% exibido:2864 statements,325 não executados,868 ramos,141 parciais.
+Bandit sem médios/elevados;scanner limitado143 ficheiros/0 assinaturas.
+Build e wheel0.63 instalado sem rede fora do checkout:7 etapas PASS.
+
+```bash
+GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
+.venv/bin/python -m coverage report
+.venv/bin/python -m bandit -r gensia --severity-level medium --confidence-level low --ignore-nosec
+.venv/bin/python scripts/check_secrets.py
+.venv/bin/python -m build --wheel --no-isolation
+.venv/bin/python scripts/verify_installed.py dist/gensia_local-0.63.0-py3-none-any.whl
+```
+
+ENOSPC em escrita/fsync é injeção de falha; SQLITE_FULL é erro real do SQLite
+provocado por max_page_count, não disco do host cheio. Processos filhos são
+terminados pelo SO em checkpoints; dados sintéticos DELETE/WAL conservam notas
+confirmadas. O ensaio de cache spill reproduz hot journal que requer escrita
+para recuperar: read-only continua a recusar, recuperação apenas na fixture.
+Uma interrupção POSIX após link e antes de limpeza deixa bytes válidos e dois
+hard links; MemoryStore recusa. Nenhum resultado é ocultado como teste omitido.
+O caso específico de hard link é condicionado a POSIX em Windows.
+
+Ver MEMORY_RECOVERY.md para os limites. Não se testou hardware, corte de energia,
+filesystem de rede nem todos os instantes possíveis de crash. Interface e Node
+não foram alterados; o CI executa as regressões completas, browser e quatro
+configurações Linux/Windows. [Checks atuais](https://github.com/Genseric0/GensIA/pull/1/checks).
+Os runs0.62/0.61 documentados abaixo são históricos, não prova do commit0.63.
 
 ## Incremento de memória0.62
 

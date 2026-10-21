@@ -109,6 +109,19 @@ justificam apresentar estas capacidades como concluídas.
 
 ## Referências primárias
 
+### Atualização0.63 — integridade de ficheiros — 21/10/2026
+
+Reproduzida exposição de destino incompleto após erro ENOSPC em fsync de
+backup/restauro. Corrigida com publicação exclusiva de ficheiro previamente
+sincronizado e fechado; testes preservam destino criado por concorrente.
+Avisos depois de publicar não apresentam o destino como ausente. Sem ampliação
+de permissões, reparação automática, nova dependência ou teste externo.
+Bandit sem médios/elevados e scanner limitado sem assinaturas nesta revisão.
+Os riscos de diretórios não confiáveis, mesmo UID, journals/órfãos, filesystem
+e hardware permanecem explicitados em MEMORY_RECOVERY.md.
+
+### Fontes do hardening inicial
+
 - [OWASP ASVS, versão 5.0.0](https://github.com/OWASP/ASVS/tree/v5.0.0)
 - [Ollama: API show](https://docs.ollama.com/api/show)
 - [Ollama: FAQ e cloud](https://docs.ollama.com/faq)

@@ -1,4 +1,59 @@
-# Verificação e recuperação da memória — v0.62.0
+# Verificação e recuperação da memória — v0.63.0
+
+## Publicação segura de backup e restauro — 21/10/2026
+
+Falha reproduzida na v0.62: injetar ENOSPC no `os.fsync` de backup/restauro
+produzia erro controlado, mas deixava o destino final visível. Agora ambos usam
+`gensia/publication.py`: gravar num diretório temporário privado na mesma pasta
+do destino, fazer flush/fsync, fechar e só depois publicar sem substituir.
+POSIX usa hard link exclusivo; Windows usa rename, que recusa destino existente.
+Não há fallback para uma cópia parcial se o filesystem recusar hard links.
+Um concorrente que crie o destino durante a preparação conserva o seu ficheiro.
+Nenhuma dependência nova; a pasta de destino precisa de ser confiável.
+
+Resultados incluem `destination_published`, `file_synced`, `directory_synced`,
+`staging_cleaned`, `warnings` e `do_not_retry`. Falha na sincronização da pasta
+ou limpeza depois de publicar devolve aviso e `do_not_retry:true`: o destino
+já existe. Não repetir automaticamente. `directory_synced:null` em Windows
+significa que não existe fsync portátil de diretório; não confirma durabilidade.
+`restored:false` com destino publicado significa que a limpeza não ficou
+confirmada. `backup_created:true` só afirma que os bytes foram publicados,
+não que o suporte físico sobreviverá a uma falha de energia.
+
+Interrupção pode deixar uma pasta `.gensia-publish-*` com dados em texto simples.
+No POSIX, interrupção entre link e limpeza pode deixar dois hard links para a
+base restaurada completa: MemoryStore continua a recusá-la. Este caso tem teste
+real; não se enfraqueceu a guarda. Preservar os artefactos, parar os processos e
+usar um destino novo para novo restauro a partir do backup validado. Limpeza de
+órfãos exige inspeção do operador; não existe rotina automática de remoção.
+O restauro também precisa de espaço para a base de construção no diretório
+temporário do SO e para a cópia privada na pasta de destino.
+
+### Ensaios e limites
+
+`tests/test_publication.py` e `tests/test_memory_failures.py` cobrem escrita
+parcial/ENOSPC injetados, fsync falhado, competição de destino, avisos após
+publicação, processos filhos terminados antes/depois da publicação, rollback
+DELETE/WAL e SQLITE_FULL real via `PRAGMA max_page_count`. Tudo usa dados sintéticos.
+Não se encheu o disco do host; não se testou corte de energia, falha do kernel,
+filesystem de rede nem hardware do utilizador. Os checkpoints são determinados;
+não são uma exploração exaustiva de todos os momentos possíveis de interrupção.
+
+Foi reproduzido um hot rollback journal após cache spill e término do processo.
+Leitura/check/backup em modo read-only podem falhar porque a recuperação SQLite
+precisa de escrita. O teste verifica essa recusa e recuperação por ligação
+explicitamente gravável apenas numa base sintética descartável. Não existe
+comando público de reparação; não apagar/renomear journals de uma base real.
+Parar a aplicação, preservar conjuntamente base e auxiliares antes de intervenção
+e preferir restauro lógico validado para destino novo. Recuperação assistida de
+journals permanece pendente, com consentimento e cópia verificada.
+
+Fontes primárias consultadas em 21/10/2026:
+[Python os.rename/os.link](https://docs.python.org/3.12/library/os.html#os.rename),
+[commit e hot journals SQLite](https://www.sqlite.org/atomiccommit.html),
+[limite de páginas SQLite](https://www.sqlite.org/pragma.html#pragma_max_page_count).
+
+## Verificação de integridade
 
 `memory check` valida uma base existente sem reparar, exportar ou imprimir notas.
 Requer Python 3.11 ou superior para aplicar limites por ligação no SQLite; o

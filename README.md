@@ -9,7 +9,7 @@ Assistente pessoal modular para conversar com um modelo local, consultar documen
 guardar notas e executar operações explícitas no computador. Python, SQLite e
 FastAPI; interface web servida pelo próprio computador, sem CDN.
 
-**Candidata 0.62.0 — RELEASE BLOCKED.** Esta branch recupera uma conversa funcional
+**Candidata 0.63.0 — RELEASE BLOCKED.** Esta branch recupera uma conversa funcional
 e corrige falhas de autorização, privacidade e integridade reproduzidas na base
 remota 0.34. A avaliação está em [RELEASE_CHECKLIST](docs/RELEASE_CHECKLIST.md) e
 [TEST_REPORT](docs/TEST_REPORT.md). Serviços sintéticos não comprovam pesos reais.
@@ -63,6 +63,10 @@ pessoais e bases SQLite devem ficar fora do Git.
 | Segurança | URLs passivas, VirusTotal/CISA opt-in e adaptador Bandit |
 | Voz | Whisper com checkpoint explícito, Piper por stdin e gravação limitada; motores opcionais |
 | API | Loopback, Bearer, Host/Origin e chat com entrada limitada |
+
+Backup/restauro preparam e sincronizam o ficheiro antes de publicar sem substituir
+destinos. Avisos após publicação assinalam que não se deve repetir automaticamente. Ensaios de
+interrupção e limites de recuperação estão em [MEMORY_RECOVERY](docs/MEMORY_RECOVERY.md).
 
 O chat mantém contexto apenas na sessão do navegador. Notas persistentes continuam
 operações explícitas da CLI. Envio de emails e execução autónoma de ferramentas não

@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 
 from .memory import MemoryError, MemoryStore
+from .publication import publish_new
 
 MAX_NOTES = 1000
 MAX_BACKUP_BYTES = 8 * 1024 * 1024
@@ -33,25 +34,14 @@ def backup_notes(store: MemoryStore, destination):
         raise MemoryError("A memória contém texto inválido; backup recusado.") from exc
     if len(raw) > MAX_BACKUP_BYTES:
         raise MemoryError("Backup excede 8 MiB; nenhum ficheiro foi criado.")
-    descriptor = None
     try:
-        # Windows CRT creation may follow a dangling symlink even with O_EXCL.
-        # Retain the un-resolved final component and reject it explicitly.
         path = Path(destination)
         if path.is_symlink():
             raise MemoryError('Destino do backup não pode ser link simbólico.')
-        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-        with os.fdopen(descriptor, 'wb') as output:
-            descriptor = None
-            output.write(raw)
-            output.flush()
-            os.fsync(output.fileno())
+        publication = publish_new(path, lambda output: output.write(raw))
     except FileExistsError as exc:
         raise MemoryError("Destino já existe; backup não substituiu ficheiros.") from exc
     except OSError as exc:
-        raise MemoryError("Não foi possível gravar o backup. Pode ter ficado um novo ficheiro incompleto.") from exc
-    finally:
-        if descriptor is not None:
-            os.close(descriptor)
+        raise MemoryError("Backup falhou antes da publicação; pode existir uma área temporária incompleta.") from exc
     return {'backup_created': True, 'notes_count': len(notes), 'bytes': len(raw),
-            'sha256': hashlib.sha256(raw).hexdigest(), 'encrypted': False}
+            'sha256': hashlib.sha256(raw).hexdigest(), 'encrypted': False, **publication}

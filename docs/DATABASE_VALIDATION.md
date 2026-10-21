@@ -1,5 +1,18 @@
 # Validação da memória e integridade de dados
 
+## Incremento0.63 — 21/10/2026
+
+Antes: injeção ENOSPC em fsync deixava backup/base de destino parcialmente
+publicados apesar de erro. Correção em memory_backup.py/memory_restore.py e
+publication.py: preparação privada, flush/fsync/fecho e publicação sem substituir
+destinos concorrentes. Resultado explicita falhas de limpeza/sincronização após
+publicar e desaconselha repetição. Regressões em test_publication.py e
+test_memory_failures.py:17 testes novos, incluindo término real de processos,
+SQLITE_FULL, rollback DELETE/WAL, hot journal e janela de hard link POSIX.
+Suíte completa394 PASS local. Manual, limites e fontes em MEMORY_RECOVERY.md.
+Não se executou recuperação em dados reais ou ensaio físico de corte de energia.
+Histórico da auditoria inicial abaixo; não representa nova auditoria comercial.
+
 Revisão executada em 20/10/2026 sobre a base GitHub
 `206f4d1798d516deccb3268938777b1348cfb85b` (v0.34.0). Os ensaios usam apenas
 SQLite e ficheiros sintéticos em pastas temporárias. Nenhuma base de utilizador
@@ -53,12 +66,16 @@ Uma linha inválida impede que a chamada devolva uma lista parcial.
 `gensia/memory_backup.py` usa o mesmo parser e a mesma projeção limitada. Recusa
 chaves duplicadas e valida todo o conjunto antes de abrir o destino. Mantém os
 limites1000notas/8MiB,formatoJSONv1,criaçãoexclusiva0600 e flush/fsync. Não repara a
-base de origem. Erro de escrita pode deixar ficheiro parcial,sem repetição ou
-remoção automática. O backup é texto simples,sem cifragem; o hash não é assinatura.
+base de origem. Desde0.63, erro antes da publicação não expõe destino parcial;
+pode restar área temporária privada. O backup é texto simples,sem cifragem;
+o hash não é assinatura. Avisos após publicação exigem inspeção, não repetição.
 
 O restauro existente exige True exato,esquema JSON estrito,UTF-8 válido,chaves
 únicas e datas com fuso. Constrói uma base temporária transacional,executa
-`PRAGMA integrity_check` e copia para descritor de destino criado com O_EXCL0600.
+`PRAGMA integrity_check` e copia para descritor privado criado com O_EXCL0600.
+Desde0.63, só publica no destino após flush/fsync/fecho; a criação exclusiva
+preserva destinos concorrentes. Limites de filesystem e interrupções estão em
+MEMORY_RECOVERY.md.
 Nunca abre pelo SQLite uma base de destino preexistente nem substitui o original.
 
 ## Ensaios executados

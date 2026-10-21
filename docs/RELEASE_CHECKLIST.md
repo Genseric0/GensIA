@@ -3,6 +3,10 @@
 **RELEASE BLOCKED** para distribuição comercial. Incremento0.61.0 preparado
 para revisão e ensaio local controlado; não existe garantia de zero falhas.
 O incremento0.62 acrescenta `memory check`, com377 testes locais aprovados.
+O incremento0.63 corrige publicação parcial de backup/restauro e acrescenta
+ensaios de interrupção:394 testes locais PASS. Hot journals e órfãos continuam
+a exigir intervenção explícita; ver MEMORY_RECOVERY.md. Sem ensaio físico de
+disco cheio/corte de energia. O CI corrente deve ser consultado no PR.
 Os [checks do PR1](https://github.com/Genseric0/GensIA/pull/1/checks) indicam o
 estado do commit atual. A tabela e run específico abaixo preservam a baseline0.61.
 

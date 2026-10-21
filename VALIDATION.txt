@@ -1,3 +1,12 @@
+2026-10-21 — v0.63.0 — publicação/falhas da memória
+GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
+394PASS/0skip/0fail,21.612s;17novos.Coverage87%(2864statements,325missing,868branches,141partial).
+BanditMED/HIGH0;signatures143files/0findings;wheel0.63+installedverifier7PASS.
+ENOSPCinjetado;SQLITE_FULLrealporlimite;processosfilhosrealmenteterminados;DELETE/WAL.
+HotjournalROrecusa/recuperaçãoRWsomenteemfixture;crashPOSIXpóspublicação deixa2links/MemoryStorerecusa.
+Semdiscohostcheio/cortedeenergia/hardware/dadosreais;docs/MEMORY_RECOVERY.md.
+CI atual:PR1/checks.Resultadosremotos0.62/0.61abaixosãohistóricos.
+
 2026-10-21 — v0.62.0 — memory check
 GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
 377PASS/0skip/0fail,21.272s.11novos de integridade/privacidade/orçamento/WAL/recuperação.
