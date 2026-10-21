@@ -13,7 +13,6 @@ from .catalog_report import render_report
 from .protections import protection_report
 from .panel import ASSETS, panel_asset
 from .chat import ChatError, MAX_BODY_BYTES, conversation, prompt_for, checked_reply, model_name
-from .providers import OllamaProvider, ProviderUnavailable
 from .api_listener import run_local
 
 
@@ -41,6 +40,7 @@ def create_app(token, port=8765, chat_model=None, provider=None):
     if chat_model is not None:
         model_name(chat_model)
     from fastapi import FastAPI
+    from .providers import OllamaProvider, ProviderUnavailable
     from starlette.responses import JSONResponse, HTMLResponse, Response
     from starlette.concurrency import run_in_threadpool
     from starlette.requests import Request

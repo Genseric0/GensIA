@@ -56,6 +56,7 @@ BMP, incluindo alguns emojis, podem atingir o limite mais cedo que no backend.
 | `node --test tests/chat.test.cjs` | 10 aprovados | Fluxos do JavaScript com fixture DOM, sem layout real |
 | `node --check gensia/web/app.js` | Aprovado | Sintaxe do JavaScript |
 | `node --check scripts/validate_chat_browser.cjs` | Aprovado | Sintaxe do runner |
+| Servidor QA em subprocesso com HTTP loopback real | Aprovado | Health, metadados, conversa e continuidade com provider sintético |
 
 Os testes cobrem Unicode, continuidade com respostas de 4.001 e 8.000 caracteres,
 recusa de 8.001 caracteres, contexto, roles, JSON duplicado, autenticação, origens,
