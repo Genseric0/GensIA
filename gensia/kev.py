@@ -10,7 +10,7 @@ import tempfile
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from .tools import AuditLogger
+from .tools import AuditLogger, ToolError
 
 
 class KevError(RuntimeError):
@@ -35,7 +35,7 @@ class CisaKevCatalog:
         self.opener = opener or urlopen
 
     def update(self, cache, approved=False, timeout=30.0) -> dict:
-        if not approved:
+        if approved is not True:
             self.audit.record("update_cisa_kev", "denied", self.FEED_URL)
             raise KevError("A atualização externa exige --approve-external.")
         if not 1 <= timeout <= 60:
@@ -46,10 +46,12 @@ class CisaKevCatalog:
             headers={"Accept": "application/json", "User-Agent": "GensIA/0.15"},
             method="GET",
         )
+        self.audit.record('update_cisa_kev', 'intent', self.FEED_URL)
         try:
             with self.opener(request, timeout=timeout) as response:
                 payload = response.read(self.MAX_BYTES + 1)
         except HTTPError as exc:
+            exc.close()
             self.audit.record("update_cisa_kev", "error", self.FEED_URL)
             raise KevError(f"A CISA devolveu HTTP {exc.code}.") from exc
         except (URLError, socket.timeout, TimeoutError, OSError) as exc:
@@ -63,7 +65,7 @@ class CisaKevCatalog:
             digest = hashlib.sha256(payload).hexdigest()
             unchanged = False
             if path.exists():
-                unchanged = hashlib.sha256(path.read_bytes()).hexdigest() == digest
+                unchanged = hashlib.sha256(self._read_cache(path)).hexdigest() == digest
             if not unchanged:
                 self._atomic_write(path, payload)
         except OSError as exc:
@@ -72,8 +74,7 @@ class CisaKevCatalog:
         except KevError:
             self.audit.record("update_cisa_kev", "error", self.FEED_URL)
             raise
-        self.audit.record("update_cisa_kev", "unchanged" if unchanged else "success", self.FEED_URL)
-        return {
+        result = {
             "source": "CISA Known Exploited Vulnerabilities Catalog",
             "source_url": self.FEED_URL,
             "catalog_version": document["catalogVersion"],
@@ -84,6 +85,14 @@ class CisaKevCatalog:
             "external_request_performed": True,
             "cache_changed": not unchanged,
         }
+        try:
+            self.audit.record("update_cisa_kev", "unchanged" if unchanged else "success", self.FEED_URL)
+        except ToolError:
+            result['audit_completed'] = False
+            result['warning'] = 'cache_update_completed_final_audit_failed_do_not_retry'
+        else:
+            result['audit_completed'] = True
+        return result
 
     def check(self, cve_id: str, cache) -> dict:
         normalized = cve_id.strip().upper()
@@ -92,9 +101,7 @@ class CisaKevCatalog:
             raise KevError("Usa um identificador CVE válido, por exemplo CVE-2021-44228.")
         path = self._cache_path(cache, require_existing=True)
         try:
-            if path.stat().st_size > self.MAX_BYTES:
-                raise KevError("O cache CISA KEV excedeu 10 MiB.")
-            payload = path.read_bytes()
+            payload = self._read_cache(path)
         except OSError as exc:
             raise KevError("Não foi possível ler o cache CISA KEV.") from exc
         document = self._decode_and_validate(payload)
@@ -124,6 +131,15 @@ class CisaKevCatalog:
         if match:
             result["entry"] = {field: match[field] for field in self.REQUIRED_ENTRY_FIELDS}
         return result
+
+    @classmethod
+    def _read_cache(cls, path):
+        # Bound the actual read, including files enlarged after metadata checks.
+        with path.open('rb') as stream:
+            payload = stream.read(cls.MAX_BYTES + 1)
+        if len(payload) > cls.MAX_BYTES:
+            raise KevError("O cache CISA KEV excedeu 10 MiB.")
+        return payload
 
     @classmethod
     def _decode_and_validate(cls, payload: bytes) -> dict:
@@ -169,7 +185,7 @@ class CisaKevCatalog:
     @staticmethod
     def _cache_path(cache, require_existing: bool) -> Path:
         path = Path(cache).expanduser()
-        if path.exists() and path.is_symlink():
+        if path.is_symlink():
             raise KevError("O cache CISA KEV não pode ser um link simbólico.")
         if require_existing and not path.is_file():
             raise KevError("Cache CISA KEV ausente; executa primeiro security kev-update.")

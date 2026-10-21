@@ -10,7 +10,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import unquote_to_bytes, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 
-from .tools import AuditLogger
+from .tools import AuditLogger, ToolError
 
 
 class SecurityError(RuntimeError):
@@ -146,7 +146,7 @@ class VirusTotalUrlReputation:
 
     def lookup(self, value: str, approved: bool = False) -> dict:
         fingerprint = hashlib.sha256(value.encode("utf-8", errors="replace")).hexdigest()
-        if not approved:
+        if approved is not True:
             self.audit.record("lookup_url_reputation", "denied", fingerprint)
             raise SecurityError("A consulta externa exige --approve-external.")
         if not self.api_key:
@@ -173,6 +173,7 @@ class VirusTotalUrlReputation:
             headers={"Accept": "application/json", "x-apikey": self.api_key},
             method="GET",
         )
+        self.audit.record('lookup_url_reputation', 'intent', fingerprint)
         try:
             with self.opener(request, timeout=self.timeout) as response:
                 payload = response.read(self.MAX_RESPONSE_BYTES + 1)
@@ -181,6 +182,7 @@ class VirusTotalUrlReputation:
             document = json.loads(payload.decode("utf-8"))
             result = self._parse_report(document, local)
         except HTTPError as exc:
+            exc.close()
             if exc.code == 404:
                 result = self._not_found(local)
             else:
@@ -200,7 +202,13 @@ class VirusTotalUrlReputation:
             raise
 
         outcome = "success" if result["found"] else "not_found"
-        self.audit.record("lookup_url_reputation", outcome, fingerprint)
+        try:
+            self.audit.record("lookup_url_reputation", outcome, fingerprint)
+        except ToolError:
+            result['audit_completed'] = False
+            result['warning'] = 'external_request_completed_final_audit_failed_do_not_retry'
+        else:
+            result['audit_completed'] = True
         return result
 
     @staticmethod

@@ -1,0 +1,102 @@
+# Validação da memória e integridade de dados
+
+Revisão executada em 20/10/2026 sobre a base GitHub
+`206f4d1798d516deccb3268938777b1348cfb85b` (v0.34.0). Os ensaios usam apenas
+SQLite e ficheiros sintéticos em pastas temporárias. Nenhuma base de utilizador
+foi aberta, migrada ou apagada. O sistema não implementa operações financeiras,
+stock, pagamentos ou saldos: esses cenários não se aplicam à memória explícita.
+
+## Modelo e estado inicial
+
+`memories(key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL)`.
+Chave até100 caracteres; valor até4000; timestamp ISO com fuso. Notas são locais,
+explícitas e não são automaticamente enviadas ao modelo. `set` faz upsert por
+chave; `delete` é uma operação destrutiva autorizada explicitamente. Backup JSON
+schema1 limitado a1000notas/8MiB; restauro escreve exclusivamente numa base nova.
+Não existe esquema de utilizadores, contas, RBAC ou segregação de clientes.
+
+Baseline antes da correção:
+
+```bash
+python3 -B -m unittest discover -s tests -p 'test_memory*.py' -q
+```
+
+Resultado inicial:36 testes passaram em1.126s. A cobertura anterior não detetava
+as falhas abaixo, reproduzidas separadamente com dados sintéticos.
+
+| Problema reproduzido | Prioridade e implicação | Correção e evidência |
+| --- | --- | --- |
+| `delete(approved='false')` apagava uma nota | P1: autorização por valor truthy | Apenas `approved is True`; matriz de valores recusados mantém a nota |
+| Base nova criada com modo0644 | P1: privacidade por omissão inadequada em POSIX | Criação exclusiva0600 antes de SQLite, comprovada com umask0 |
+| Escrita por hardlink alterava o ficheiro de origem | P1: alvo da operação ambíguo | Exige ficheiro regular com link único antes da ligação; origem permanece byte-idêntica |
+| `get` devolvia coluna adicional do schema | P1: divulgação fora do contrato | SQL explícito sem SELECT*, apenas key/value/updated_at |
+| `get` materializava valor de1.000.000bytes | P1: fronteira de leitura sem limite | Corte BLOB em401/16001/257bytes e validação posterior; caso grande recusado |
+| Backup exportava apenas prefixo antes do NUL | P1: perda silenciosa no backup | Projeção BLOB preserva NUL para recusa antes da criação do destino |
+| Unicode inválido lançava UnicodeEncodeError depois de criar a base | P2: exceção bruta/artefacto vazio | UTF-8 estrito antes do acesso ao disco, erro de domínio |
+| Paginação aceitava booleanos/decimais numa base ausente e strings lançavam TypeError | P2: contrato inconsistente | Inteiros exatos,limit1–200 e offset0–2^63−1,antes da consulta de existência |
+
+## Comportamento depois da correção
+
+`gensia/memory.py` passa a criar novos ficheiros exclusivamente com0600, a recusar
+symlinks/hardlinks/FIFO antes da ligação e a usar URI SQLite ro/rw e
+`PRAGMA trusted_schema=OFF`. O modo rw impede a recriação implícita do destino
+quando ele desaparece após a criação inicial. Ficheiros antigos não têm as suas
+permissões alteradas silenciosamente.
+
+As consultas são SQL fixo e parametrizado. Projeções BLOB têm um byte de sentinela
+acima do máximo de UTF-8 de quatro bytes por carácter; o parser recusa tipo SQLite
+que não seja TEXT,UTF-8 inválido,campos excessivos,NUL e data inválida/sem fuso.
+Valores truncados não são apresentados como registos válidos. `get` lê no máximo
+dois candidatos e recusa chaves repetidas; `list` lê apenas chave/data,sem valor.
+Uma linha inválida impede que a chamada devolva uma lista parcial.
+
+`gensia/memory_backup.py` usa o mesmo parser e a mesma projeção limitada. Recusa
+chaves duplicadas e valida todo o conjunto antes de abrir o destino. Mantém os
+limites1000notas/8MiB,formatoJSONv1,criaçãoexclusiva0600 e flush/fsync. Não repara a
+base de origem. Erro de escrita pode deixar ficheiro parcial,sem repetição ou
+remoção automática. O backup é texto simples,sem cifragem; o hash não é assinatura.
+
+O restauro existente exige True exato,esquema JSON estrito,UTF-8 válido,chaves
+únicas e datas com fuso. Constrói uma base temporária transacional,executa
+`PRAGMA integrity_check` e copia para descritor de destino criado com O_EXCL0600.
+Nunca abre pelo SQLite uma base de destino preexistente nem substitui o original.
+
+## Ensaios executados
+
+```bash
+python3 -B -m unittest discover -s tests -p 'test_memory*.py' -q
+python3 -B -m unittest discover -s tests -p test_database_hardening.py -v
+```
+
+Depois das alterações:36 testes existentes passaram em1.660s;22 novos testes
+passaram em0.391s,sem falhas ou omissões neste ambiente Linux/Python3.12.14/
+SQLite3.53.1. Os resultados da suite agregada são registados em TEST_REPORT.md.
+
+Fluxos essenciais verificados:
+
+- Backup→restauro exclusivo numa base nova→get/search:emojis de quatro bytes nos
+  limites,português,notas multilinha e timestamps preservados;hash do backup igual;
+  base original byte-idêntica e integrity_check do destino igual aok.
+- Concorrência:4 threads,15 chaves distintas por thread,mais uma nota inicial;
+  61registos persistidos sem perda,integrity_check igual aok.
+- Rollback:UPDATE seguido de violação da chave primária na mesma transação;
+  MemoryError controlado e valor inicial preservado após rollback.
+- Tipos NULL/int/float/BLOB,UTF-8 inválido,NUL,duplicados,última linha inválida,
+  campos de1MiB e schema com coluna extra:nenhum backup inválido criado;origens
+  permanecem byte-idênticas. CLI recusa com código6 sem payload privado/traceback.
+
+## Limites e condições de entrega
+
+Não há quota global de CPU/memória do SQLite nem da serializaçãoJSON. A projeção
+limita os campos entregues ao Python,mas SQLite ainda pode percorrer e ordenar uma
+base grande. Os1001registos são lidos para detetar excesso;8MiB é conferido após
+serialização. Schema externo,views e bases adulteradas não são neutralizados por
+esta validação. A descodificação assume armazenamentoUTF-8 da GensIA;bases externas
+UTF-16 podem ser recusadas. O controlo de tipo/link verifica o alvo antes de SQLite;
+não é defesa atómica contra troca concorrente dos ancestrais por outro processo.
+
+As pastas,instalação e utilizador do SO devem ser confiáveis. Modos POSIX não
+comprovam ACL Windows. A revisão não validou Windows/macOS,interrupção abrupta,
+restauro após falha de energia ou recuperação física de base corrompida. Não cria
+backups recorrentes nem configura um serviço autónomo. Uso com clientes partilhados
+continua bloqueado enquanto não existir isolamento e autorização por cliente.
