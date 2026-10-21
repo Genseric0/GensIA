@@ -9,10 +9,14 @@ Assistente pessoal modular para conversar com um modelo local, consultar documen
 guardar notas e executar operações explícitas no computador. Python, SQLite e
 FastAPI; interface web servida pelo próprio computador, sem CDN.
 
-**Candidata 0.65.0 — RELEASE BLOCKED.** Esta branch recupera uma conversa funcional
+**Candidata 0.66.0 — RELEASE BLOCKED.** Esta branch recupera uma conversa funcional
 e corrige falhas de autorização, privacidade e integridade reproduzidas na base
 remota 0.34. A avaliação está em [RELEASE_CHECKLIST](docs/RELEASE_CHECKLIST.md) e
 [TEST_REPORT](docs/TEST_REPORT.md). Serviços sintéticos não comprovam pesos reais.
+
+Ensaio explícito do modelo já instalado: `python -m gensia.model_probe --model
+NOME_LOCAL --approve`. Usa entrada sintética fixa e apresenta tempos sem incluir
+respostas no relatório. [Utilização e limites](docs/MODEL_PROBE.md).
 
 ## Instalar e abrir
 

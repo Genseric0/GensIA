@@ -1,5 +1,11 @@
 # Auditoria defensiva — 21 de outubro de 2026
 
+v0.66: novo model_probe exige aprovação antes do provider, não aceita ficheiros
+ou prompts pessoais, usa transporte/localidade existentes e omite conteúdo,
+modelo/endpoint e erros brutos.10 regressões incluindo recusa cloud antes de
+geração num servidor sintético. Sem novas rotas/dependências. Timings não provam
+privacidade do daemon nem qualidade/segurança; ver MODEL_PROBE.md.
+
 Estado: **RELEASE BLOCKED para distribuição comercial ou serviço multiutilizador**.
 Este relatório descreve o endurecimento do agente local a partir da baseline
 `206f4d1798d516deccb3268938777b1348cfb85b`. Não constitui certificação ASVS,

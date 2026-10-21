@@ -1,4 +1,31 @@
-# Testes — 21/10/2026 — v0.65.0
+# Testes — 21/10/2026 — v0.66.0
+
+## Incremento0.66 — ensaio operacional explícito
+
+Linux/Python3.12:423 testes PASS/0 omitidos em21.965s, incluindo10 testes novos
+em tests/test_model_probe.py. Node50 PASS/0 omitidos em0.583s. Coverage87%:
+3092 statements,338 missing,938 branches,152 partial. Build do wheel0.66 e
+instalação offline isolada10 etapas PASS. Bandit MED/HIGH0;pipcheck PASS.
+
+```bash
+GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
+GENSIA_PYTHON=/caminho/absoluto/para/python node --test tests/*.test.cjs
+.venv/bin/python scripts/verify_installed.py dist/gensia_local-0.66.0-py3-none-any.whl
+.venv/bin/python -m bandit -r gensia -ll -q
+```
+
+Cobertos: aprovação antes do provider, limites finitos, endpoint/modelo inválidos
+sem rede, tempos controlados, resposta omitida, falha parcial sem retry, erros
+sanitizados, Ctrl+C, relógio/resposta inválidos e códigos CLI. HTTP real com
+servidor sintético confirma show→chat e prompt fixo, recusa cloud antes de chat.
+Não é inferência com pesos nem benchmark do equipamento alvo.
+CLI real contra daemon ausente: saída12, connection_failed e zero amostras.
+Scanner de assinaturas150 ficheiros/0 achados, sem análise de toda história Git.
+CI corrente nos
+[checks do PR1](https://github.com/Genseric0/GensIA/pull/1/checks); resultados
+das versões anteriores abaixo são históricos. Nenhuma captura nova necessária:
+interface e assets inalterados.
+
 
 ## Incremento0.65 — guia de configuração na interface
 

@@ -30,6 +30,7 @@ def main(argv=None):
             [str(python), '-I', '-B', '-m', 'gensia', '--version'],
             [str(python), '-I', '-B', '-m', 'gensia', '--help'],
             [str(python), '-I', '-B', '-m', 'gensia.api', '--help'],
+            [str(python), '-I', '-B', '-m', 'gensia.model_probe', '--help'],
             [str(python), '-I', '-B', '-c',
              "from importlib.resources import files; "
              "assets=('panel.html','panel.js','panel.css','app.html','app.js','app.css'); "

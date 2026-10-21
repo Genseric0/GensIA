@@ -1,5 +1,9 @@
 # Entrega — alvo22/10/2026 — revisão21/10/2026
 
+Incremento0.66: model_probe opt-in;423 Python/50 Node PASS local, wheel10 etapas
+PASS e10 novas regressões. Medição real depende de daemon/pesos/equipamento
+disponíveis ao operador; não foi executada aqui. Não altera os bloqueios abaixo.
+
 Incremento0.65: configuração guiada no/app,50 Node PASS,413 Python PASS e
 wheel9 etapas PASS local. CI39597871148: seis jobs PASS; Chromium com oito PNG
 reais inspecionados e dez grupos de verificações PASS. Uma primeira resposta recebida

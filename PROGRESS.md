@@ -1,5 +1,28 @@
 # Progresso GensIA
 
+## 21/10/2026 — ensaio explícito de inferência — v0.66.0
+
+Novo python -m gensia.model_probe: --approve obrigatório antes de qualquer I/O,
+1–3 chamadas com prompt sintético fixo, tempos de chamadas completas, sem resposta,
+modelo/endpoint ou erro bruto no relatório. Provider local existente verifica
+metadados antes de cada geração; recusa cloud, sem instalação/fallback. Falha
+interrompe sequência; amostras parciais não aprovam ensaio; Ctrl+C tratado130.
+Timeout por HTTP documentado; sem alegação de cancelamento efetivo do daemon.
+10 testes novos, incluindo HTTP real com servidor sintético. Regressão local:
+423 Python PASS/0 omitidos em21.965s;50 Node PASS/0 omitidos em0.583s;
+coverage87% (3092 statements,338 missing,938 branches,152 partial);wheel0.66
+instalado offline10 etapas PASS;Bandit MED/HIGH0;pipcheck PASS.
+Ligação Python da venv voltou a estar ausente;venv--upgrade repôs execução.
+Tentativa scan_secrets.py falhou por nome inexistente; comando correto é
+scripts/check_secrets.py. Sem novas dependências nem alteração da interface.
+Scanner correto:150 ficheiros/0 assinaturas, sem história Git completa. Execução
+real do probe contra daemon ausente devolveu12/connection_failed, zero amostras,
+sem falso positivo. A medição permanece indisponível por ausência do serviço.
+Ollama/pesos indisponíveis: nenhuma inferência ou medição de hardware real.
+RELEASE BLOCKED mantém-se. Próximo: executar probe no equipamento alvo, rever
+tempos/carga e validar voz; não substituir medições reais por fixtures.
+
+
 ## 21/10/2026 — configuração guiada na interface — v0.65.0
 
 Guia expansível em/app com3 etapas: API, metadados locais e primeira resposta.

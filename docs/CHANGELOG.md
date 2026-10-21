@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.66.0 — ensaio explícito do modelo — 21/10/2026
+
+- Comando model_probe com aprovação, frase sintética fixa e1–3 amostras.
+- Tempos de chamadas completas, sem conteúdo/nome do modelo/endpoint na saída.
+- Falha parcial/interrupção não aprovam teste; sem fallback ou novas rotas.
+- Dez regressões e verificação de empacotamento do novo comando.
+
+
 ## 0.65.0 — configuração guiada na interface — 21/10/2026
 
 - Guia expansível com etapas separadas de API, metadados e primeira resposta.
