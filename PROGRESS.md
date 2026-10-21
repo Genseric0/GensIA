@@ -20,7 +20,11 @@ hardware alvo; não interpretar provider sintético como inferência real.
 Primeiro Chromium0.65 falhou após duas capturas, descarregadas e inspecionadas.
 Runner ajustado para abrir details antes de ler etapa visível; checkpoints
 sanitizados acrescentados para diagnóstico. Run39597189471 permanece evidência
-de falha;consultar repetição nos checks do PR.
+de falha. Repetição39597871148 no commit af3a745: seis jobs PASS; Linux413PASS,
+Windows386PASS/27 omissões POSIX, Node50PASS e wheel9 etapas PASS. Chromium
+concluiu10 grupos e oito PNG inspecionados. ZIP12345345585 descarregado e SHA256
+87c5c8a94d8aff4a5cd2d8c83ac036d55c324a0e363c7272609c98dcfdc8f30e confirmado.
+Dois PNG sem alteração e manifesto persistidos em docs/screenshots/ci-39597871148/.
 
 ## 21/10/2026 — recuperação assistida em cópia — v0.64.0
 

@@ -1,9 +1,9 @@
 # GensIA
 
-![Interface GensIA em execução no Chromium, com respostas de teste sintéticas](docs/screenshots/ci-39520092421/chat-desktop.png)
+![Guia GensIA em execução no Chromium: metadados locais verificados, primeira resposta ainda por testar](docs/screenshots/ci-39597871148/setup-model-ready.png)
 
 Captura real do job Chromium em 21/10/2026; dados e respostas são sintéticos.
-[Evidência e origem das capturas](docs/screenshots/ci-39520092421/README.md).
+[Evidência e origem das capturas](docs/screenshots/ci-39597871148/README.md).
 
 Assistente pessoal modular para conversar com um modelo local, consultar documentos,
 guardar notas e executar operações explícitas no computador. Python, SQLite e

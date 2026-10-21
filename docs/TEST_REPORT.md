@@ -22,8 +22,16 @@ pipcheck/imports confirmados;repetição50PASS. Não foi correção no produto.
 Chromium local segue ausente. Runner real de CI ampliado para guia em1440/390px,
 progresso após metadados/resposta, reset e erro sintético por route.fulfill.
 Não se afirma inferência real; provider e erro são explicitamente sintéticos.
-Oito PNG são previstos;aguardar execução e inspeção antes de declarar capturas
-verificadas. CI corrente em[PR1/checks](https://github.com/Genseric0/GensIA/pull/1/checks).
+Repetição [39597871148](https://github.com/Genseric0/GensIA/actions/runs/39597871148)
+no commit af3a74556888c41b351030b92337e1cafdcbf4ff: seis jobs PASS.
+Linux3.12/3.13:413 Python PASS; Windows3.12/3.13:386 PASS/27 omissões POSIX
+declaradas. Node50 PASS e wheel9 etapas PASS. Chromium:10 grupos de verificações
+PASS e oito PNG reais inspecionados, incluindo larguras1440/768/390/320px.
+Dois PNG representativos e manifesto guardados em
+[screenshots/ci-39597871148](screenshots/ci-39597871148/README.md).
+Artifact12345345585:1028043 bytes, SHA256
+87c5c8a94d8aff4a5cd2d8c83ac036d55c324a0e363c7272609c98dcfdc8f30e,
+descarregado e hash confirmado. CI corrente em[PR1/checks](https://github.com/Genseric0/GensIA/pull/1/checks).
 Resultados0.64 e anteriores abaixo são históricos.
 
 Primeiro Chromium0.65:[run39597189471](https://github.com/Genseric0/GensIA/actions/runs/39597189471),

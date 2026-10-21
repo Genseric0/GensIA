@@ -38,8 +38,9 @@ Uma auditoria completa com leitor de ecrã continua pendente.
 Validação local: seis regressões novas em tests/chat.test.cjs;50 Node PASS no
 total. Backend sem novas rotas;413 Python PASS e wheel9 etapas PASS. O runner
 Chromium foi ampliado para guia inicial desktop/390px, metadados sem inferência,
-primeira resposta, reset e erro sintético de modelo ausente. Capturas só contam
-como evidência quando esse runner conclui; consultar TEST_REPORT.md/PR1/checks.
+primeira resposta, reset e erro sintético de modelo ausente. Run39597871148 passou:
+oito PNG reais inspecionados; dois exemplos e manifesto em
+[evidência0.65](screenshots/ci-39597871148/README.md). Consultar TEST_REPORT.md.
 As capturas antigas no fim deste documento são históricas.
 
 Fontes primárias consultadas em21/10/2026:

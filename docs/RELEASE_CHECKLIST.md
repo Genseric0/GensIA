@@ -1,8 +1,8 @@
 # Entrega — alvo22/10/2026 — revisão21/10/2026
 
 Incremento0.65: configuração guiada no/app,50 Node PASS,413 Python PASS e
-wheel9 etapas PASS local. Runner Chromium ampliado para os estados do guia;
-capturas só são evidência após execução/inspeção. Uma primeira resposta recebida
+wheel9 etapas PASS local. CI39597871148: seis jobs PASS; Chromium com oito PNG
+reais inspecionados e dez grupos de verificações PASS. Uma primeira resposta recebida
 não comprova qualidade, desempenho, privacidade do daemon ou prontidão comercial.
 
 **RELEASE BLOCKED** para distribuição comercial. Incremento0.61.0 preparado
@@ -27,7 +27,7 @@ estado do commit atual. A tabela e run específico abaixo preservam a baseline0.
 | Correções P1 conhecidas da auditoria | Implementadas e com regressões; nenhum P0 estabelecido |
 | Dados sintéticos e recuperação | PASS: concorrência, rollback, integridade e backup/restauro |
 | Vulnerabilidades conhecidas da resolução instalada | Zero no pip-audit; Bandit sem médios/elevados |
-| Interface real e acessibilidade visual | Chromium remoto PASS; quatro PNG inspecionados; auditoria completa de acessibilidade pendente |
+| Interface real e acessibilidade visual | Chromium remoto0.65 PASS; oito PNG inspecionados; auditoria completa de acessibilidade pendente |
 | Modelo/voz reais | PENDENTE: pesos, dispositivos, desempenho e privacidade do daemon |
 | Windows e Python3.13 | PASS no CI Linux/Windows3.12/3.13; hardware e aplicações interativas pendentes |
 | CI obrigatório verde | PASS: [run39521033113](https://github.com/Genseric0/GensIA/actions/runs/39521033113), seis jobs aprovados no commit04a8660 |
