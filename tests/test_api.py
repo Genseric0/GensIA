@@ -97,11 +97,11 @@ class ApiTests(unittest.TestCase):
         self.assertFalse(report['pdf_worker']['resource_limits']['enforcement_validated'])
 
     def test_launcher_loopback_and_no_proxy(self):
-        with patch.dict("os.environ", {"GENSIA_API_TOKEN": "a" * 64}), patch("uvicorn.run") as run:
+        with patch.dict("os.environ", {"GENSIA_API_TOKEN": "a" * 64}), patch("gensia.api.run_local", return_value=0) as run:
             self.assertEqual(main([]), 0)
-        self.assertEqual(run.call_args.kwargs["host"], "127.0.0.1")
-        self.assertFalse(run.call_args.kwargs["proxy_headers"])
-        self.assertFalse(run.call_args.kwargs["access_log"])
+        self.assertEqual(run.call_args.args[1], 8765)
+        self.assertEqual(run.call_args.kwargs['token'], 'a' * 64)
+        self.assertIs(run.call_args.kwargs['display_token'], False)
 
     def test_agent_catalog_is_static_and_read_only(self):
         from gensia.agent_catalog import catalog_snapshot

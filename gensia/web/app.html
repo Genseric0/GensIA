@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GensIA · O teu espaço de inteligência</title>
+  <link rel="icon" href="data:,"><link rel="stylesheet" href="/app.css"><script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="workspace">
+    <aside class="sidebar" aria-label="Navegação principal">
+      <a class="brand" href="/app" aria-label="GensIA início"><span class="brand-icon" aria-hidden="true">G</span><span>Gens<span class="brand-light">IA</span><small>O TEU ESPAÇO DE INTELIGÊNCIA</small></span></a>
+      <button id="new-chat" class="new-chat" type="button"><span aria-hidden="true">＋</span> Nova conversa <kbd>↗</kbd></button>
+      <p class="nav-label">ESPAÇO DE TRABALHO</p>
+      <nav><a class="nav-item active" href="/app" aria-current="page"><span aria-hidden="true">◌</span> Conversa <span class="nav-dot" aria-hidden="true"></span></a><a class="nav-item" href="/panel"><span aria-hidden="true">▦</span> Diagnóstico local <span class="nav-arrow" aria-hidden="true">↗</span></a></nav>
+      <div class="sidebar-note"><span class="small-star" aria-hidden="true">✧</span><h2>Um lugar para pensar melhor.</h2><p>Engenharia, estudo e trabalho. Traz as tuas perguntas e constrói a próxima ideia.</p></div>
+      <div class="privacy-card"><span class="privacy-dot" aria-hidden="true"></span><div><strong>Sessão privada</strong><p>Conversa só nesta página.<br>Sem histórico guardado no browser.</p></div></div>
+      <div class="sidebar-footer"><span class="avatar" aria-hidden="true">TU</span><div>O teu espaço<small>Controlo local</small></div><span aria-hidden="true">⌘</span></div>
+    </aside>
+    <main>
+      <header class="topbar"><div><span class="breadcrumb">GensIA</span><span class="divider" aria-hidden="true">/</span><strong>Conversa</strong></div><div class="top-actions"><span id="model-badge" class="badge"><span aria-hidden="true"></span>Modelo por ligar</span><button id="clear-session" class="quiet" type="button" hidden>Terminar sessão</button></div></header>
+      <div class="content">
+        <section id="connection" class="connection" aria-labelledby="connection-title"><div><h2 id="connection-title">Liga o teu modelo local</h2><p id="connection-status" role="status" aria-live="polite">Introduz o token apresentado ao iniciar a GensIA.</p></div><form id="connect-form" autocomplete="off"><label class="sr-only" for="api-token">Token da API local</label><input id="api-token" type="password" autocomplete="off" spellcheck="false" maxlength="256" placeholder="Token da sessão" disabled><button id="connect" type="submit" disabled>Ligar <span aria-hidden="true">↗</span></button></form><button id="check-model" class="quiet" type="button" hidden>Verificar modelo</button></section>
+        <section id="welcome" class="welcome" aria-labelledby="welcome-title"><div class="hero-mark" aria-hidden="true">✧</div><p class="eyebrow">CLAREZA PARA A TUA PRÓXIMA IDEIA</p><h1 id="welcome-title">Como posso ajudar-te<br><span>hoje?</span></h1><p class="hero-description">Uma conversa para simplificar o complexo.<br>Explora uma ideia, resolve um problema ou aprende algo novo.</p><div class="suggestions" aria-label="Sugestões de conversa"><button type="button" class="suggestion" data-prompt="Explica DNS com um exemplo prático de uma pequena empresa em Moçambique."><span class="suggestion-icon blue" aria-hidden="true">⌁</span><strong>Aprender na prática</strong><span>Compreender redes e engenharia</span><span class="suggestion-arrow" aria-hidden="true">↗</span></button><button type="button" class="suggestion" data-prompt="Ajuda-me a estruturar um plano de trabalho semanal com prioridades e objetivos realistas."><span class="suggestion-icon purple" aria-hidden="true">▤</span><strong>Organizar uma ideia</strong><span>Transformar objetivos em passos</span><span class="suggestion-arrow" aria-hidden="true">↗</span></button><button type="button" class="suggestion" data-prompt="Ajuda-me a preparar um rascunho profissional de resposta a um recrutador. Primeiro pergunta o contexto necessário."><span class="suggestion-icon amber" aria-hidden="true">✎</span><strong>Escrever com clareza</strong><span>Preparar um texto profissional</span><span class="suggestion-arrow" aria-hidden="true">↗</span></button></div></section>
+        <section id="messages" class="messages" aria-label="Mensagens da conversa" aria-live="polite" aria-relevant="additions" hidden></section>
+        <div class="composer-area"><p id="request-status" class="request-status" role="status" aria-live="polite"></p><form id="chat-form"><label class="sr-only" for="prompt">Mensagem para a GensIA</label><div class="composer"><textarea id="prompt" maxlength="4000" rows="2" placeholder="O que gostarias de explorar?" disabled></textarea><div class="composer-footer"><span class="composer-hint"><span aria-hidden="true">✧</span> Conversa com modelo local</span><div><span id="char-count" class="char-count">0 / 4000</span><button id="cancel" class="cancel" type="button" hidden>Cancelar espera</button><button id="send" class="send" type="submit" aria-label="Enviar mensagem" disabled>↑</button></div></div></div></form><p class="footnote">A GensIA pode cometer erros. Confirma informações importantes. <span>Ações do computador não estão ativas nesta conversa.</span></p></div>
+      </div><noscript><p class="noscript">Ativa JavaScript para conversar ou usa a interface por terminal.</p></noscript>
+    </main>
+  </div>
+</body>
+</html>

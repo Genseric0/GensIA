@@ -3,7 +3,10 @@ from pathlib import Path
 
 ASSETS = {'/panel': ('panel.html', 'text/html'),
           '/panel.css': ('panel.css', 'text/css'),
-          '/panel.js': ('panel.js', 'text/javascript')}
+          '/panel.js': ('panel.js', 'text/javascript'),
+          '/app': ('app.html', 'text/html'),
+          '/app.css': ('app.css', 'text/css'),
+          '/app.js': ('app.js', 'text/javascript')}
 
 
 def panel_asset(route):
