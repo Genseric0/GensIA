@@ -47,6 +47,8 @@ def main(argv=None):
              "restored=MemoryStore(Path('restored.sqlite3')); "
              "restore_notes(restored,Path('synthetic.json'),approved=True); "
              "raise SystemExit(0 if restored.get('idioma')==before else 1)"],
+            [str(python), '-I', '-B', '-m', 'gensia', 'memory',
+             '--db', 'restored.sqlite3', 'check'],
         ]
         for command in commands:
             result = subprocess.run(command, cwd=root, stdin=subprocess.DEVNULL,

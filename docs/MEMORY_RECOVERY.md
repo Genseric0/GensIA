@@ -2,28 +2,28 @@
 
 `memory check` valida uma base existente sem reparar, exportar ou imprimir notas.
 Requer Python 3.11 ou superior para aplicar limites por ligação no SQLite; o
-restante núcleo conserva a compatibilidade declarada. CI cobre Python3.12/3.13.
+restante núcleo conserva a compatibilidade declarada. CI cobre Python 3.12/3.13.
 
 ```bash
 python -m gensia memory --db notas.sqlite3 check
 ```
 
-Saída0 exige: tabela ordinary `memories`, até1000 notas válidas e sem duplicados,
+Saída `0` exige: tabela SQLite normal `memories`, até 1000 notas válidas e sem duplicados,
 e uma única resposta `ok` do `PRAGMA integrity_check(1)`. Validação lógica e
 estrutural partilham uma transação de leitura. Valores, chaves e erros internos
 SQLite não são devolvidos; apenas contagem e metadados. Falha/inconclusivo dá
-saída6. Base ausente não é criada. Links e ficheiros especiais usam as recusas
+saída `6`. Base ausente não é criada. Links e ficheiros especiais usam as recusas
 já existentes de MemoryStore. Views não substituem a tabela de notas.
 
 ## Limites e significado
 
-- Limites SQLite por ligação:1MiB para strings/BLOB/linha,64KiB para SQL e
-  profundidade de expressão50. Não modificam limites globais do processo.
-- Progress handler a cada1000 instruções, com teto de2milhões de instruções e
-  prazo de2s verificado durante trabalho SQL e antes do sucesso. Não é um
+- Limites SQLite por ligação: 1 MiB para strings/BLOB/linha, 64 KiB para SQL e
+  profundidade de expressão 50. Não modificam limites globais do processo.
+- Progress handler a cada 1000 instruções, com teto de 2 milhões de instruções e
+  prazo de 2 s verificado durante trabalho SQL e antes do sucesso. Não é um
   deadline de parede rígido: espera de lock, I/O e encerramento podem demorar
-  mais. O timeout de lock do MemoryStore permanece5s.
-- Mais de1000 notas, estruturas incompatíveis ou trabalho acima dos limites
+  mais. O timeout de lock do MemoryStore permanece 5 s.
+- Mais de 1000 notas, estruturas incompatíveis ou trabalho acima dos limites
   não recebem aprovação parcial. O comando não repara corrupção nem cifra dados.
 - `mutations_requested:false` significa que não são pedidos INSERT/UPDATE,
   DELETE, checkpoint, VACUUM ou reparação. SQLite pode usar locks e ficheiros
@@ -64,7 +64,11 @@ alocação pretendida. Foi substituído por uma consulta real que confirma que a
 ligação recusa BLOB acima do limite com SQLITE_TOOBIG, sem inferir a semântica
 de CHECK arbitrário a partir desse resultado. Não se omitiram testes Windows.
 
-Fontes primárias consultadas em21/10/2026:
+O verificador do wheel instala o pacote sem rede numa venv nova, fora do checkout,
+restaura notas sintéticas e executa a CLI `memory check` sobre a base recuperada.
+São sete etapas; a aprovação não exige API, modelos ou motores de voz.
+
+Fontes primárias consultadas em 21/10/2026:
 
 - [SQLite: integrity_check](https://www.sqlite.org/pragma.html#pragma_integrity_check)
 - [SQLite: proteção contra entradas não confiáveis](https://www.sqlite.org/security.html)

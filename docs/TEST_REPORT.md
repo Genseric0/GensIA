@@ -5,8 +5,9 @@
 Onze regressões novas em test_memory_check.py. Suíte completa com extras e HTTP
 real:377 testes Python aprovados,zero omitidos/falhas,21.272s. Coverage combinado
 87% exibido:2818 statements,320 não executados,854 ramos,140 parciais. Bandit
-sem médios/elevados;scanner limitado140 ficheiros/0 achados. Ver MEMORY_RECOVERY.md
-para corrupção real, WAL, limites e ensaio de recuperação. Não se validou falha
+sem médios/elevados;scanner limitado140 ficheiros/0 achados. O wheel0.62 passou
+sete etapas isoladas, incluindo a CLI check na base restaurada.
+Ver MEMORY_RECOVERY.md para corrupção real, WAL, limites e recuperação. Não se validou falha
 de energia, disco cheio ou hardware do cliente. Os [checks do PR1](https://github.com/Genseric0/GensIA/pull/1/checks)
 são a referência para o commit corrente; os resultados0.61 abaixo são históricos.
 

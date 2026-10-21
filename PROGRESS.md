@@ -8,7 +8,8 @@ ausente. Tetos por ligação para strings/SQL/expressões, instruções VM e tem
 cooperativo. Onze regressões novas passam, incluindo corrupção real de página
 e índice secundário, WAL, orçamento e backup/restauro para base nova.
 Suíte completa local:377 Python PASS/0 omitidos em21.272s;coverage87% combinado.
-Bandit sem médios/elevados;scanner140 ficheiros/0 assinaturas. Comandos e limites
+Bandit sem médios/elevados;scanner140 ficheiros/0 assinaturas. Wheel0.62 validado
+em sete etapas isoladas, incluindo memory check após restauro. Comandos e limites
 em docs/MEMORY_RECOVERY.md. Sem dependências novas ou hardware/modelos testados.
 Próximo: ensaio de recuperação após interrupção de processo/disco cheio; modelos
 e voz reais continuam gate comercial. Checks atuais: PR1, sem alterar main.

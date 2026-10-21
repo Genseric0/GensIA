@@ -140,6 +140,7 @@ garantem ausência de vulnerabilidades.
 O [CI do commit 04a8660](https://github.com/Genseric0/GensIA/actions/runs/39521033113)
 passou nos seis jobs, incluindo Windows/Linux, browser e segurança. A validação
 interativa de aplicações Windows e hardware continua separada destes testes.
+Para o incremento atual, consultar os [checks do PR1](https://github.com/Genseric0/GensIA/pull/1/checks).
 
 A licença de distribuição do projeto continua por definir pelo titular. Dependências
 e vozes mantêm licenças próprias; não foi atribuída uma licença em nome do autor.
