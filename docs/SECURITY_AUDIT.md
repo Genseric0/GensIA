@@ -119,7 +119,7 @@ Hash/estat é deteção observada de alteração, não prova de lock ou snapshot
 P1 corrigido em memory_restore.py: destino principal ausente com journal antigo
 podia produzir sucesso seguido de falha de leitura. Agora recusa todos os
 auxiliares do destino, preservando-os. Testes/causa em DATABASE_VALIDATION.md.
-17 testes novos, Bandit sem médios/elevados e scanner limitado sem assinaturas.
+19 testes novos, Bandit sem médios/elevados e scanner limitado sem assinaturas.
 Sem novas dependências, avaliação intrusiva externa ou reparação de dados reais.
 O modo não é sandbox para SQLite hostil e exige origem parada por operador.
 

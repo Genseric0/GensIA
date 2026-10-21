@@ -11,13 +11,14 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from gensia.cli import main
 from gensia.memory import MemoryError, MemoryStore
 from gensia.memory_backup import backup_notes
 from gensia.memory_restore import restore_notes
-from gensia.memory_recovery import recover_copy, JOURNAL_MAGIC
+from gensia.memory_recovery import recover_copy, JOURNAL_MAGIC, _read_source
 
 
 class MemoryRecoveryTests(unittest.TestCase):
@@ -77,6 +78,29 @@ with MemoryStore(sys.argv[1]).connect(write=True) as db:
                     recover_copy(self.source, self.target, approve, stopped)
             inventory.assert_not_called()
         self.assertFalse(self.target.exists())
+
+    @staticmethod
+    def changed_ctime(info):
+        values = {name: getattr(info, name) for name in
+                  ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns', 'st_ctime_ns',
+                   'st_nlink', 'st_mode')}
+        values['st_ctime_ns'] += 1000000000
+        return SimpleNamespace(**values)
+
+    def test_path_and_descriptor_ctime_differences_do_not_reject_unchanged_bytes(self):
+        lstat = Path.lstat
+        def different_api_ctime(path, *args, **kwargs):
+            info = lstat(path, *args, **kwargs)
+            return self.changed_ctime(info) if path == self.source.path else info
+        with patch('gensia.memory_recovery.Path.lstat', different_api_ctime):
+            snapshot = _read_source(self.source.path)
+        self.assertEqual(snapshot['sha256'], self.digest(self.source.path))
+
+    def test_descriptor_ctime_change_during_read_is_still_rejected(self):
+        info = self.source.path.stat()
+        with patch('gensia.memory_recovery.os.fstat', side_effect=[info, self.changed_ctime(info)]):
+            with self.assertRaises(MemoryError):
+                _read_source(self.source.path)
 
     def test_clean_source_preserved_and_output_does_not_return_contents(self):
         before = self.digest(self.source.path)

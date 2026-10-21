@@ -2,9 +2,9 @@
 
 ## Incremento0.64 — recuperação numa cópia
 
-Local Linux/Python3.12.14: **411 PASS,0 omitidos,0 falhas,30.502s**;17 testes novos
-em test_memory_recovery.py. Coverage combinado87%:3032 statements,338 não
-executados,926 ramos,152 parciais. Bandit sem médios/elevados;scanner limitado145
+Local Linux/Python3.12.14: **413 PASS,0 omitidos,0 falhas,23.323s**;19 testes novos
+em test_memory_recovery.py. Coverage combinado87%:3034 statements,337 não
+executados,926 ramos,151 parciais. Bandit sem médios/elevados;scanner limitado145
 ficheiros/0 assinaturas. Wheel0.64 instalado sem rede fora do checkout:9 etapas
 PASS, incluindo recover-copy e check sobre o resultado. Sem dependências novas.
 
@@ -36,6 +36,15 @@ ordem de Path.iterdir(). Os ficheiros eram os mesmos, em ordem inversa. Corrigid
 para assertCountEqual, preservando a verificação de ausência de órfãos. Regressão
 direcionada17 PASS após a correção. Consultar checks do PR para a repetição final;
 não se apresenta esse primeiro run como verde.
+
+Segundo CI:[run39589744826](https://github.com/Genseric0/GensIA/actions/runs/39589744826),
+commitbc5706c: Linux3.12/3.13,Chromium e security PASS;Windows falhou porque
+stat(path) e fstat(fd) podem dar significados diferentes a ctime. Correção:
+comparar identidade/tamanho/mtime entre APIs e conservar ctime em comparações
+fstat antes/depois e entre passes. Novas regressões verificam aceitação da
+diferença entre APIs e recusa de alteração pelo mesmo descritor. Suíte413 local
+e9 etapas do wheel repetidos PASS. Origem continua sem lock imposto.
+Fonte primária:[CPython157671](https://github.com/python/cpython/issues/157671).
 
 ## Incremento0.63 — publicação e interrupções
 

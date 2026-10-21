@@ -7,9 +7,11 @@
   canónico publicado num destino novo. Nunca abre a origem pelo SQLite.
 - Guardas de WAL, super-journals, expansão por header, origem alterada, links,
   tamanhos, schema adicional e auxiliares antigos no destino.
-- Restauro JSON também recusa auxiliares antigos;17 regressões novas e pacote
+- Restauro JSON também recusa auxiliares antigos;19 regressões novas e pacote
   instalado validado em9 etapas. Manual e resultados em MEMORY_RECOVERY/TEST_REPORT.
 - Sem lock imposto à origem, reparação física, WAL ou novas dependências.
+- CI expôs ordem variável de diretórios e diferença ctime stat/fstat no Windows;
+  asserção corrigida e comparações de metadados feitas entre APIs compatíveis.
 
 ## 0.63.0 — publicação de backup/restauro — 21/10/2026
 

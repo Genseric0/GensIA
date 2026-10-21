@@ -9,7 +9,7 @@ Suporta rollback de uma base GensIA confiável até64MiB por ficheiro/1000notas;
 recusa WAL, super-journals, expansão excessiva declarada e schemas adicionais.
 Não impõe quiescência: o operador tem de parar todos os acessos antes das flags.
 Corrigida também aceitação de auxiliares antigos no destino do restauro JSON.
-17 regressões novas PASS;suíte411 Python PASS/0 omitidos em30.502s;coverage87%
+19 regressões novas PASS;suíte413 Python PASS/0 omitidos em23.323s;coverage87%
 combinado. Bandit sem médios/elevados;scanner145 ficheiros/0 assinaturas;wheel0.64
 instalado offline fora do checkout e9 etapas PASS, incluindo recover-copy/check.
 Procedimento e limites em docs/MEMORY_RECOVERY.md. Sem dados reais, hardware,
@@ -21,6 +21,10 @@ PrimeiroCI0.64 revelou asserção dependente da ordem de listagem do filesystem 
 Ubuntu3.12/3.13. Corrigida para comparação sem ordem, mantendo guarda de órfãos;
 17 regressões direcionadas PASS. O run39589478006 fica como evidência de falha;
 repetição final consultável em PR1/checks.
+O CI seguinte39589744826 passou Linux/Chromium/security, mas Windows expôs
+comparação incompatível de ctime entre stat e fstat. Corrigida mantendo ctime
+em fstat consistente e identidade/tamanho/mtime entre APIs. Duas regressões
+acrescentadas;suíte413 local e wheel9 etapas repetidos com sucesso.
 
 ## 21/10/2026 — publicação e falhas da memória — v0.63.0
 

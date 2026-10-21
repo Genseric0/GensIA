@@ -4,7 +4,7 @@
 
 Novo recover-copy: leitura de bytes da origem e journal, hashes/estat verificados,
 recuperação SQLite só na cópia, notas/integridade verificadas, esquema normalizado
-e publicação exclusiva. 17 regressões novas;suíte411 Python PASS local. Paragem
+e publicação exclusiva. 19 regressões novas;suíte413 Python PASS local. Paragem
 da origem é declaração do operador, não lock verificado. Só uma base GensIA em
 rollback;WAL/multi-base/esquemas adicionais recusados. Ver MEMORY_RECOVERY.md.
 

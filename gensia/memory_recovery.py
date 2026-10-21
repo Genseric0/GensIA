@@ -34,9 +34,15 @@ def _inventory(source):
     return [source, journal] if _exists(journal) else [source]
 
 
+def _identity(info):
+    # On Windows stat(path).ctime can mean birth time while fstat(fd).ctime
+    # means change time (CPython #157671). Do not compare those across APIs.
+    return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_nlink)
+
+
 def _signature(info):
-    return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns,
-            info.st_ctime_ns, info.st_nlink)
+    # Always derived from fstat, including across verification passes.
+    return _identity(info) + (info.st_ctime_ns,)
 
 
 def _read_source(path, output=None):
@@ -67,7 +73,7 @@ def _read_source(path, output=None):
                     output.write(chunk)
             after = os.fstat(stream.fileno())
         if (count != before.st_size or _signature(before) != _signature(after)
-                or path.is_symlink() or _signature(path.lstat()) != _signature(before)):
+                or path.is_symlink() or _identity(path.lstat()) != _identity(before)):
             raise MemoryError('Origem alterada durante a leitura; recuperação recusada.')
         return {'signature': _signature(before), 'sha256': digest.hexdigest()}
     finally:

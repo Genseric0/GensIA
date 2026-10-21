@@ -27,8 +27,9 @@ observação. `source_quiescence_enforced:false` mantém essa limitação explí
 
 O comando copia a base e o eventual journal para uma pasta privada na pasta do
 destino, por blocos de64KiB, com teto64MiB por ficheiro. Recusa ficheiros especiais,
-symlinks e hard links adicionais; compara identidade/tamanho/mtime/ctime antes e
-depois da leitura, hashes SHA256 de origem/cópia e outra leitura da origem antes
+symlinks e hard links adicionais; compara identidade/tamanho/mtime entre path e
+descritor, e inclui ctime nas comparações fstat antes/depois e entre passes.
+Usa hashes SHA256 de origem/cópia e outra leitura da origem antes
 de recuperar e antes de publicar. O acesso de leitura pode atualizar atime.
 `source_hashes_verified:true` só descreve as comparações realizadas, não garante
 ausência de escritores. Nenhum conteúdo de nota é incluído na saída.
@@ -63,7 +64,7 @@ hard link POSIX da0.63 mantém-se. Backups externos e retenção continuam neces
 
 ### Validação e revisão do incremento0.64
 
-17 testes novos em test_memory_recovery.py: journal real criado por cache spill
+19 testes novos em test_memory_recovery.py: journal real criado por cache spill
 e término de processo, origem/journal byte a byte preservados, chamadas SQLite
 apenas nas cópias, consentimento exato, WAL com/sem auxiliares, super-journal com
 sentinel externa preservada, header de expansão excessiva, mudanças observadas na
@@ -84,6 +85,14 @@ Fontes primárias consultadas em21/10/2026, sem novas dependências:
 [pager.c oficial — readSuperJournal/readJournalHdr](https://github.com/sqlite/sqlite/blob/master/src/pager.c).
 Código consultado através do endpoint público contents de SQLite no GitHub;
 esta implementação não copia o pager nem substitui a recuperação SQLite.
+
+Compatibilidade Windows: ctime por path e por descritor pode ter significados
+diferentes no CPython. O primeiro CI Windows recusou origens válidas pela
+comparação cruzada. A correção mantém identidade/tamanho/mtime cruzados e ctime
+somente entre fstat da mesma API. Duas regressões confirmam aceitação de ctime
+divergente entre APIs e recusa quando muda durante a leitura pelo descritor.
+Fonte primária consultada em21/10/2026:
+[CPython issue157671](https://github.com/python/cpython/issues/157671).
 
 ## Publicação segura de backup e restauro — 21/10/2026
 
