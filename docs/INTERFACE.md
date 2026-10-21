@@ -1,7 +1,51 @@
-# Interface de conversa — candidata 0.61
+# Interface de conversa — candidata 0.65
 
 A página `/app` conversa com o modelo Ollama local configurado no arranque da API.
 `/panel` mantém o diagnóstico técnico. O backend utiliza o mesmo provider da CLI.
+
+## Configuração guiada — incremento0.65,21/10/2026
+
+Abrir «Configuração guiada» em `/app`. O guia acompanha a sessão atual:
+
+| Progresso | Evidência apresentada |
+| --- | --- |
+| 0/3 | Ainda sem verificação bem-sucedida nesta sessão |
+| 1/3 | API verificada, mas conversa sem modelo configurado; instruções abertas |
+| 2/3 | Metadados locais confirmados; primeira resposta ainda por testar |
+| 3/3 | Resposta válida recebida nesta conversa; não certifica qualidade/hardware/segurança |
+
+A consulta continua a ser o GET autenticado `/model` existente, após «Ligar» ou
+«Verificar modelo». O guia não acrescenta polling, endpoints, instalações nem
+pedidos automáticos. Uma pergunta explícita é necessária para obter a resposta.
+Os exemplos ollama list e arranque da GensIA são texto para execução manual,
+com placeholder NOME_LOCAL: nunca se executam comandos pelo navegador.
+
+API sem --chat-model abre instruções de configuração e mantém o compositor
+bloqueado. Ollama indisponível, modelo ausente, cloud recusada, localidade não
+confirmada e servidor ocupado têm orientação específica, por códigos conhecidos.
+Mensagens arbitrárias do servidor não são refletidas; códigos como reply ou
+__proto__ não podem fabricar um estado concluído. Falha de verificação limpa a
+sessão como anteriormente, pelo que 0/3 não nega que o servidor tenha respondido:
+significa que a sessão não conserva uma verificação bem-sucedida.
+
+Nova conversa remove a etapa da resposta, conservando metadados confirmados.
+Reverificar o modelo também repõe essa etapa. Logout/expiração limpam o progresso;
+pedidos tardios após cancelamento ou logout não o restauram. Token e contexto
+continuam só em memória. Summary/details nativos permitem abrir o guia com teclado;
+passos reorganizam-se numa coluna em ecrãs pequenos e comandos quebram a linha.
+Uma auditoria completa com leitor de ecrã continua pendente.
+
+Validação local: seis regressões novas em tests/chat.test.cjs;50 Node PASS no
+total. Backend sem novas rotas;413 Python PASS e wheel9 etapas PASS. O runner
+Chromium foi ampliado para guia inicial desktop/390px, metadados sem inferência,
+primeira resposta, reset e erro sintético de modelo ausente. Capturas só contam
+como evidência quando esse runner conclui; consultar TEST_REPORT.md/PR1/checks.
+As capturas antigas no fim deste documento são históricas.
+
+Fontes primárias consultadas em21/10/2026:
+[Ollama FAQ — cloud e ambiente](https://docs.ollama.com/faq).
+As instruções exigem daemon/modelo local confiável já preparado; nenhuma nova
+biblioteca, versão de motor, licença de pesos ou alegação de desempenho foi adotada.
 
 ## Arranque local
 

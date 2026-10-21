@@ -1,3 +1,12 @@
+2026-10-21 — v0.65.0 — configuração guiada/app
+Node50PASS/0skip/0fail,0.774s;6novos guia/erros/reset/cancel/logout/expiração/recheck.
+GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
+413PASS/0skip/0fail,33.192s;coverage87%(3034statements,337missing,926branches,151partial).
+Wheel0.65instaladooffline9PASS;BanditMED/HIGH0;signatures145files/0findings.
+VenvPythonlinkquebrado:helperNodefalhouantesdereparar;venv--upgrade,pipcheck/importsPASS.
+Chromiumlocalausente;runnerCIampliado8PNGprevistos,nãosãocapturasconfirmadasatéconclusão.
+Semrotasnovas/polling/instalaçãoautomática;metadadosnãoinferencia;CIatualPR1/checks.
+
 2026-10-21 — v0.64.0 — recuperação assistida numa cópia
 GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
 413PASS/0skip/0fail,23.323s;19novos.Coverage87%(3034statements,337missing,926branches,151partial).

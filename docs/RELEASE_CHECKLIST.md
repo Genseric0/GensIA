@@ -1,5 +1,10 @@
 # Entrega — alvo22/10/2026 — revisão21/10/2026
 
+Incremento0.65: configuração guiada no/app,50 Node PASS,413 Python PASS e
+wheel9 etapas PASS local. Runner Chromium ampliado para os estados do guia;
+capturas só são evidência após execução/inspeção. Uma primeira resposta recebida
+não comprova qualidade, desempenho, privacidade do daemon ou prontidão comercial.
+
 **RELEASE BLOCKED** para distribuição comercial. Incremento0.61.0 preparado
 para revisão e ensaio local controlado; não existe garantia de zero falhas.
 O incremento0.62 acrescenta `memory check`, com377 testes locais aprovados.

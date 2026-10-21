@@ -109,6 +109,17 @@ justificam apresentar estas capacidades como concluídas.
 
 ## Referências primárias
 
+### Atualização0.65 — guia da interface — 21/10/2026
+
+Sem rotas/permissões novas, polling, downloads ou execução de comandos pelo
+navegador. Guia deriva progresso de respostas já validadas e usa textContent
+com mensagens fixas por códigos conhecidos. __proto__,reply e mensagens
+arbitrárias não fabricam estado concluído. Metadados permanecem distintos de
+inferência; logout/expiração/cancelamento impedem atualização por resposta tardia.
+Seis regressões novas,50 Node PASS;413 Python e9 etapas do wheel PASS local.
+Token/histórico continuam só em memória. BrowserCI com provider sintético;
+hardware/modelos reais e auditoria completa de acessibilidade pendentes.
+
 ### Atualização0.64 — recuperação em cópia — 21/10/2026
 
 Novo memory_recovery.py mantém SQLite afastado da origem e recupera só clone

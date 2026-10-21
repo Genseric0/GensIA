@@ -9,7 +9,7 @@ Assistente pessoal modular para conversar com um modelo local, consultar documen
 guardar notas e executar operações explícitas no computador. Python, SQLite e
 FastAPI; interface web servida pelo próprio computador, sem CDN.
 
-**Candidata 0.64.0 — RELEASE BLOCKED.** Esta branch recupera uma conversa funcional
+**Candidata 0.65.0 — RELEASE BLOCKED.** Esta branch recupera uma conversa funcional
 e corrige falhas de autorização, privacidade e integridade reproduzidas na base
 remota 0.34. A avaliação está em [RELEASE_CHECKLIST](docs/RELEASE_CHECKLIST.md) e
 [TEST_REPORT](docs/TEST_REPORT.md). Serviços sintéticos não comprovam pesos reais.
@@ -39,6 +39,9 @@ python3 -m venv .venv
 
 Abrir **http://127.0.0.1:8765/app** e introduzir o token apresentado no terminal.
 Token novo por processo, apresentado depois de reservar a porta; Ctrl+C termina.
+O guia «Configuração guiada» em `/app` acompanha ligação à API, confirmação dos
+metadados locais e primeira resposta. Mostra instruções de arranque e ajuda
+específica para erros; verificar metadados não conta como testar inferência.
 Sem --chat-model a geração permanece desativada. /panel oferece diagnóstico autenticado.
 Consultar [INTERFACE](docs/INTERFACE.md).
 

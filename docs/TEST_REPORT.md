@@ -1,4 +1,30 @@
-# Testes — 21/10/2026 — v0.64.0
+# Testes — 21/10/2026 — v0.65.0
+
+## Incremento0.65 — guia de configuração na interface
+
+Local:50 Node PASS/0 omitidos/0 falhas em0.774s, incluindo seis regressões novas
+em chat.test.cjs.413 Python PASS/0 omitidos em33.192s;coverage87%,3034 statements,
+337 não executados,926 ramos,151 parciais. Wheel0.65 instalado offline fora do
+checkout:9 etapas PASS. Bandit sem médios/elevados;scanner145 ficheiros/0 achados.
+
+```bash
+GENSIA_PYTHON=/caminho/absoluto/para/python node --test tests/*.test.cjs
+GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
+.venv/bin/python scripts/verify_installed.py dist/gensia_local-0.65.0-py3-none-any.whl
+```
+
+Guia:0→2→3 etapas,API sem modelo1/3,erros conhecidos/hostis, falha/cancelamento
+sem conclusão, logout/expiração e resposta tardia sem restaurar estado, recheck
+sem enviar histórico. FixtureDOM/VM usa app.js real; não é prova de layout.
+Primeiro ensaio Node completo falhou ao iniciar helperPython porque a venv
+apontava para runtime ausente. Reparação python3 -m venv --upgrade .venv e
+pipcheck/imports confirmados;repetição50PASS. Não foi correção no produto.
+Chromium local segue ausente. Runner real de CI ampliado para guia em1440/390px,
+progresso após metadados/resposta, reset e erro sintético por route.fulfill.
+Não se afirma inferência real; provider e erro são explicitamente sintéticos.
+Oito PNG são previstos;aguardar execução e inspeção antes de declarar capturas
+verificadas. CI corrente em[PR1/checks](https://github.com/Genseric0/GensIA/pull/1/checks).
+Resultados0.64 e anteriores abaixo são históricos.
 
 ## Incremento0.64 — recuperação numa cópia
 

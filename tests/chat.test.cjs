@@ -115,3 +115,79 @@ test('unsafe or excessive user text never reaches provider',async()=>{
   const ui=setup();await ui.connect();for(const text of ['x'.repeat(4001),'\x1bPRIVATE','\ud800'])await ui.send(text);
   assert.equal(ui.calls.length,1);assert.equal(ui.elements.messages.children.length,0);
 });
+
+test('setup guide separates metadata from the first reply without extra network calls',async()=>{
+  const ui=setup();
+  assert.equal(ui.elements['setup-progress'].textContent,'0 de 3 passos');
+  assert.equal(ui.elements['setup-reply'].textContent,'Por testar');
+  assert.equal(ui.calls.length,0);
+  await ui.connect();
+  assert.equal(ui.elements['setup-progress'].textContent,'2 de 3 passos');
+  assert.match(ui.elements['setup-model'].textContent,/Metadados locais/);
+  assert.match(ui.elements['setup-hint'].textContent,/Falta testar uma resposta/);
+  assert.equal(ui.elements['setup-guide'].open,false);
+  assert.deepEqual(ui.calls.map(x=>x[0]),['/model']);
+  await ui.send('teste');
+  assert.equal(ui.elements['setup-progress'].textContent,'3 de 3 passos');
+  assert.match(ui.elements['setup-hint'].textContent,/não certifica/);
+  ui.elements['new-chat'].handlers.click();
+  assert.equal(ui.elements['setup-progress'].textContent,'2 de 3 passos');
+  assert.equal(ui.elements['setup-reply'].textContent,'Por testar');
+  ui.elements['clear-session'].handlers.click();
+  assert.equal(ui.elements['setup-progress'].textContent,'0 de 3 passos');
+});
+
+test('setup guide opens concrete instructions for an API without a configured model',async()=>{
+  const ui=setup(()=>response({configured:false,available:false,locality:'not_checked',inference_tested:false}));
+  await ui.connect();
+  assert.equal(ui.elements['setup-progress'].textContent,'1 de 3 passos');
+  assert.equal(ui.elements['setup-guide'].open,true);
+  assert.match(ui.elements['setup-hint'].textContent,/--chat-model/);
+  assert.equal(ui.elements.prompt.disabled,true);
+  await ui.send('not sent');assert.equal(ui.calls.length,1);
+});
+
+test('setup guide errors never reflect untrusted messages or claim a verified stage',async()=>{
+  for(const [code,expected] of [['connection_failed',/Ollama está a correr/],
+      ['model_not_found',/ollama list/],['cloud_model_blocked',/processamento remoto/],
+      ['locality_unconfirmed',/não foi confirmada/],['model_busy',/ocupado/],
+      ['reply',/inconclusiva/],['__proto__',/inconclusiva/],['<img SECRET>',/inconclusiva/]]){
+    const ui=setup(()=>response({error:code,message:'PRIVATE '+TOKEN},503));await ui.connect();
+    assert.equal(ui.elements['setup-progress'].textContent,'0 de 3 passos');
+    assert.equal(ui.elements['setup-guide'].open,true);
+    assert.match(ui.elements['setup-hint'].textContent,expected);
+    assert.doesNotMatch(ui.elements['setup-hint'].textContent,/PRIVATE|synthetic|<img/);
+    assert.equal(ui.elements.prompt.disabled,true);
+  }
+});
+
+test('failed or cancelled chat never completes the guide and a late reply cannot restore it',async()=>{
+  const bad=setup(url=>url==='/model'?model():response({error:'model_busy'},429));
+  await bad.connect();await bad.send('test');
+  assert.equal(bad.elements['setup-progress'].textContent,'2 de 3 passos');
+  let resolve;const ui=setup(url=>url==='/model'?model():new Promise(done=>{resolve=done;}));
+  await ui.connect();const waiting=ui.send('test');ui.elements.cancel.handlers.click();
+  resolve(reply('late'));await waiting;
+  assert.equal(ui.elements['setup-progress'].textContent,'2 de 3 passos');
+  ui.elements['clear-session'].handlers.click();
+  assert.equal(ui.elements['setup-progress'].textContent,'0 de 3 passos');
+});
+
+test('stale model response cannot mark setup ready after logout or expiry',async()=>{
+  for(const expire of [false,true]){
+    let resolve;const ui=setup(()=>new Promise(done=>{resolve=done;}));const waiting=ui.connect();
+    if(expire){ui.clock.wall+=300000;ui.clock.monotonic+=300000;ui.events.focus();}
+    else ui.elements['clear-session'].handlers.click();
+    resolve(model());await waiting;
+    assert.equal(ui.elements['setup-progress'].textContent,'0 de 3 passos');
+    assert.equal(ui.elements.prompt.disabled,true);
+  }
+});
+
+test('rechecking metadata resets the response stage and does not send history',async()=>{
+  const ui=setup();await ui.connect();await ui.send('private context');
+  await ui.elements['check-model'].handlers.click();
+  assert.equal(ui.elements['setup-progress'].textContent,'2 de 3 passos');
+  const call=ui.calls.at(-1);assert.equal(call[0],'/model');assert.equal(call[1].body,undefined);
+  assert.doesNotMatch(ui.elements['setup-hint'].textContent,/private context/);
+});

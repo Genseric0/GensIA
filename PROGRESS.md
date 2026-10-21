@@ -1,5 +1,23 @@
 # Progresso GensIA
 
+## 21/10/2026 — configuração guiada na interface — v0.65.0
+
+Guia expansível em/app com3 etapas: API, metadados locais e primeira resposta.
+Instruções manuais e orientação por erro; zero endpoints/polling/dependências
+novos. Não confunde metadados com inferência nem resposta com certificação.
+Logout/expiração e respostas tardias preservam limpeza; nova conversa ou nova
+verificação repõem a etapa da resposta. Seis regressões JS novas:50 Node PASS.
+413 Python PASS/0 omitidos em33.192s;coverage87% (backend inalterado);wheel0.65
+instalado offline fora do checkout9 etapas PASS;Bandit sem médios/elevados;
+scanner145 ficheiros/0 assinaturas. Runtime local teve ligação Python da venv
+quebrada;reparada com python3 -m venv --upgrade .venv,pipcheck/imports PASS.
+Chromium local continua ausente;runnerCI ampliado para capturas reais do guia,
+estados e responsividade. Não repetir download bloqueado sem mudança do ambiente.
+CI atual em PR1/checks. Estado RELEASE BLOCKED para venda; modelo/voz/hardware,
+licenças, distribuição e isolamento de clientes continuam gates separados.
+Próximo: diagnóstico operacional do modelo local e percurso de primeiro uso no
+hardware alvo; não interpretar provider sintético como inferência real.
+
 ## 21/10/2026 — recuperação assistida em cópia — v0.64.0
 
 Novo `memory recover-copy --output NOVA --approve --source-stopped`: origem lida

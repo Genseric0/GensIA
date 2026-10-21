@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.65.0 — configuração guiada na interface — 21/10/2026
+
+- Guia expansível com etapas separadas de API, metadados e primeira resposta.
+- Instruções manuais e orientação específica por erro, com texto fixo seguro.
+- Progresso reposto em logout/expiração, nova conversa e nova verificação;
+  respostas tardias não restauram uma sessão terminada.
+- Seis regressões Node e runner Chromium ampliado; sem novas rotas/dependências.
+
 ## 0.64.0 — recuperação assistida numa cópia — 21/10/2026
 
 - CLI recover-copy, com aprovação e declaração específica de origem parada.

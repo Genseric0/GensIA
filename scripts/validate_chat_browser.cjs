@@ -65,10 +65,27 @@ async function main() {
     await page.goto(origin+'/app');
     await page.locator('#api-token').waitFor({state:'visible'});
     assert.equal(await page.locator('#prompt').isDisabled(),true);
+    assert.equal(await page.locator('#setup-progress').innerText(),'0 de 3 passos');
+    await page.locator('#setup-guide summary').click();
+    await page.screenshot({path:path.join(output,'setup-initial.png'),fullPage:true});
+    report.screenshots.push('setup-initial.png');
+    await page.setViewportSize({width:390,height:1000});
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+    await page.screenshot({path:path.join(output,'setup-390.png'),fullPage:true});
+    report.screenshots.push('setup-390.png');
+    await page.setViewportSize({width:1440,height:1000});
+    await page.locator('#setup-guide summary').click();
     await page.locator('#api-token').fill(token);
     await page.locator('#connect').click();
     await page.waitForFunction(()=>!document.querySelector('#prompt').disabled);
     assert.equal(await page.locator('#api-token').inputValue(),'');
+    assert.equal(await page.locator('#setup-progress').innerText(),'2 de 3 passos');
+    assert.equal(await page.locator('#setup-reply').innerText(),'Por testar');
+    await page.locator('#setup-guide summary').click();
+    await page.screenshot({path:path.join(output,'setup-model-ready.png'),fullPage:true});
+    report.screenshots.push('setup-model-ready.png');
+    await page.locator('#setup-guide summary').click();
+    report.checks.push('setup_metadata_does_not_claim_inference_and_responsive_instructions');
     report.checks.push('connection_and_token_field_cleared');
     async function send(text, expected) {
       await page.locator('#prompt').fill(text);await page.locator('#send').click();
@@ -76,6 +93,7 @@ async function main() {
       if (expected) assert.match(await page.locator('.message.assistant').last().innerText(),expected);
     }
     await send('Explica DNS com um exemplo prático.', /Contexto: 1 mensagens/);
+    assert.equal(await page.locator('#setup-progress').innerText(),'3 de 3 passos');
     await send('Como funciona o cache?', /Contexto: 3 mensagens/);
     report.checks.push('conversation_and_followup_context');
     await page.screenshot({path:path.join(output,'chat-desktop.png'),fullPage:true});
@@ -104,6 +122,7 @@ async function main() {
     report.checks.push('cancel_wait_and_ignore_late_reply');
     await page.locator('#new-chat').click();
     assert.equal(await page.locator('.message').count(),0);
+    assert.equal(await page.locator('#setup-progress').innerText(),'2 de 3 passos');
     await send('Uma conversa nova.', /Contexto: 1 mensagens/);
     report.checks.push('new_conversation_removes_previous_context');
     assert.deepEqual(await context.cookies(),[]);
@@ -111,9 +130,23 @@ async function main() {
     await page.locator('#clear-session').click();
     assert.equal(await page.locator('.message').count(),0);
     assert.equal(await page.locator('#prompt').isDisabled(),true);
+    assert.equal(await page.locator('#setup-progress').innerText(),'0 de 3 passos');
     await page.locator('#api-token').fill('b'.repeat(64));await page.locator('#connect').click();
     await page.waitForFunction(()=>document.querySelector('#connection-status').textContent.includes('recusado'));
     report.checks.push('clear_session_no_storage_and_invalid_token');
+    // Explicitly synthetic error response for the frontend recovery instructions.
+    await page.route('**/model', route => route.fulfill({status:503,contentType:'application/json',
+      body:JSON.stringify({error:'model_not_found',message:'UNTRUSTED_DIAGNOSTIC'})}));
+    await page.locator('#api-token').fill(token);await page.locator('#connect').click();
+    await page.waitForFunction(()=>document.querySelector('#setup-hint').textContent.includes('ollama list'));
+    assert.equal(await page.locator('#setup-progress').innerText(),'0 de 3 passos');
+    assert.equal(await page.locator('#prompt').isDisabled(),true);
+    assert.equal(await page.locator('#setup-guide').evaluate(element=>element.open),true);
+    assert.doesNotMatch(await page.locator('#setup-hint').innerText(),/UNTRUSTED/);
+    await page.screenshot({path:path.join(output,'setup-model-missing.png'),fullPage:true});
+    report.screenshots.push('setup-model-missing.png');
+    await page.unroute('**/model');
+    report.checks.push('setup_error_instructions_and_progress_reset_with_synthetic_error');
     assert.deepEqual(errors,[]);
     report.passed=true;save();return 0;
   } catch (error) {
