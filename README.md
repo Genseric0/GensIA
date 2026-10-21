@@ -1,5 +1,10 @@
 # GensIA
 
+![Interface GensIA em execução no Chromium, com respostas de teste sintéticas](docs/screenshots/ci-39520092421/chat-desktop.png)
+
+Captura real do job Chromium em 21/10/2026; dados e respostas são sintéticos.
+[Evidência e origem das capturas](docs/screenshots/ci-39520092421/README.md).
+
 Assistente pessoal modular para conversar com um modelo local, consultar documentos,
 guardar notas e executar operações explícitas no computador. Python, SQLite e
 FastAPI; interface web servida pelo próprio computador, sem CDN.

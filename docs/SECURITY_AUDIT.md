@@ -62,6 +62,22 @@ de segurança dos executáveis/motores chamados.
 
 ## Limites e trabalho pendente
 
+### API e interface: aplicabilidade ASVS
+
+| Área | Controlo existente e evidência | Limite |
+| --- | --- | --- |
+| Autenticação e sessão | Bearer aleatório, header único, comparação constante; testes API/socket e browser | Um token por processo; expiração limpa a página, não revoga o servidor |
+| Autorização | Diagnóstico e conversa autenticados; chat sem despacho de ferramentas; ações CLI exigem aprovação específica | Sem identidade de cliente, RBAC ou isolamento multiutilizador |
+| XSS / conteúdo não confiável | textContent, CSP sem scripts inline, resposta Unicode limitada; teste Chromium de HTML | Sem auditoria integral de acessibilidade ou browser alternativo |
+| CSRF / CORS | Sem cookies/CORS; Host e Origin exatos, query recusada; testes negativos HTTP | API limitada a loopback; não publicar diretamente |
+| Validação / limites | JSON estrito, corpo32 KiB, contexto12000 caracteres, um worker de geração por aplicação | Lock é contenção de concorrência, não quota por cliente ou deadline total |
+| SQL / dados | Queries parametrizadas e projeções limitadas; regressões de integridade e backup/restauro | Não cifra os dados em repouso nem controla processos com os mesmos privilégios |
+| Passwords / recuperação / upload web | Não implementados ou expostos nesta aplicação local | Exigem desenho próprio antes de um serviço de clientes |
+
+O cliente não envia prompts para serviços cloud automaticamente. A política de
+metadados não controla o comportamento interno de um daemon Ollama comprometido.
+Não se atribui um nível ASVS nem se apresentam controlos não testados como PASS.
+
 - A confirmação `confirmed_local` significa que os metadados fornecidos pelo
   Ollama satisfazem a política; não é atestação criptográfica nem medição de
   tráfego do daemon. `status` conserva os indicadores de localidade/inferência

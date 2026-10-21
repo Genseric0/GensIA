@@ -9,13 +9,13 @@ Node24.19.0, dependências isoladas em `.venv`; não são testes no PC do client
 | --- | --- |
 | Baseline206f4d1, sem extras globais | Python250 aprovados/27 omitidos; Node33 aprovados/1 falha de dependência |
 | Mesmo commit, worktree independente, extras instalados | Python277 aprovados/0 omitidos em11.376s; Node34 aprovados/0 omitidos |
-| Versão corrigida, API/PDF/HTTP ativados | Python360 aprovados/0 omitidos/0 falhas em21.242s |
-| Todos os contratos Node atuais | 44 aprovados/0 omitidos/0 falhas em0.575s |
-| Coverage Python, linhas e ramos combinados | 86% exibido;2757 statements,321 não executados;830 ramos,138 parciais |
+| Versão corrigida, API/PDF/HTTP ativados | Python 366 aprovados/0 omitidos/0 falhas em 22.883s |
+| Todos os contratos Node atuais | 44 aprovados/0 omitidos/0 falhas em 0.722s |
+| Coverage Python, linhas e ramos combinados | 86% exibido; 2770 statements,321 não executados; 838 ramos,138 parciais |
 | Wheel reconstruído e instalado fora do checkout | Seis etapas aprovadas; inclui assets e memória→backup→restauro |
 | pip check / pip-audit strict | Ambos exit0; zero vulnerabilidades conhecidas |
 | Bandit, ignorando supressões | Zero médios/elevados; quatro baixos de alta confiança revistos |
-| Scanner limitado de assinaturas de segredos |132 ficheiros,zero achados; não analisa todo o histórico Git |
+| Scanner limitado de assinaturas de segredos |136 ficheiros,zero achados; não analisa todo o histórico Git |
 
 A primeira regressão integrada encontrou uma falha: importar `gensia.api`
 carregava prematuramente `gensia.providers`, contrariando o contrato de importação
@@ -30,7 +30,8 @@ GENSIA_TEST_REAL_HTTP=1 python -m coverage run --branch --source=gensia -m unitt
 python -m coverage report --show-missing
 GENSIA_PYTHON="$(python -c 'import sys; print(sys.executable)')" node --test tests/*.test.cjs
 python -m pip check
-python -m pip_audit --local --strict --progress-spinner off
+python -m pip freeze --all --exclude-editable > artifacts/audit-requirements.txt
+python -m pip_audit --strict --disable-pip --no-deps -r artifacts/audit-requirements.txt --progress-spinner off
 python -m bandit -r gensia --severity-level medium --confidence-level low --ignore-nosec
 python scripts/check_secrets.py
 python -m build --wheel --no-isolation
@@ -52,6 +53,18 @@ a instalação do browser falhou com ZIP truncado. Nenhum PNG foi produzido.
 `docs/screenshots/chat-browser-2026-10-21/validation.json` preserva o bloqueio.
 O CI inclui um job E2E com browser e dados explicitamente sintéticos. Só os seus
 resultados efetivamente consultados podem fechar a validação visual.
+
+Atualização remota: o job Chromium118961545502 no run39520092421 passou. O ZIP
+foi descarregado, hash confirmado e as quatro capturas inspecionadas. Evidência
+em `screenshots/ci-39520092421/`. Linux3.12 e3.13 também passaram. O primeiro
+Windows3.13 registou6 falhas,13 erros de limpeza e25 omissões específicas de
+plataforma; estão a ser corrigidos os destinos symlink, fecho de fixtures SQLite
+e expectativas de caminhos canónicos. O primeiro job security falhou por tentar
+auditar o próprio pacote não publicado no PyPI. A configuração está a ser
+corrigida sem ignorar advisories de dependências. A repetição Linux passou com
+366 testes, incluindo seis regressões novas: guardas de destino e fecho/rollback
+de conexões. O pacote foi reconstruído e o verificador isolado voltou a passar.
+Ver checklist para a repetição remota.
 
 Não houve inferência com pesos Ollama, Whisper/Piper reais, microfone, validação
 Windows nativa, carga representativa de clientes ou avaliação de SLA. Os tempos

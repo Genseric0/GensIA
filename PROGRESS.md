@@ -7,10 +7,12 @@ Implementados aprovação exata, auditoria durável antes dos efeitos, gate de
 metadados Ollama e resposta segura, memória0600/bounded/UTF8/rollback, voz com
 checkpoint local e texto por stdin, interface/app com contexto e Bearer, reserva
 de socket antes do token, pacote instalável e CI Linux/Windows/browser/security.
-360Python e44Node aprovados sem omissões. Coverage86%;pipcheck/audit aprovados;
+366 Python e44 Node aprovados sem omissões após correções Windows identificadas
+no CI. Coverage86%;pipcheck/audit aprovados;
 Bandit0médios/elevados;wheel instalado fora do checkout com seis etapas PASS.
 Regressão da importação API encontrada e corrigida antes da repetição completa.
-Chromium local bloqueado por download truncado; sem PNG ou pesos reais testados.
+Chromium local bloqueado por download truncado. Chromium remoto passou; quatro
+PNG reais descarregados e inspecionados. Sem pesos reais testados. PR1 aberto.
 Estado RELEASE BLOCKED: ver docs/RELEASE_CHECKLIST.md. Próximo: PR/CI efetivamente
 verificados, browser e hardware/modelo reais. Sem produção ou dados reais.
 

@@ -93,3 +93,12 @@ runner quando o browser estiver disponível; o seu resultado deve ser consultado
 
 Inferência com pesos reais, instalação em Windows e áudio real continuam por
 validar. Esta interface local não constitui uma plataforma comercial multiutilizador.
+# Evidência posterior no CI — 21/10/2026
+
+O job Chromium118961545502 passou no commit18a87ae. O artifact foi descarregado,
+o hash verificado e as quatro imagens inspecionadas. Ver
+[capturas e proveniência](screenshots/ci-39520092421/README.md). Esta evidência
+fecha o percurso E2E sintético do runner em desktop/tablet/telemóvel. A limitação
+de Chromium local abaixo continua verdadeira; não impede a evidência remota.
+Inferência com pesos reais e acessibilidade completa permanecem por validar.
+

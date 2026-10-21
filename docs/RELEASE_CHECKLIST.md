@@ -7,15 +7,15 @@ para revisão e ensaio local controlado; não existe garantia de zero falhas.
 | --- | --- |
 | Baseline reproduzível | PASS: commit206f4d1 em worktree separado,277 testes completos |
 | Código inicia / pacote instalável | PASS Linux/Python3.12: CLI/API/HTTP e wheel isolado |
-| Regressão essencial | PASS:360 Python e44 Node; ver TEST_REPORT.md |
+| Regressão essencial | PASS Linux:366 Python e44 Node; ver TEST_REPORT.md |
 | Correções P1 conhecidas da auditoria | Implementadas e com regressões; nenhum P0 estabelecido |
 | Dados sintéticos e recuperação | PASS: concorrência, rollback, integridade e backup/restauro |
 | Vulnerabilidades conhecidas da resolução instalada | Zero no pip-audit; Bandit sem médios/elevados |
-| Interface real e acessibilidade visual | Código e HTTP aprovados; browser real bloqueado localmente |
+| Interface real e acessibilidade visual | Chromium remoto PASS; quatro PNG inspecionados; auditoria completa de acessibilidade pendente |
 | Modelo/voz reais | PENDENTE: pesos, dispositivos, desempenho e privacidade do daemon |
 | Windows e Python3.13 | PENDENTE de execução do CI e ensaio em hardware alvo |
 | CI obrigatório verde | PENDENTE: configuração não equivale a execução aprovada |
-| GitHub atualizado / PR | Publicação na branch de desenvolvimento em curso; sem merge |
+| GitHub atualizado / PR | PASS: [PR1](https://github.com/Genseric0/GensIA/pull/1), draft, sem merge |
 | Venda / vários clientes | BLOQUEADO: produto ainda local por utilizador, sem identidade/RBAC/isolamento entre clientes |
 | Licenças e distribuição | BLOQUEADO: titular deve definir licença do projeto e direitos dos pesos/vozes |
 
