@@ -1,0 +1,149 @@
+name: Validate GensIA
+
+'on':
+  push:
+    branches: [main, 'release/**']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gensia-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    name: Python ${{ matrix.python }} / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+        python: ['3.12', '3.13']
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    env:
+      GENSIA_TEST_REAL_HTTP: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out source without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Set up Node for interface contracts
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+        with:
+          node-version: '24'
+      - name: Install application extras and development tools
+        run: python -m pip install -e '.[api,documents]' -r requirements-dev.txt
+      - name: Require integration dependencies
+        run: |
+          python -m pip check
+          python -c "import fastapi,uvicorn,httpx,pypdf; print('API/PDF integration dependencies imported')"
+          echo "GENSIA_PYTHON=$(python -c 'import sys; print(sys.executable)')" >> "$GITHUB_ENV"
+          mkdir -p artifacts
+      - name: Compile Python sources
+        run: python -m compileall -q gensia scripts
+      - name: Run Python integration and regression tests with coverage
+        run: |
+          python -m coverage run --branch --source=gensia -m unittest discover -s tests -v
+          python -m coverage report --show-missing
+          python -m coverage xml -o artifacts/coverage.xml
+      - name: Run Node interface and runner contracts
+        run: node --test tests/*.test.cjs
+      - name: Build wheel
+        run: python -m build --wheel --no-isolation
+      - name: Verify offline wheel installation outside the checkout
+        run: python scripts/verify_installed.py dist
+      - name: Upload test evidence and wheel
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: tests-${{ matrix.os }}-python-${{ matrix.python }}
+          path: |
+            artifacts/coverage.xml
+            dist/*.whl
+          if-no-files-found: warn
+          retention-days: 7
+
+  browser:
+    name: Chromium conversation E2E with synthetic model
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out source without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: '3.12'
+      - name: Set up Node
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+        with:
+          node-version: '24'
+      - name: Install application and isolated browser harness
+        run: |
+          python -m pip install -e '.[api,documents]' -r requirements-dev.txt
+          python -m pip check
+          npm install --prefix artifacts/browser --no-save --ignore-scripts playwright@1.62.1
+          node artifacts/browser/node_modules/playwright/cli.js install --with-deps chromium
+          echo "GENSIA_PYTHON=$(python -c 'import sys; print(sys.executable)')" >> "$GITHUB_ENV"
+          echo "NODE_PATH=$PWD/artifacts/browser/node_modules" >> "$GITHUB_ENV"
+      - name: Validate conversation, permissions, text rendering and responsive views
+        run: node scripts/validate_chat_browser.cjs --output artifacts/browser-evidence
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: chromium-conversation-evidence
+          path: artifacts/browser-evidence/
+          if-no-files-found: warn
+          retention-days: 7
+
+  security:
+    name: Code, dependencies and secret signatures
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out source without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: '3.12'
+      - name: Install application extras and security tools
+        run: |
+          python -m pip install -e '.[api,documents]' -r requirements-dev.txt
+          python -m pip check
+          mkdir -p artifacts
+      - name: Check current source for known secret signatures
+        run: python scripts/check_secrets.py
+      - name: Block medium and high Bandit findings
+        run: python -m bandit -r gensia --severity-level medium --confidence-level low --ignore-nosec -f json -o artifacts/bandit.json
+      - name: Audit installed dependencies against published advisories
+        if: always()
+        run: python -m pip_audit --strict --progress-spinner off --format json --output artifacts/dependencies.json
+      - name: Upload security evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: security-evidence
+          path: artifacts/*.json
+          if-no-files-found: warn
+          retention-days: 7

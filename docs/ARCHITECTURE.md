@@ -1,5 +1,21 @@
 # Arquitetura e decisões — 14/10/2026
 
+## Estado da candidata0.61 — revisão20–21/10/2026
+
+As secções abaixo preservam decisões históricas. O fluxo atual acrescenta /app
+e POST/chat autenticado:browser → Host/Origin/Bearer → JSON/contextolimitado →
+lockdeinferência → /api/show semprompt → /api/chat → respostavalidada →textContent.
+O modelo nunca invoca ferramentas. Contexto fica na memória do browser;notas
+persistentes continuam CLIexplícita. Consultar INTERFACE e SECURITY_AUDIT.
+
+Abertura de apps:approvedisTrue →intentauditflush/fsync →spawnallowlist →auditfinal.
+Intenção falhada bloqueia efeito;falha posterior não oculta abertura concluída.
+SQLite:exclusivo0600,regular/linkúnico,transações,SQLparametrizado,projeçãoBLOB+
+typeof+UTF8/tamanho/NUL/data. Backuppartilhavalidador;restoreexigebasenova/True.
+Token é por processo,semcontas/RBAC;socket é reservado antes deexibir tokenoptin.
+Lock limita concorrência,não quota temporal. Limites não constituem sandbox deSO.
+Voz:Piperstdin/checkpointWhisperexplícito;hardwareaindanãocomprovado.
+
 ## Fluxos atuais
 
 - Texto: CLI → Assistant → ModelProvider → resposta.
