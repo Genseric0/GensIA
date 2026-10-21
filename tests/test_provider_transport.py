@@ -20,7 +20,8 @@ class TransportTests(unittest.TestCase):
                 else:
                     self.send_response(200)
                     self.end_headers()
-                    self.wfile.write(b'{"message":{"content":"local"}}')
+                    self.wfile.write(b'{"details":{"format":"gguf"},"model_info":{"general.architecture":"llama"}}'
+                                     if self.path == '/api/show' else b'{"message":{"content":"local"}}')
 
             def do_GET(self):
                 visits.append(self.path)
@@ -49,7 +50,7 @@ class TransportTests(unittest.TestCase):
                 endpoint, visits = self.server(code)
                 with self.assertRaises(ProviderUnavailable):
                     OllamaProvider("fixture", endpoint).reply("test prompt")
-                self.assertEqual(visits, ["/api/chat"])
+                self.assertEqual(visits, ["/api/show"])
 
     def test_environment_proxy_cannot_receive_prompt(self):
         endpoint, visits = self.server()
@@ -57,5 +58,5 @@ class TransportTests(unittest.TestCase):
         with patch.dict("os.environ", {"http_proxy": proxy, "HTTP_PROXY": proxy,
                                       "no_proxy": "", "NO_PROXY": ""}):
             self.assertEqual(OllamaProvider("fixture", endpoint).reply("test prompt"), "local")
-        self.assertEqual(visits, ["/api/chat"])
+        self.assertEqual(visits, ["/api/show", "/api/chat"])
         self.assertEqual(proxy_visits, [])

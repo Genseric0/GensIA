@@ -1,0 +1,9 @@
+{
+  "kind": "gensia.chat_browser_qa",
+  "passed": false,
+  "synthetic_model": true,
+  "real_inference_tested": false,
+  "screenshots": [],
+  "checks": [],
+  "blocked_reason": "chromium_unavailable"
+}

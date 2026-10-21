@@ -156,7 +156,7 @@ class BanditScanner:
             raise StaticAnalysisError("O caminho sai da pasta-base autorizada.")
         if not target.is_dir() and not (target.is_file() and target.suffix.casefold() == ".py"):
             raise StaticAnalysisError("O alvo deve ser uma pasta ou um ficheiro .py.")
-        return target, str(target.relative_to(self.workspace)) or "."
+        return target, target.relative_to(self.workspace).as_posix() or "."
 
     def _preflight(self, target):
         files = []
@@ -236,7 +236,7 @@ class BanditScanner:
         if not candidate.is_absolute():
             candidate = self.workspace / candidate
         try:
-            return str(candidate.resolve(strict=False).relative_to(self.workspace))
+            return candidate.resolve(strict=False).relative_to(self.workspace).as_posix()
         except ValueError:
             return "<fora-da-pasta-base>"
 

@@ -1,5 +1,9 @@
 # Diagnóstico local — atualizado na v0.31.0
 
+Na v0.66, o ensaio separado [model_probe](MODEL_PROBE.md) permite enviar uma
+frase sintética com --approve e medir chamadas completas sem imprimir respostas.
+O doctor abaixo continua apenas a consultar metadados/listagem, sem inferência.
+
 Antes de iniciar os agentes, na pasta do projeto:
 
 ```powershell

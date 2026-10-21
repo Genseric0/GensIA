@@ -90,6 +90,29 @@ class KevTests(unittest.TestCase):
             self.assertTrue(service.update(cache, approved=True)["cache_changed"])
             self.assertFalse(service.update(cache, approved=True)["cache_changed"])
 
+    def test_oversized_existing_cache_is_bounded_for_check_and_update(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cache = Path(directory)/'kev.json'
+            with cache.open('wb') as stream:
+                stream.truncate(CisaKevCatalog.MAX_BYTES + 1)
+            service = self.service(directory, lambda *args, **kwargs: FakeResponse(catalog_bytes()))
+            with self.assertRaisesRegex(KevError, '10 MiB'):
+                service.check('CVE-2021-44228', cache)
+            with self.assertRaisesRegex(KevError, '10 MiB'):
+                service.update(cache, approved=True)
+            self.assertEqual(cache.stat().st_size, CisaKevCatalog.MAX_BYTES + 1)
+
+    def test_dangling_cache_symlink_is_refused_before_download(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cache = Path(directory)/'kev.json'
+            try:
+                cache.symlink_to(Path(directory)/'missing.json')
+            except OSError:
+                self.skipTest('Symlinks unavailable')
+            service = self.service(directory, lambda *args, **kwargs: self.fail('network used'))
+            with self.assertRaisesRegex(KevError, 'link simbólico'):
+                service.update(cache, approved=True)
+
     def test_invalid_download_preserves_previous_cache(self):
         with tempfile.TemporaryDirectory() as directory:
             cache = Path(directory) / "kev.json"

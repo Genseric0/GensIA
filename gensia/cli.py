@@ -7,6 +7,8 @@ from pathlib import Path
 from .memory import MemoryStore, MemoryError
 from .memory_backup import backup_notes
 from .memory_restore import restore_notes
+from .memory_check import check_memory
+from .memory_recovery import recover_copy
 from .kev import CisaKevCatalog, KevError
 from .documents import DocumentError, SafeTextDocuments
 from .pdf_process import SupervisedPdfDocuments
@@ -62,6 +64,11 @@ def main(argv=None) -> int:
     mem_restore = mem_sub.add_parser("restore", help="restaurar backup validado para a base nova indicada por --db")
     mem_restore.add_argument("--input", required=True, help="backup JSON local")
     mem_restore.add_argument("--approve", action="store_true")
+    mem_sub.add_parser("check", help="verificar integridade e notas sem reparar ou exportar dados")
+    recovery = mem_sub.add_parser("recover-copy", help="recuperar notas numa base nova, com origem parada e preservada")
+    recovery.add_argument("--output", required=True, help="base de destino nova; nunca substitui a origem")
+    recovery.add_argument("--approve", action="store_true")
+    recovery.add_argument("--source-stopped", action="store_true", help="declaro que parei todos os acessos à origem e auxiliares")
     mem_delete = mem_sub.add_parser("delete")
     mem_delete.add_argument("key")
     mem_delete.add_argument("--approve", action="store_true")
@@ -76,8 +83,10 @@ def main(argv=None) -> int:
     transcribe.add_argument("--language", default="pt", help="código de idioma ou auto")
     transcribe.add_argument("--device", choices=tuple(sorted(WhisperTranscriber.DEVICES)), default="cpu")
     transcribe.add_argument("--max-mib", type=int, default=500)
+    transcribe.add_argument("--checkpoint", help="ficheiro .pt local confiável; necessário para transcrever sem download")
     synthesize = voice_sub.add_parser("synthesize", help="criar um WAV local com Piper")
-    synthesize.add_argument("text")
+    synthesize.add_argument("text", nargs="?")
+    synthesize.add_argument("--stdin", action="store_true", help="ler texto UTF-8 limitado de stdin, sem texto em argv")
     synthesize.add_argument("--voice", required=True, help="ficheiro local VOZ.onnx")
     synthesize.add_argument("--output", required=True, help="ficheiro WAV de destino")
     synthesize.add_argument("--approve-overwrite", action="store_true")
@@ -207,18 +216,24 @@ def main(argv=None) -> int:
                 )
             print(json.dumps(output, ensure_ascii=False, indent=2))
             return 0
-        except (SecurityError, KevError, StaticAnalysisError) as exc:
+        except (SecurityError, KevError, StaticAnalysisError, ToolError) as exc:
             print(str(exc), file=sys.stderr)
             return 9
     if args.command == "voice":
         try:
             if args.voice_command == "transcribe":
-                engine = WhisperTranscriber(args.whisper_model, args.device, args.max_mib)
+                engine = WhisperTranscriber(args.whisper_model, args.device, args.max_mib, checkpoint=args.checkpoint)
                 output = engine.transcribe(args.file, args.language).as_dict()
             elif args.voice_command == "synthesize":
                 engine = PiperSynthesizer(args.tts_timeout)
+                if args.stdin:
+                    if args.text is not None:
+                        raise VoiceError('Escolhe texto posicional ou --stdin, não ambos.')
+                    text = engine.read_stdin(sys.stdin.buffer)
+                else:
+                    text = args.text
                 output = engine.synthesize(
-                    args.text, args.voice, args.output, args.approve_overwrite
+                    text, args.voice, args.output, args.approve_overwrite
                 )
             elif args.voice_command == "devices":
                 output = {"input_devices": MicrophoneRecorder().list_devices()}
@@ -250,6 +265,10 @@ def main(argv=None) -> int:
                 output = backup_notes(store, args.output)
             elif args.memory_command == "restore":
                 output = restore_notes(store, args.input, args.approve)
+            elif args.memory_command == "check":
+                output = check_memory(store)
+            elif args.memory_command == "recover-copy":
+                output = recover_copy(store, args.output, args.approve, args.source_stopped)
             else:
                 output = store.delete(args.key, args.approve)
             print(json.dumps(output, ensure_ascii=False, indent=2))

@@ -23,7 +23,8 @@ class WindowsLauncherTests(unittest.TestCase):
             query.assert_called_once_with(api)
             runner.assert_called_once_with([executable], executable=executable,
                                           cwd=directory, shell=False, close_fds=True)
-            audit.record.assert_called_once_with('open_app', 'success', app)
+            self.assertEqual([call.args for call in audit.record.call_args_list],
+                             [('open_app', 'intent', app), ('open_app', 'success', app)])
 
     def test_denied_actions_do_not_resolve_or_launch(self):
         with patch('gensia.tools._windows_directory') as query:
@@ -61,7 +62,8 @@ class WindowsLauncherTests(unittest.TestCase):
                 AppLauncher(audit, 'win32', runner).open('notepad', True)
         self.assertNotIn('PRIVATE', str(error.exception))
         self.assertEqual(runner.call_count, 1)
-        audit.record.assert_called_once_with('open_app', 'error', 'notepad')
+        self.assertEqual([call.args for call in audit.record.call_args_list],
+                         [('open_app', 'intent', 'notepad'), ('open_app', 'error', 'notepad')])
 
     def test_unicode_api_adapter_returns_buffer(self):
         function = Mock()

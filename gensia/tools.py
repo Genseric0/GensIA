@@ -49,6 +49,8 @@ class AuditLogger:
             with os.fdopen(descriptor, "a", encoding="utf-8") as stream:
                 descriptor = None  # fdopen owns and closes the descriptor.
                 stream.write(json.dumps(event, ensure_ascii=False) + "\n")
+                stream.flush()
+                os.fsync(stream.fileno())
         except (OSError, UnicodeError) as exc:
             raise ToolError("Não foi possível gravar a auditoria local; verifica pasta e permissões.") from exc
         finally:
@@ -153,7 +155,7 @@ class AppLauncher:
         if app not in self.WINDOWS_APPS:
             self.audit.record("open_app", "denied", app)
             raise ToolPermissionError("Aplicação não autorizada.")
-        if not approved:
+        if approved is not True:
             self.audit.record("open_app", "denied", app)
             raise ToolPermissionError("A abertura exige confirmação explícita com --approve.")
         if self.platform_name != "win32":
@@ -161,10 +163,22 @@ class AppLauncher:
             raise ToolError("A abertura de aplicações está implementada apenas para Windows.")
         try:
             executable, directory = self._resolve_executable(app)
+        except (OSError, ToolError):
+            self.audit.record('open_app', 'error', app)
+            raise ToolError('O Windows não conseguiu resolver a aplicação.') from None
+        try:
+            self.audit.record('open_app', 'intent', app)
+        except Exception:
+            raise ToolError('Auditoria indisponível; a aplicação não foi iniciada.') from None
+        try:
             self.runner([executable], executable=executable, cwd=directory,
                         shell=False, close_fds=True)
         except (OSError, ToolError) as exc:
             self.audit.record("open_app", "error", app)
             raise ToolError("O Windows não conseguiu abrir a aplicação.") from exc
-        self.audit.record("open_app", "success", app)
-        return {"opened": app, "approved": True}
+        try:
+            self.audit.record("open_app", "success", app)
+        except Exception:
+            return {"opened": app, "approved": True, "audit_completed": False,
+                    "warning": "app_opened_final_audit_failed_do_not_retry"}
+        return {"opened": app, "approved": True, "audit_completed": True, "warning": None}

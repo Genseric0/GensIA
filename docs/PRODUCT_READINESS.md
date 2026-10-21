@@ -1,5 +1,12 @@
 # Preparação para uso pessoal e clientes
 
+Revisão atual21/10/2026, v0.61.0: **RELEASE BLOCKED**. A avaliação atual está em
+[RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md), [TEST_REPORT.md](TEST_REPORT.md),
+[SECURITY_AUDIT.md](SECURITY_AUDIT.md) e [DATABASE_VALIDATION.md](DATABASE_VALIDATION.md).
+Auditoria agora faz flush/fsync antes dos efeitos e a aplicação dispõe de chat
+autenticado. As secções abaixo preservam a revisão histórica0.34 e não devem
+ser usadas como descrição de capacidades ou resultados atuais.
+
 Revisão de 16/10/2026, atualizada na v0.34.0. Estado: protótipo local; **lançamento comercial
 geral ainda não aprovado**. Os testes validam casos concretos, não ausência de falhas.
 Inspeção e reprodução a partir do próprio código existente, sem binários de terceiros.

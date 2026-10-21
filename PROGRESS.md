@@ -1,5 +1,134 @@
 # Progresso GensIA
 
+## 21/10/2026 — ensaio explícito de inferência — v0.66.0
+
+Novo python -m gensia.model_probe: --approve obrigatório antes de qualquer I/O,
+1–3 chamadas com prompt sintético fixo, tempos de chamadas completas, sem resposta,
+modelo/endpoint ou erro bruto no relatório. Provider local existente verifica
+metadados antes de cada geração; recusa cloud, sem instalação/fallback. Falha
+interrompe sequência; amostras parciais não aprovam ensaio; Ctrl+C tratado130.
+Timeout por HTTP documentado; sem alegação de cancelamento efetivo do daemon.
+10 testes novos, incluindo HTTP real com servidor sintético. Regressão local:
+423 Python PASS/0 omitidos em21.965s;50 Node PASS/0 omitidos em0.583s;
+coverage87% (3092 statements,338 missing,938 branches,152 partial);wheel0.66
+instalado offline10 etapas PASS;Bandit MED/HIGH0;pipcheck PASS.
+Ligação Python da venv voltou a estar ausente;venv--upgrade repôs execução.
+Tentativa scan_secrets.py falhou por nome inexistente; comando correto é
+scripts/check_secrets.py. Sem novas dependências nem alteração da interface.
+Scanner correto:150 ficheiros/0 assinaturas, sem história Git completa. Execução
+real do probe contra daemon ausente devolveu12/connection_failed, zero amostras,
+sem falso positivo. A medição permanece indisponível por ausência do serviço.
+Ollama/pesos indisponíveis: nenhuma inferência ou medição de hardware real.
+RELEASE BLOCKED mantém-se. Próximo: executar probe no equipamento alvo, rever
+tempos/carga e validar voz; não substituir medições reais por fixtures.
+
+
+## 21/10/2026 — configuração guiada na interface — v0.65.0
+
+Guia expansível em/app com3 etapas: API, metadados locais e primeira resposta.
+Instruções manuais e orientação por erro; zero endpoints/polling/dependências
+novos. Não confunde metadados com inferência nem resposta com certificação.
+Logout/expiração e respostas tardias preservam limpeza; nova conversa ou nova
+verificação repõem a etapa da resposta. Seis regressões JS novas:50 Node PASS.
+413 Python PASS/0 omitidos em33.192s;coverage87% (backend inalterado);wheel0.65
+instalado offline fora do checkout9 etapas PASS;Bandit sem médios/elevados;
+scanner145 ficheiros/0 assinaturas. Runtime local teve ligação Python da venv
+quebrada;reparada com python3 -m venv --upgrade .venv,pipcheck/imports PASS.
+Chromium local continua ausente;runnerCI ampliado para capturas reais do guia,
+estados e responsividade. Não repetir download bloqueado sem mudança do ambiente.
+CI atual em PR1/checks. Estado RELEASE BLOCKED para venda; modelo/voz/hardware,
+licenças, distribuição e isolamento de clientes continuam gates separados.
+Próximo: diagnóstico operacional do modelo local e percurso de primeiro uso no
+hardware alvo; não interpretar provider sintético como inferência real.
+Primeiro Chromium0.65 falhou após duas capturas, descarregadas e inspecionadas.
+Runner ajustado para abrir details antes de ler etapa visível; checkpoints
+sanitizados acrescentados para diagnóstico. Run39597189471 permanece evidência
+de falha. Repetição39597871148 no commit af3a745: seis jobs PASS; Linux413PASS,
+Windows386PASS/27 omissões POSIX, Node50PASS e wheel9 etapas PASS. Chromium
+concluiu10 grupos e oito PNG inspecionados. ZIP12345345585 descarregado e SHA256
+87c5c8a94d8aff4a5cd2d8c83ac036d55c324a0e363c7272609c98dcfdc8f30e confirmado.
+Dois PNG sem alteração e manifesto persistidos em docs/screenshots/ci-39597871148/.
+
+## 21/10/2026 — recuperação assistida em cópia — v0.64.0
+
+Novo `memory recover-copy --output NOVA --approve --source-stopped`: origem lida
+apenas como bytes, cópia/hash verificados, recuperação SQLite só em área privada,
+validação e reconstrução de notas num esquema canónico antes da publicação.
+Suporta rollback de uma base GensIA confiável até64MiB por ficheiro/1000notas;
+recusa WAL, super-journals, expansão excessiva declarada e schemas adicionais.
+Não impõe quiescência: o operador tem de parar todos os acessos antes das flags.
+Corrigida também aceitação de auxiliares antigos no destino do restauro JSON.
+19 regressões novas PASS;suíte413 Python PASS/0 omitidos em23.323s;coverage87%
+combinado. Bandit sem médios/elevados;scanner145 ficheiros/0 assinaturas;wheel0.64
+instalado offline fora do checkout e9 etapas PASS, incluindo recover-copy/check.
+Procedimento e limites em docs/MEMORY_RECOVERY.md. Sem dados reais, hardware,
+reparação da origem, cloud ou dependências novas. CI atual em PR1/checks.
+Estado RELEASE BLOCKED para distribuição comercial. Próximo: validar percurso
+operacional no hardware alvo com modelo/voz reais e concluir distribuição/licenças;
+WAL/multi-base e sandbox de bases hostis não são suportados por este incremento.
+PrimeiroCI0.64 revelou asserção dependente da ordem de listagem do filesystem em
+Ubuntu3.12/3.13. Corrigida para comparação sem ordem, mantendo guarda de órfãos;
+17 regressões direcionadas PASS. O run39589478006 fica como evidência de falha;
+repetição final consultável em PR1/checks.
+O CI seguinte39589744826 passou Linux/Chromium/security, mas Windows expôs
+comparação incompatível de ctime entre stat e fstat. Corrigida mantendo ctime
+em fstat consistente e identidade/tamanho/mtime entre APIs. Duas regressões
+acrescentadas;suíte413 local e wheel9 etapas repetidos com sucesso.
+
+## 21/10/2026 — publicação e falhas da memória — v0.63.0
+
+Corrigida falha reproduzida em backup/restauro: ENOSPC em fsync deixava destino
+final visível. Novo publication.py prepara/sincroniza/fecha antes de publicar
+exclusivamente, preservando destinos concorrentes. Avisos após publicação são
+explícitos e indicam não repetir. Formato JSONv1 e autorizações preservados.
+17 regressões novas: ENOSPC injetado, processos realmente terminados, SQLITE_FULL
+real por teto de páginas, DELETE/WAL, concorrência e avisos/órfãos. Suíte394
+Python PASS/0 omitidos em21.612s;coverage87% combinado. Bandit sem médios/elevados;
+scanner143 ficheiros/0 assinaturas;wheel0.63 aprovado em sete etapas isoladas.
+Hot journal e janela de hard link POSIX reproduzidos/documentados; sem reparação
+silenciosa. Sem dependências novas, dados reais, corte de energia ou hardware
+testado. Manual em docs/MEMORY_RECOVERY.md. CI atual em PR1/checks; preservar
+distinção entre evidência local e remota. Estado RELEASE BLOCKED.
+Próximo: recuperação assistida com cópia verificada e autorização explícita;
+validação de modelo/voz/hardware continua necessária para entrega comercial.
+
+## 21/10/2026 — verificação e recuperação da memória — v0.62.0
+
+Novo `memory check`, com transação de leitura, validação de notas e integridade
+SQLite completa. Sem conteúdo privado na saída, reparação ou criação de base
+ausente. Tetos por ligação para strings/SQL/expressões, instruções VM e tempo
+cooperativo. Onze regressões novas passam, incluindo corrupção real de página
+e índice secundário, WAL, orçamento e backup/restauro para base nova.
+Suíte completa local:377 Python PASS/0 omitidos em21.272s;coverage87% combinado.
+Bandit sem médios/elevados;scanner140 ficheiros/0 assinaturas. Wheel0.62 validado
+em sete etapas isoladas, incluindo memory check após restauro. Comandos e limites
+em docs/MEMORY_RECOVERY.md. Sem dependências novas ou hardware/modelos testados.
+Próximo: ensaio de recuperação após interrupção de processo/disco cheio; modelos
+e voz reais continuam gate comercial. Checks atuais: PR1, sem alterar main.
+
+## 20–21/10/2026 — hardening e conversa local — v0.61.0
+
+Retomado o remoto206f4d1(v0.34), com baseline independente277Python/34Node.
+Implementados aprovação exata, auditoria durável antes dos efeitos, gate de
+metadados Ollama e resposta segura, memória0600/bounded/UTF8/rollback, voz com
+checkpoint local e texto por stdin, interface/app com contexto e Bearer, reserva
+de socket antes do token, pacote instalável e CI Linux/Windows/browser/security.
+366 Python e44 Node aprovados sem omissões após correções Windows identificadas
+no CI. Coverage86%;pipcheck/audit aprovados;
+Bandit0médios/elevados;wheel instalado fora do checkout com seis etapas PASS.
+Regressão da importação API encontrada e corrigida antes da repetição completa.
+Chromium local bloqueado por download truncado. Chromium remoto passou; quatro
+PNG reais descarregados e inspecionados. Sem pesos reais testados. PR1 aberto.
+Estado RELEASE BLOCKED: ver docs/RELEASE_CHECKLIST.md. Próximo: PR/CI efetivamente
+verificados, browser e hardware/modelo reais. Sem produção ou dados reais.
+
+Fecho da validação em21/10: PR1 aberto, commit04a8660 com seis jobs CI verdes
+(run39521033113). Windows:341 testes Python PASS/25 específicos POSIX omitidos;
+Linux:366 PASS/0 omitidos;44 Node e instalação isolada PASS em todas as quatro
+configurações. Security e Chromium PASS. As falhas dos primeiros runs foram
+corrigidas e preservadas nos relatórios. Próximo: modelo/voz/hardware e critérios
+de distribuição comercial; não repetir automaticamente o trabalho cancelado.
+
 ## 16/10/2026 — expiração local da sessão do painel — v0.34.0
 
 O painel limpa metadados/referência reutilizável ao token e aborta o pedido após

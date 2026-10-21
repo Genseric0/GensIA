@@ -1,0 +1,32 @@
+{
+  "kind": "gensia.chat_browser_qa",
+  "passed": true,
+  "synthetic_model": true,
+  "real_inference_tested": false,
+  "screenshots": [
+    "setup-initial.png",
+    "setup-390.png",
+    "setup-model-ready.png",
+    "chat-desktop.png",
+    "chat-768.png",
+    "chat-390.png",
+    "chat-320.png",
+    "setup-model-missing.png"
+  ],
+  "checks": [
+    "setup_metadata_does_not_claim_inference_and_responsive_instructions",
+    "connection_and_token_field_cleared",
+    "conversation_and_followup_context",
+    "responsive_768_390_320_no_horizontal_overflow",
+    "model_html_rendered_as_text",
+    "safe_model_error_feedback",
+    "cancel_wait_and_ignore_late_reply",
+    "new_conversation_removes_previous_context",
+    "clear_session_no_storage_and_invalid_token",
+    "setup_error_instructions_and_progress_reset_with_synthetic_error"
+  ],
+  "blocked_reason": null,
+  "stage": "completed",
+  "failure_stage": null,
+  "failure_type": null
+}

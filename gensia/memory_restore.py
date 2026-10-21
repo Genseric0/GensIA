@@ -12,6 +12,15 @@ import tempfile
 
 from .memory import MemoryError, MemoryStore
 from .memory_backup import MAX_BACKUP_BYTES, MAX_NOTES
+from .publication import publish_new
+
+
+def ensure_new_database(path):
+    """No existing database or sidecars; never remove another database's files."""
+    for suffix in ('', '-journal', '-wal', '-shm'):
+        candidate = Path(str(path) + suffix)
+        if candidate.is_symlink() or candidate.exists():
+            raise MemoryError('Destino ou auxiliares já existem; nenhuma base foi substituída.')
 
 
 def _unique_object(pairs):
@@ -91,8 +100,12 @@ def _load_backup(source):
 def restore_notes(store: MemoryStore, source, approved=False):
     if approved is not True:
         raise MemoryError('Restauro exige --approve e uma base de destino nova.')
+    # O_EXCL alone does not reject every dangling symlink on Windows CRT.
+    if store.path.is_symlink():
+        raise MemoryError('Destino do restauro não pode ser link simbólico.')
+    ensure_new_database(store.path)
     notes, source_hash = _load_backup(source)
-    descriptor = None
+    publication = None
     try:
         # Build a fresh schema privately. Never open the destination through
         # SQLite: copy the completed database to our exclusively owned handle.
@@ -105,19 +118,18 @@ def restore_notes(store: MemoryStore, source, approved=False):
                                    [(n['key'], n['value'], n['updated_at']) for n in notes])
                 if db.execute('PRAGMA integrity_check').fetchone() != ('ok',):
                     raise MemoryError('A base temporária não passou a verificação de integridade.')
-            descriptor = os.open(store.path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            with os.fdopen(descriptor, 'wb') as output:
-                descriptor = None
+            def copy_completed(output):
                 with staged.open('rb') as input_stream:
                     shutil.copyfileobj(input_stream, output, length=64 * 1024)
-                output.flush()
-                os.fsync(output.fileno())
-    except FileExistsError as exc:
-        raise MemoryError('Destino já existe; nenhuma base foi substituída.') from exc
+            ensure_new_database(store.path)
+            publication = publish_new(store.path, copy_completed)
     except (OSError, sqlite3.Error) as exc:
-        raise MemoryError('Restauro falhou. Pode ter ficado uma nova base incompleta; a origem foi preservada.') from exc
-    finally:
-        if descriptor is not None:
-            os.close(descriptor)
-    return {'restored': True, 'notes_count': len(notes), 'backup_sha256': source_hash,
-            'encrypted': False}
+        if publication is None:
+            if isinstance(exc, FileExistsError):
+                raise MemoryError('Destino já existe; nenhuma base foi substituída.') from exc
+            raise MemoryError('Restauro falhou antes da publicação. Pode existir uma área temporária incompleta; a origem foi preservada.') from exc
+        publication['staging_cleaned'] = False
+        publication['warnings'].append('build_cleanup_failed')
+        publication['do_not_retry'] = True
+    return {'restored': publication['staging_cleaned'], 'notes_count': len(notes),
+            'backup_sha256': source_hash, 'encrypted': False, **publication}

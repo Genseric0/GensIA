@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools==84.0.0", "wheel==0.48.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gensia-local"
+dynamic = ["version"]
+description = "GensIA: assistente pessoal local com permissões explícitas"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+api = ["fastapi==0.143.0", "uvicorn==0.54.0"]
+documents = ["pypdf==6.20.1"]
+
+[project.scripts]
+gensia = "gensia.cli:main"
+gensia-api = "gensia.api:main"
+
+[tool.setuptools]
+packages = ["gensia"]
+include-package-data = false
+
+[tool.setuptools.package-data]
+gensia = ["web/*.html", "web/*.css", "web/*.js"]
+
+[tool.setuptools.dynamic]
+version = {attr = "gensia.__version__"}

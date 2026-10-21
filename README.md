@@ -1,187 +1,174 @@
 # GensIA
 
-Assistente pessoal modular, com prioridade ao processamento local e controlo
-explícito sobre ferramentas e dados. Versão atual: **0.34.0** — protótipo em evolução.
+![Guia GensIA em execução no Chromium: metadados locais verificados, primeira resposta ainda por testar](docs/screenshots/ci-39597871148/setup-model-ready.png)
 
-Novo: [runner E2E do painel](docs/BROWSER_QA.md), com servidor e token temporários,
-política de rede da página e capturas condicionadas a verificações. A tentativa
-real ficou blocked por falta de Chromium; não há screenshots nem validação visual.
-Os contratos e o ciclo de vida do servidor de teste foram validados separadamente.
+Captura real do job Chromium em 21/10/2026; dados e respostas são sintéticos.
+[Evidência e origem das capturas](docs/screenshots/ci-39597871148/README.md).
 
-Novo: [painel local experimental de diagnóstico](docs/PANEL.md), apenas de leitura,
-em `http://127.0.0.1:8765/panel` após iniciar a API. Estrutura pública vazia; dados
-protegidos por token, só em memória no navegador. HTTP/JS testados; browser/layout
-ainda pendentes por falta de Chromium. Não é interface de chat ou execução de agentes.
+Assistente pessoal modular para conversar com um modelo local, consultar documentos,
+guardar notas e executar operações explícitas no computador. Python, SQLite e
+FastAPI; interface web servida pelo próprio computador, sem CDN.
 
-Novo: [diagnóstico offline das proteções](docs/PROTECTIONS.md):
-`python -m gensia.protections`. Mostra o modo de leitura e quotas previstas,
-sem abrir documentos ou alterar limites; capacidade disponível não é aplicação
-validada nem aprovação comercial. Também integrado no doctor e GET /diagnostics.
+**Candidata 0.66.0 — RELEASE BLOCKED.** Esta branch recupera uma conversa funcional
+e corrige falhas de autorização, privacidade e integridade reproduzidas na base
+remota 0.34. A avaliação está em [RELEASE_CHECKLIST](docs/RELEASE_CHECKLIST.md) e
+[TEST_REPORT](docs/TEST_REPORT.md). Serviços sintéticos não comprovam pesos reais.
 
-Novo: [abertura POSIX por descritores](docs/DOCUMENT_IO.md), com recusa de trocas
-observadas, symlinks e hard links adicionais antes de devolver texto. Windows
-mantém o caminho limitado anterior, sem esta proteção contra trocas concorrentes.
+Ensaio explícito do modelo já instalado: `python -m gensia.model_probe --model
+NOME_LOCAL --approve`. Usa entrada sintética fixa e apresenta tempos sem incluir
+respostas no relatório. [Utilização e limites](docs/MODEL_PROBE.md).
 
-Novo: [extração PDF supervisionada](docs/PDF_PROCESS.md), com processo separado e
-timeout explícito: `python -m gensia document --workspace . pdf-read exemplo.pdf --pdf-timeout 30`.
-Leitura, resumo, perguntas, pesquisa PDF e tutor usam a supervisão por omissão.
-Em Linux, o worker agora limita espaço de endereçamento (512 MiB), CPU (30s),
-tamanho por ficheiro escrito (2 MiB) e core dumps (0); mantém tetos herdados menores.
-Não é sandbox. Windows conserva timeout, sem estas quotas; ver o guia acima.
+## Instalar e abrir
 
-Novo: [backup explícito das notas locais](docs/MEMORY_BACKUP.md), em JSON versionado:
-`python -m gensia memory backup --output notas.memory-backup.json`.
-O ficheiro contém dados completos e não está encriptado. [Restauro validado](docs/MEMORY_RESTORE.md)
-para base nova: `python -m gensia memory --db nova.sqlite3 restore --input notas.memory-backup.json --approve`.
+Python 3.12/3.13 são as configurações previstas no CI. O núcleo declara >=3.10;
+essa versão mínima precisa de validação própria. Ollama e um modelo local confiável
+devem estar previamente instalados para conversar.
 
-Novo: [aplicações Windows com caminho absoluto](docs/WINDOWS_APPS.md), obtido das
-APIs do sistema, sem procurar executáveis no PATH. Validação Windows real pendente.
-
-Novo: [leitura limitada de TXT/Markdown/PDF](docs/DOCUMENT_LIMITS.md), incluindo
-recusa se o conteúdo ultrapassar o limite entre a verificação e a leitura.
-
-Correções de segurança: escrita de auditoria mais restrita e tratamento de erros
-Ollama sem revelar corpos de erro. A [avaliação para uso pessoal e clientes](docs/PRODUCT_READINESS.md)
-regista os bloqueios antes de um piloto comercial; a versão ainda não está aprovada
-para venda geral ou alojamento partilhado entre clientes.
-
-Novo: [exportação HTML autenticada pela API](docs/API_REPORT.md), em
-`GET /agents/report`. É um anexo estático, não um painel interativo.
-
-Novo: [pesquisa literal nas notas locais](docs/MEMORY_SEARCH.md), com paginação,
-sem rede nem envio ao modelo: `python -m gensia memory search DNS`.
-
-Novo: [relatório visual HTML offline dos agentes](docs/CATALOG_REPORT.md), sem
-dependências adicionais. Exporta com `python -m gensia.catalog_report --output catalogo.html`
-sem substituir ficheiros existentes. É uma consulta estática, separada do novo painel de diagnóstico.
-
-## Demonstração visual
-
-O [teste de apresentação desktop/mobile](docs/VISUAL_VALIDATION.md) gera capturas
-reais quando Chromium está disponível. A execução de 15/10/2026 ficou bloqueada
-pela ausência do navegador; não há ainda screenshots HTML validados.
-
-A interface principal é **por terminal**, acompanhada de API local autenticada e
-painel experimental de diagnóstico (ainda sem validação em navegador real).
-As imagens abaixo reproduzem saídas reais da CLI com dados fictícios de demonstração;
-são renderizações documentais, não capturas do novo painel gráfico. As capturas
-reais do painel e a interface de conversa continuam pendentes.
-
-![Terminal da GensIA e comandos disponíveis](docs/screenshots/01-terminal.svg)
-
-![Catálogo dos quatro agentes](docs/screenshots/02-agentes.svg)
-
-![Análise passiva de URL sem visitar o endereço](docs/screenshots/03-seguranca.svg)
-
-![Guardar e consultar uma nota SQLite](docs/screenshots/04-memoria.svg)
-
-![Pesquisa lexical num documento local](docs/screenshots/05-documentos.svg)
-
-**Para recrutadores:** [visão geral, arquitetura, evidências e limitações](docs/SHOWCASE.md).
-As [transcrições originais](docs/screenshots/) e o
-[script de reprodução](scripts/capture_showcase.py) acompanham as imagens.
-
-## Começar
-
-Requer Python 3.10 ou superior. Na pasta do repositório:
+PowerShell, na pasta do repositório:
 
 ```powershell
-py -3 -m gensia --help
-py -3 -m gensia --version
-py -3 -m unittest discover -s tests -v
+py -3 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[api,documents]"
+.\.venv\Scripts\python.exe -m pip check
+.\.venv\Scripts\python.exe -m gensia.api --chat-model NOME_DO_MODELO_LOCAL --ephemeral-token
 ```
 
-A base por terminal usa a biblioteca padrão. As integrações de voz, PDF e API são
-opcionais e têm instruções próprias no [guia de utilização](docs/USAGE.md).
-Não é necessário instalar todas as bibliotecas para começar.
+Linux/macOS:
 
-## Capacidades implementadas
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e '.[api,documents]'
+.venv/bin/python -m gensia.api --chat-model NOME_DO_MODELO_LOCAL --ephemeral-token
+```
 
-| Área | Estado |
+Abrir **http://127.0.0.1:8765/app** e introduzir o token apresentado no terminal.
+Token novo por processo, apresentado depois de reservar a porta; Ctrl+C termina.
+O guia «Configuração guiada» em `/app` acompanha ligação à API, confirmação dos
+metadados locais e primeira resposta. Mostra instruções de arranque e ajuda
+específica para erros; verificar metadados não conta como testar inferência.
+Sem --chat-model a geração permanece desativada. /panel oferece diagnóstico autenticado.
+Consultar [INTERFACE](docs/INTERFACE.md).
+
+Configurar OLLAMA_NO_CLOUD=1 no servidor Ollama e reiniciá-lo antes de usar dados
+sensíveis. A GensIA consulta /api/show antes de inferir e recusa metadados remotos ou
+localidade não confirmada. A verificação depende de um daemon confiável.
+Não existe fallback cloud automático.
+
+.env.example documenta opções; ficheiros .env não são carregados automaticamente.
+GENSIA_API_TOKEN permite token persistente. Credenciais, pesos, gravações, documentos
+pessoais e bases SQLite devem ficar fora do Git.
+
+## Capacidades
+
+| Área | Implementação |
 | --- | --- |
-| Texto e modelos | Terminal e integração local com Ollama |
-| Sistema | Listagem confinada e abertura explícita de aplicações permitidas |
-| Memória | SQLite com guardar, consultar e apagar explícitos |
-| Voz | Adaptadores Whisper/Piper e gravação limitada de microfone |
-| Documentos | TXT/Markdown/PDF, pesquisa lexical e respostas com referências |
-| Cibersegurança | URLs passivas, VirusTotal opt-in, CISA KEV e adaptador Bandit |
-| API | Estado, diagnóstico e catálogo dos agentes em loopback, com token |
-| Agentes | Coordenador, segurança, revisor e tutor; tarefas locais explícitas |
-| Apresentação visual | Relatório HTML offline e painel experimental de diagnóstico com token; browser real pendente |
+| Conversa | Contexto da sessão, nova conversa, cancelamento da espera e verificação manual do modelo |
+| Terminal | Perguntas Ollama e comandos explícitos; respostas não executam ferramentas |
+| Memória | SQLite, pesquisa literal, paginação, backup JSON e restauro para base nova |
+| Documentos e estudo | TXT/Markdown/PDF limitados, pesquisa lexical, resumos e perguntas com referências |
+| Sistema | Listagem confinada e aplicações da allowlist, aprovação exata e auditoria antes do efeito |
+| Segurança | URLs passivas, VirusTotal/CISA opt-in e adaptador Bandit |
+| Voz | Whisper com checkpoint explícito, Piper por stdin e gravação limitada; motores opcionais |
+| API | Loopback, Bearer, Host/Origin e chat com entrada limitada |
 
-As capacidades opcionais precisam dos respetivos motores/modelos. Implementação
-de um adaptador não significa validação com hardware ou serviços reais.
+Backup/restauro preparam e sincronizam o ficheiro antes de publicar sem substituir
+destinos. Avisos após publicação assinalam que não se deve repetir automaticamente. Ensaios de
+interrupção e limites de recuperação estão em [MEMORY_RECOVERY](docs/MEMORY_RECOVERY.md).
 
-## Equipa de agentes
+`memory recover-copy` recupera notas numa base nova a partir de uma origem
+parada em modo rollback, incluindo um journal pendente. Exige aprovação e
+declaração explícita de que todos os acessos foram parados. Só abre SQLite na
+cópia; verifica hashes e recusa WAL, super-journals e esquemas personalizados.
+O operador precisa de garantir a paragem: o comando não impõe esse bloqueio.
 
-```powershell
-py -3 -m gensia.agents list
-py -3 -m gensia.doctor --model qwen2.5:0.5b
-py -3 -m gensia.agents audit --workspace . --url https://example.com
+O chat mantém contexto apenas na sessão do navegador. Notas persistentes continuam
+operações explícitas da CLI. Envio de emails e execução autónoma de ferramentas não
+estão implementados. Os adaptadores de voz exigem motores e modelos preparados.
+
+## Comandos
+
+No Python do ambiente virtual:
+
+```bash
+python -m gensia --help
+python -m gensia --provider ollama --model NOME_DO_MODELO_LOCAL ask "Explica DNS"
+python -m gensia memory --db notas.sqlite3 set idioma Português
+python -m gensia memory --db notas.sqlite3 search idioma
+python -m gensia memory --db notas.sqlite3 check
+python -m gensia memory --db notas.sqlite3 backup --output notas-novas.memory-backup.json
+python -m gensia memory --db restaurada.sqlite3 restore --input notas-novas.memory-backup.json --approve
 ```
 
-O coordenador delega tarefas delimitadas e o revisor recebe as evidências da
-segurança. Para analisar Python é necessário Bandit; para estudo e revisão com
-modelo, Ollama local. Ver [comandos e limites](docs/AGENT_TEAM.md).
-Publicar o código no GitHub não inicia processos permanentes nem monitorização.
-O [diagnóstico local](docs/DOCTOR.md) verifica pré-requisitos sem prompts, downloads
-ou arranque de serviços. Um modelo listado ainda precisa de validação de inferência.
-O endpoint autenticado `GET /agents` descreve as capacidades e os limites dos
-agentes, mas não os executa. Ver [catálogo na API](docs/AGENT_CATALOG_API.md).
+Para recuperação assistida, após parar a aplicação e todos os outros acessos
+à origem e preservar os ficheiros originais, com Python3.11+:
 
-## Organização
+```bash
+python -m gensia memory --db notas.sqlite3 recover-copy --output recuperada-nova.sqlite3 --approve --source-stopped
+python -m gensia memory --db recuperada-nova.sqlite3 check
+```
 
-- `gensia/`: módulos Python e interfaces CLI/API.
-- `tests/`: testes automatizados.
-- `docs/USAGE.md`: instalação opcional, comandos e exemplos.
-- `docs/ARCHITECTURE.md`: arquitetura e limites de confiança.
-- `PROGRESS.md`: histórico dos incrementos e próximo passo.
-- `VALIDATION.txt`: evidências e limitações dos testes.
-- `requirements-api.txt`: dependências opcionais da API.
+Não apagar journals nem reutilizar um destino existente. O manual descreve
+limites e avisos. Esta operação não substitui backups externos.
 
-## Validação
+Backups são texto simples, sem cifragem. Restauro recusa destinos existentes.
+`memory check` verifica integridade e notas numa transação de leitura; requer
+Python3.11+ e não repara a base. Ver [MEMORY_RECOVERY](docs/MEMORY_RECOVERY.md).
+Transcrição exige checkpoint .pt local confiável; ver [VOICE_HARDENING](docs/VOICE_HARDENING.md).
 
-Na v0.34.0 os 277 testes Python passaram, com as dependências opcionais da API/PDF
-e `GENSIA_TEST_REAL_HTTP=1`, sem omissões. Inclui sete testes com Uvicorn real
-em loopback, além dos testes em processo. Ver [reprodução](docs/API_REPORT.md).
-Windows, hardware de áudio e vários motores externos ainda precisam de testes reais.
-Na v0.29.0, nove testes cobrem quotas PDF, incluindo processos Linux reais com falhas
-de alocação/escrita/CPU e extração de PDF bem-sucedida após falha de recursos.
-Na v0.30.0, mais 14 testes cobrem abertura por descritores, trocas de caminhos,
-alterações observadas durante leitura e identidade da pasta-base no worker.
-Na v0.31.0, mais 12 testes verificam o relatório de capacidades, limites herdados,
-ausência de efeitos laterais e integrações CLI/doctor/API, incluindo HTTP real.
-Na v0.32.0, oito testes Python novos e dez Node/VM validam guardas e fluxo do painel.
-Node/VM não substitui navegador, validação visual ou CSP real. Nenhum screenshot novo.
-Na v0.33.0, dois testes Python novos e oito Node validam contratos/lifecycle do
-runner. 18 testes Node do painel/runner passaram com GENSIA_PYTHON configurado;
-o E2E real continua bloqueado antes do fluxo. Sem instalação automática de browser.
-Na v0.34.0, a sessão local do painel expira após cinco minutos sem consulta manual;
-não revoga o token da API. 12 testes Node novos cobrem prazos, suspensão simulada,
-relógios e respostas tardias; 30 Node passaram no total, sem omissões, com helper
-real e GENSIA_PYTHON configurado. Ver [limites e execução](docs/PANEL.md).
+## Testes e build
 
-Na v0.24.1, Bandit 1.9.4 real encontrou três avisos baixos B404, nenhum
-achado médio/alto e nenhum erro de análise. Isto não garante ausência de vulnerabilidades. Ollama 0.40.4
-real respondeu à API; inferência pendente porque a rede impediu o download do
-modelo. Ver [relatório de integração](docs/REAL_ENGINE_VALIDATION.md).
+```bash
+python -m pip install -r requirements-dev.txt
+python -m pip check
+python -m coverage run --branch --source=gensia -m unittest discover -s tests -v
+python -m coverage report --show-missing
+node --test tests/*.test.cjs
+python -m bandit -r gensia --severity-level medium --ignore-nosec
+python -c "from pathlib import Path; Path('artifacts').mkdir(exist_ok=True)"
+python -m pip freeze --all --exclude-editable > artifacts/audit-requirements.txt
+python -m pip_audit --strict --disable-pip --no-deps -r artifacts/audit-requirements.txt
+python scripts/check_secrets.py
+python -m build --wheel --no-isolation
+python scripts/verify_installed.py dist
+```
 
-## Privacidade e permissões
+Definir GENSIA_TEST_REAL_HTTP=1 para testes HTTP reais em loopback e GENSIA_PYTHON
+com o caminho absoluto do Python virtual para os helpers Node.
+[CI.md](docs/CI.md) contém comandos PowerShell completos. Playwright/Chromium são
+requisitos de QA, sem dependência em tempo de execução do produto.
+O inventário de advisories exclui a própria GensIA editable, ainda não publicada
+no PyPI. O CI verifica que nenhum pacote de terceiros editable é omitido.
 
-Não há fallback cloud automático. Consultas externas exigem autorização explícita.
-Não envia emails. O modelo não recebe autorização para executar comandos livres.
-A API não expõe memória, documentos nem operações mutáveis. Os adaptadores não
-constituem uma sandbox de sistema operativo para código hostil.
+A matriz CI valida Linux/Windows, Python 3.12/3.13, extras, build e segurança.
+Consultar resultados por commit no [GitHub Actions](https://github.com/Genseric0/GensIA/actions).
+O workflow não executa desenvolvimento permanente nem configura um agente Goose.
 
-Nunca versionar tokens, `.env`, gravações, documentos pessoais, bases SQLite,
-pesos de modelos ou ambientes virtuais. Não foi atribuída uma licença de
-distribuição ao projeto; as dependências mantêm as suas próprias licenças.
+## Estrutura e evidências
 
-## Continuidade
+- gensia/: núcleo, providers, ferramentas, SQLite, documentos, voz e API.
+- gensia/web/: conversa e diagnóstico; tests/: regressões e integração.
+- scripts/: QA visual, pacote instalado e assinaturas de segredos.
+- .github/workflows/: validações em runner.
+- [INITIAL_AUDIT](docs/INITIAL_AUDIT.md): baseline e prioridades.
+- [ARCHITECTURE](docs/ARCHITECTURE.md): componentes e limites.
+- [SECURITY_AUDIT](docs/SECURITY_AUDIT.md): ASVS5 aplicável e riscos.
+- [DATABASE_VALIDATION](docs/DATABASE_VALIDATION.md): integridade, concorrência e recuperação.
+- [TEST_REPORT](docs/TEST_REPORT.md): comandos, resultados e evidências.
+- [CHANGELOG](docs/CHANGELOG.md) e [RELEASE_CHECKLIST](docs/RELEASE_CHECKLIST.md): alterações e bloqueios.
+- PROGRESS.md: histórico preservado.
 
-Próximo: executar o runner num ambiente com Chromium e rever capturas desktop/mobile
-sem segredos; enquanto esse pré-requisito faltar, não repetir a mesma tentativa.
-Próximo incremento de segurança: rever rotação assistida da credencial local, sem
-confundir limpeza no browser com revogação no servidor. Permanecem pendentes inferência Ollama real, Windows real e interface
-de conversa/voz integrada, sem CDN e com permissões explícitas.
-Consultar [PROGRESS.md](PROGRESS.md) antes de iniciar alterações.
+## Maturidade
+
+O alvo é um utilizador local, com serviço em 127.0.0.1. O token autentica o processo;
+não há contas de clientes, RBAC ou isolamento entre organizações. Internet e venda
+como serviço partilhado exigem trabalho adicional. Hardware de voz, modelo real,
+aplicações interativas Windows e recuperação operacional precisam de evidência específica. Os testes não
+garantem ausência de vulnerabilidades.
+
+O [CI do commit 04a8660](https://github.com/Genseric0/GensIA/actions/runs/39521033113)
+passou nos seis jobs, incluindo Windows/Linux, browser e segurança. A validação
+interativa de aplicações Windows e hardware continua separada destes testes.
+Para o incremento atual, consultar os [checks do PR1](https://github.com/Genseric0/GensIA/pull/1/checks).
+
+A licença de distribuição do projeto continua por definir pelo titular. Dependências
+e vozes mantêm licenças próprias; não foi atribuída uma licença em nome do autor.

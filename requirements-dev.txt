@@ -1,0 +1,10 @@
+# Direct development pins verified against the configured package index, 2026-10-20.
+# Runtime optional extras remain in requirements-api.txt / requirements-documents.txt.
+pip==26.2.1
+setuptools==84.0.0
+wheel==0.48.0
+build==1.6.1
+httpx==0.28.1
+bandit==1.9.4
+coverage==7.16.2
+pip-audit==2.10.1

@@ -1,3 +1,66 @@
+2026-10-21 — v0.66.0 — model_probe explícito
+423PythonPASS/0skip/0fail21.965s;10novos.50NodePASS/0skip/0fail0.583s.
+Coverage87%:3092statements,338missing,938branches,152partial.
+Wheel0.66instaladooffline10PASS;BanditMED/HIGH0;pipcheckPASS.
+SemOllama/pesos/hardware:HTTPsintéticoapenas,nãoinferênciareal.
+CIcorrente:PR1/checks;docs/MODEL_PROBE.md. RELEASE BLOCKED para venda.
+
+2026-10-21 — v0.65.0 — configuração guiada/app
+Node50PASS/0skip/0fail,0.774s;6novos guia/erros/reset/cancel/logout/expiração/recheck.
+GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
+413PASS/0skip/0fail,33.192s;coverage87%(3034statements,337missing,926branches,151partial).
+Wheel0.65instaladooffline9PASS;BanditMED/HIGH0;signatures145files/0findings.
+VenvPythonlinkquebrado:helperNodefalhouantesdereparar;venv--upgrade,pipcheck/importsPASS.
+Chromium local ausente; CI39597871148 seis jobs PASS. Chromium10 grupos PASS,
+8PNG reais inspecionados;2PNG e manifesto em docs/screenshots/ci-39597871148/.
+Linux3.12/3.13:413PASS;Windows3.12/3.13:386PASS/27POSIX skips;Node50PASS;wheel9PASS.
+Artifact12345345585 SHA25687c5c8a94d8aff4a5cd2d8c83ac036d55c324a0e363c7272609c98dcfdc8f30e confirmado.
+Semrotasnovas/polling/instalaçãoautomática;metadadosnãoinferencia;CIatualPR1/checks.
+
+2026-10-21 — v0.64.0 — recuperação assistida numa cópia
+GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
+413PASS/0skip/0fail,23.323s;19novos.Coverage87%(3034statements,337missing,926branches,151partial).
+BanditMED/HIGH0;signatures145files/0findings;wheel0.64+installedverifier9PASS.
+Hotjournalreal/cache-spill/kill:recuperasócópia;origem+journalhashesidênticos.
+Rollbackúnicabase;WAL/superjournal/esquemaextra/links/expansãoexcessivarecusados.
+Consentimentoexato;quiescênciadeclaradapelooperador,nãoimposta;semsandbox/powerloss/hardware.
+RestauroJSONrecusaauxiliaresantigos;manualdocs/MEMORY_RECOVERY.md;CIcorrentePR1/checks.
+CI39589478006:falhaordemiterdir;CI39589744826:Linux/browser/securityPASS,Windowsctimefalhou.
+Corrigidoctimestat/fstatincompatível;conservadofstatctimeentrepasse/duranteleitura;duasregressões.
+
+2026-10-21 — v0.63.0 — publicação/falhas da memória
+GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
+394PASS/0skip/0fail,21.612s;17novos.Coverage87%(2864statements,325missing,868branches,141partial).
+BanditMED/HIGH0;signatures143files/0findings;wheel0.63+installedverifier7PASS.
+ENOSPCinjetado;SQLITE_FULLrealporlimite;processosfilhosrealmenteterminados;DELETE/WAL.
+HotjournalROrecusa/recuperaçãoRWsomenteemfixture;crashPOSIXpóspublicação deixa2links/MemoryStorerecusa.
+Semdiscohostcheio/cortedeenergia/hardware/dadosreais;docs/MEMORY_RECOVERY.md.
+CI atual:PR1/checks.Resultadosremotos0.62/0.61abaixosãohistóricos.
+
+2026-10-21 — v0.62.0 — memory check
+GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
+377PASS/0skip/0fail,21.272s.11novos de integridade/privacidade/orçamento/WAL/recuperação.
+Coverage87%(statements2818,missing320,branches854,partial140).
+BanditMED/HIGH0;signatures140files/0findings.
+Limites SQLiteporligação/VM/tempo cooperativo;não é deadline rígido/sandbox/reparação.
+Ver docs/MEMORY_RECOVERY.md;CI do commit atual em PR1/checks.
+
+2026-10-21 — v0.61.0 — hardening e conversa
+GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
+366PASS/0skip/0fail,22.883s;coverage86%(statements2770,missing321,branches838,partial138).
+GENSIA_PYTHON=$PWD/.venv/bin/python node --test tests/*.test.cjs
+44PASS/0skip/0fail,0.722s. DOM simulado e helperHTTP reais; não browser.
+pipcheckPASS;pipauditstrictPASS0advisories;Bandit0MED/HIGH,4LOW.
+Secret signatures136files/0findings;wheelbuild+installedverifier6PASS.
+ChromiumZIPtruncado local;jobremoto118961545502PASS/4PNGinspecionados.
+Sem pesos/audiohardware;primeiroCIWindowsfalhou,correçõesincluídaspara repetição.
+Baseline worktree206f4d1:277PythonPASS/0skip11.376s,34NodePASS0.637s.
+Primeira regressão atual359PASS/1FAIL(importação API);corrigida e repetição360PASS.
+Ver docs/TEST_REPORT.md e RELEASE_CHECKLIST.md para limites e CI.
+CI final consultado:39521033113,commit04a866059fd65c1d7079c14b20f41ac620c76e02,SUCCESS6jobs.
+Linux3.12/3.13:366PythonPASS0skip;Windows3.12/3.13:341PASS25skipPOSIX/Linux.
+Node44PASS0skip e wheelverify6PASS nas4configurações.Security/ChromiumPASS.
+
 2026-10-16 — v0.34.0 — expiração local do painel
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
 277 passaram, zero omitidos, 11,057s na repetição final, Linux/Python 3.12.14;
