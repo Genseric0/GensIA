@@ -1,5 +1,19 @@
 # Progresso GensIA
 
+## 20–21/10/2026 — hardening e conversa local — v0.61.0
+
+Retomado o remoto206f4d1(v0.34), com baseline independente277Python/34Node.
+Implementados aprovação exata, auditoria durável antes dos efeitos, gate de
+metadados Ollama e resposta segura, memória0600/bounded/UTF8/rollback, voz com
+checkpoint local e texto por stdin, interface/app com contexto e Bearer, reserva
+de socket antes do token, pacote instalável e CI Linux/Windows/browser/security.
+360Python e44Node aprovados sem omissões. Coverage86%;pipcheck/audit aprovados;
+Bandit0médios/elevados;wheel instalado fora do checkout com seis etapas PASS.
+Regressão da importação API encontrada e corrigida antes da repetição completa.
+Chromium local bloqueado por download truncado; sem PNG ou pesos reais testados.
+Estado RELEASE BLOCKED: ver docs/RELEASE_CHECKLIST.md. Próximo: PR/CI efetivamente
+verificados, browser e hardware/modelo reais. Sem produção ou dados reais.
+
 ## 16/10/2026 — expiração local da sessão do painel — v0.34.0
 
 O painel limpa metadados/referência reutilizável ao token e aborta o pedido após

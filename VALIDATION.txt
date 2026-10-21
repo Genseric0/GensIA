@@ -1,3 +1,15 @@
+2026-10-21 — v0.61.0 — hardening e conversa
+GENSIA_TEST_REAL_HTTP=1 .venv/bin/python -m coverage run --branch --source=gensia -m unittest discover -s tests -q
+360PASS/0skip/0fail,21.242s;coverage86%(statements2757,missing321,branches830,partial138).
+GENSIA_PYTHON=$PWD/.venv/bin/python node --test tests/*.test.cjs
+44PASS/0skip/0fail,0.575s. DOM simulado e helperHTTP reais; não browser.
+pipcheckPASS;pipauditstrictPASS0advisories;Bandit0MED/HIGH,4LOW.
+Secret signatures132files/0findings;wheelbuild+installedverifier6PASS.
+ChromiumZIPtruncado/E2Eblocked;semPNG,pesos,audiohardwareouWindowsvalidadoslocalmente.
+Baseline worktree206f4d1:277PythonPASS/0skip11.376s,34NodePASS0.637s.
+Primeira regressão atual359PASS/1FAIL(importação API);corrigida e repetição360PASS.
+Ver docs/TEST_REPORT.md e RELEASE_CHECKLIST.md para limites e CI.
+
 2026-10-16 — v0.34.0 — expiração local do painel
 GENSIA_TEST_REAL_HTTP=1 python -m unittest discover -s tests -q
 277 passaram, zero omitidos, 11,057s na repetição final, Linux/Python 3.12.14;
